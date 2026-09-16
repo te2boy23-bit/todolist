@@ -1,6 +1,6 @@
 export const getCroppedImg = async (
   imageSrc: string,
-  pixelCrop: { x: number; y: number; width: number; height: number }
+  pixelCrop: { x: number; y: number; width: number; height: number },
 ): Promise<Blob | null> => {
   const image = new Image();
   image.src = imageSrc;
@@ -27,7 +27,7 @@ export const getCroppedImg = async (
     0,
     0,
     pixelCrop.width,
-    pixelCrop.height
+    pixelCrop.height,
   );
 
   return new Promise((resolve) => {

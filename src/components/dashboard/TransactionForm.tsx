@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   PlusCircle,
   MinusCircle,
@@ -12,6 +12,10 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { addTransaction } from "@/app/actions";
 import { useRouter } from "next/navigation";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import { format } from "date-fns";
+import { ja, enUS } from "date-fns/locale";
 
 type TransactionType = "income" | "deposit" | "expense";
 type PayerType = "me" | "partner";
@@ -19,19 +23,43 @@ type PayerType = "me" | "partner";
 interface TransactionFormProps {
   myName: string;
   partnerName: string;
+  initialDate?: string;
 }
 
-export function TransactionForm({ myName, partnerName }: TransactionFormProps) {
-  const { t } = useLanguage();
+export function TransactionForm({ myName, partnerName, initialDate }: TransactionFormProps) {
+  const { t, language } = useLanguage();
   const router = useRouter();
   const [type, setType] = useState<TransactionType>("deposit");
   const [payer, setPayer] = useState<PayerType>("me");
   const [amount, setAmount] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [transactionDate, setTransactionDate] = useState<string>(
-    new Date().toISOString().split("T")[0],
+    initialDate || new Date().toISOString().split("T")[0],
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // initialDateが変更されたらステートを更新する
+  useEffect(() => {
+    if (initialDate) {
+      setTransactionDate(initialDate);
+    }
+  }, [initialDate]);
+
+  // 外側をクリックしたらカレンダーを閉じる
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsCalendarOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,22 +179,37 @@ export function TransactionForm({ myName, partnerName }: TransactionFormProps) {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row gap-3">
-          <div className="w-full sm:w-1/3">
-            <input
-              type="date"
-              value={transactionDate}
-              onChange={(e) => setTransactionDate(e.target.value)}
+          <div className="w-full sm:w-1/3 relative" ref={containerRef}>
+            <button
+              type="button"
+              onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+              disabled={isSubmitting}
               className={cn(
-                "w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none transition-all",
+                "w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none transition-all text-left bg-white",
                 type === "deposit"
                   ? "border-gray-200 focus:border-blue-500 focus:ring-blue-200"
                   : type === "expense"
                     ? "border-gray-200 focus:border-red-500 focus:ring-red-200"
                     : "border-gray-200 focus:border-emerald-500 focus:ring-emerald-200",
               )}
-              required
-              disabled={isSubmitting}
-            />
+            >
+              {transactionDate ? format(new Date(transactionDate), language === "ja" ? "yyyy年MM月dd日" : "MMM d, yyyy", { locale: language === "ja" ? ja : enUS }) : "日付を選択"}
+            </button>
+            {isCalendarOpen && (
+              <div className="absolute z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
+                <DayPicker
+                  mode="single"
+                  selected={new Date(transactionDate)}
+                  onSelect={(date) => {
+                    if (date) {
+                      setTransactionDate(format(date, "yyyy-MM-dd"));
+                      setIsCalendarOpen(false);
+                    }
+                  }}
+                  locale={language === "ja" ? ja : enUS}
+                />
+              </div>
+            )}
           </div>
           <div className="w-full sm:w-1/3 relative">
             <input

@@ -36,9 +36,12 @@ export function PairingModal({ profile }: PairingModalProps) {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
+  const onCropComplete = useCallback(
+    (croppedArea: any, croppedAreaPixels: any) => {
+      setCroppedAreaPixels(croppedAreaPixels);
+    },
+    [],
+  );
 
   const handleSaveProfile = () => {
     startTransition(async () => {
@@ -62,15 +65,15 @@ export function PairingModal({ profile }: PairingModalProps) {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setFileName(file.name);
-      
+
       const reader = new FileReader();
       reader.addEventListener("load", () => {
         setImageSrc(reader.result?.toString() || null);
       });
       reader.readAsDataURL(file);
-      
+
       // Reset input value so the same file can be selected again
-      e.target.value = '';
+      e.target.value = "";
     }
   };
 
@@ -80,21 +83,26 @@ export function PairingModal({ profile }: PairingModalProps) {
     try {
       startTransition(async () => {
         setError("");
-        
+
         // クロップした画像をBlobとして取得
-        const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+        const croppedImageBlob = await getCroppedImg(
+          imageSrc,
+          croppedAreaPixels,
+        );
         if (!croppedImageBlob) throw new Error("Failed to crop image");
 
         const { createClient } = await import("@/lib/supabase/client");
         const supabase = createClient();
 
         // 拡張子は元のファイルから適当に類推するか、jpeg固定にする
-        const fileExt = "jpg"; 
+        const fileExt = "jpg";
         const uploadedName = `${profile.id}-${Math.random()}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
           .from("avatars")
-          .upload(uploadedName, croppedImageBlob, { contentType: 'image/jpeg' });
+          .upload(uploadedName, croppedImageBlob, {
+            contentType: "image/jpeg",
+          });
 
         if (uploadError) throw uploadError;
 
@@ -255,7 +263,7 @@ export function PairingModal({ profile }: PairingModalProps) {
               )}
             </button>
           </div>
-          
+
           <div className="relative flex-1">
             <Cropper
               image={imageSrc}
@@ -269,7 +277,7 @@ export function PairingModal({ profile }: PairingModalProps) {
               onZoomChange={setZoom}
             />
           </div>
-          
+
           <div className="p-6 bg-black/50 flex flex-col items-center gap-4 z-10">
             <span className="text-white text-sm">ズーム調整</span>
             <input
@@ -280,7 +288,7 @@ export function PairingModal({ profile }: PairingModalProps) {
               step={0.1}
               aria-labelledby="Zoom"
               onChange={(e) => {
-                setZoom(Number(e.target.value))
+                setZoom(Number(e.target.value));
               }}
               className="w-full max-w-sm accent-blue-500"
             />

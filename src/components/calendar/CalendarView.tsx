@@ -8,6 +8,7 @@ import { ja, enUS } from "date-fns/locale";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { Wallet, User, Trash2, CheckSquare } from "lucide-react";
 import { deleteTransaction, toggleTodo, deleteTodo } from "@/app/actions";
+import { TransactionForm } from "@/components/dashboard/TransactionForm";
 
 type Transaction = {
   id: string;
@@ -184,6 +185,14 @@ export function CalendarView({
                 )
               : ""}
           </h3>
+
+          <div className="mb-6">
+            <TransactionForm 
+              myName={myName} 
+              partnerName={partnerName} 
+              initialDate={selectedDateStr || undefined} 
+            />
+          </div>
 
           {dayTransactions.length === 0 && dayTodos.length === 0 ? (
             <p className="text-gray-500 text-center py-8">
