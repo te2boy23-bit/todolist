@@ -48,9 +48,7 @@ export function ShareProjectModal({ project }: { project: any }) {
                 <h2 className="text-xl font-bold text-gray-900">
                   プロジェクトを共有
                 </h2>
-                <p className="text-sm text-gray-500 mt-2">
-                  {project.name}
-                </p>
+                <p className="text-sm text-gray-500 mt-2">{project.name}</p>
               </div>
 
               {isShared ? (
@@ -77,7 +75,9 @@ export function ShareProjectModal({ project }: { project: any }) {
                       {copied ? (
                         <>
                           <Check className="w-4 h-4 text-emerald-500" />
-                          <span className="text-emerald-600">コピーしました</span>
+                          <span className="text-emerald-600">
+                            コピーしました
+                          </span>
                         </>
                       ) : (
                         <>

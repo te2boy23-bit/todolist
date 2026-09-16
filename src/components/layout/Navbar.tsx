@@ -103,9 +103,7 @@ export function Navbar({
           )}
 
           {/* Share Button (Current Project) */}
-          {currentProject && (
-            <ShareProjectModal project={currentProject} />
-          )}
+          {currentProject && <ShareProjectModal project={currentProject} />}
 
           {/* Language Toggle */}
           <button
