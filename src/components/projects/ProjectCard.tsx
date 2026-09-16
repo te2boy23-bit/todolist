@@ -26,7 +26,6 @@ export function ProjectCard({
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    setMenuOpen(false);
 
     const msg =
       actionType === "delete"
