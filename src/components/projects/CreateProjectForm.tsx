@@ -40,7 +40,7 @@ export function CreateProjectForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!startDate || !endDate) {
       alert("開始日と目標日を選択してください。");
       return;
@@ -58,7 +58,7 @@ export function CreateProjectForm() {
           throw error;
         }
         console.error(error);
-        alert("プロジェクトの作成に失敗しました");
+        alert(`プロジェクトの作成に失敗しました: ${error.message || "不明なエラー"}`);
       }
     });
   };
