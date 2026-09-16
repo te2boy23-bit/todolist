@@ -6,7 +6,13 @@ import { FolderKanban } from "lucide-react";
 import Link from "next/link";
 import { PairingModal } from "@/components/profile/PairingModal";
 
-export function DashboardHeader({ project, profile }: { project?: any; profile?: any }) {
+export function DashboardHeader({
+  project,
+  profile,
+}: {
+  project?: any;
+  profile?: any;
+}) {
   const { t } = useLanguage();
 
   return (
@@ -25,7 +31,9 @@ export function DashboardHeader({ project, profile }: { project?: any; profile?:
         </h1>
         {profile && (
           <div className="mt-2 flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
-            <span className="text-sm font-medium text-gray-600">あなたのプロフィール:</span>
+            <span className="text-sm font-medium text-gray-600">
+              あなたのプロフィール:
+            </span>
             <PairingModal profile={profile} />
           </div>
         )}

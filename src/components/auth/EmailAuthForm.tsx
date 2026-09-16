@@ -36,7 +36,7 @@ export function EmailAuthForm() {
         router.refresh();
       } else {
         // 新規登録処理
-        const { error: signUpError } = await supabase.auth.signUp({
+        const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -45,12 +45,17 @@ export function EmailAuthForm() {
         });
         if (signUpError) throw signUpError;
 
-        // Supabaseの設定で「Confirm email」がオフならそのままログインされる
-        setMessage("登録が完了しました！ダッシュボードに移動します。");
-        setTimeout(() => {
-          router.push("/dashboard");
-          router.refresh();
-        }, 1500);
+        // Confirm emailがオンの場合、sessionはnullになります
+        if (data.session) {
+          setMessage("登録が完了しました！ダッシュボードに移動します。");
+          setTimeout(() => {
+            router.push("/dashboard");
+            router.refresh();
+          }, 1500);
+        } else {
+          setMessage("【重要】確認メールを送信しました！メールの受信トレイを開き、リンクをクリックして登録を完了させてください。");
+          // 遷移はしない（ユーザーにメールを確認させるため）
+        }
       }
     } catch (err: any) {
       console.error("Auth error:", err);
@@ -60,6 +65,10 @@ export function EmailAuthForm() {
         setError("このメールアドレスは既に登録されています。");
       } else if (err.message.includes("Password should be at least")) {
         setError("パスワードは6文字以上で入力してください。");
+      } else if (err.message.includes("Email not confirmed")) {
+        setError("メールアドレスの確認が完了していません。受信したメールのリンクをクリックしてください。");
+      } else if (err.message.includes("rate limit exceeded")) {
+        setError("短時間に何度も試行されたため一時的に制限されました。少し時間（1時間程度）を空けてからやり直すか、別のメールアドレスをお試しください。");
       } else {
         setError(err.message || "エラーが発生しました。");
       }
