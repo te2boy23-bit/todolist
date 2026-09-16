@@ -5,8 +5,11 @@ import { joinProject } from "@/app/actions/project";
 import { Link2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 export function JoinProjectForm() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [isPending, startTransition] = useTransition();
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
@@ -22,16 +25,16 @@ export function JoinProjectForm() {
       try {
         const result = await joinProject(inviteCode);
         if (result.success) {
-          setSuccess("プロジェクトに参加しました！");
+          setSuccess("Success!");
           setInviteCode("");
           router.push("/dashboard");
           router.refresh();
         } else {
-          setError(result.error || "エラーが発生しました");
+          setError(result.error || "Error");
         }
       } catch (err) {
         console.error(err);
-        setError("参加に失敗しました");
+        setError("Error");
       }
     });
   };
@@ -40,7 +43,7 @@ export function JoinProjectForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          招待コード
+          {t("project.codeLabel")}
         </label>
         <div className="flex gap-2">
           <input
@@ -49,7 +52,7 @@ export function JoinProjectForm() {
             onChange={(e) => setInviteCode(e.target.value)}
             required
             maxLength={6}
-            placeholder="ABCDEF"
+            placeholder={t("project.codePlaceholder")}
             className="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono tracking-widest uppercase text-center"
           />
           <button

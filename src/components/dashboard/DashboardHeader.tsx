@@ -22,7 +22,7 @@ export function DashboardHeader({
         className="inline-flex items-center gap-2 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors"
       >
         <FolderKanban className="w-3.5 h-3.5" />
-        プロジェクト一覧に戻る
+        {t("dashboard.backToProjects")}
       </Link>
 
       <div className="flex flex-col items-center justify-center gap-2">
@@ -32,7 +32,7 @@ export function DashboardHeader({
         {profile && (
           <div className="mt-2 flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
             <span className="text-sm font-medium text-gray-600">
-              あなたのプロフィール:
+              {t("dashboard.yourProfile")}
             </span>
             <PairingModal profile={profile} />
           </div>

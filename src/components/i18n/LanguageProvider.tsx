@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { dictionaries, Language, Dictionary } from "@/lib/i18n/dictionaries";
+import { useRouter } from "next/navigation";
 
 interface LanguageContextType {
   language: Language;
@@ -14,19 +15,23 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 );
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [language, setLanguageState] = useState<Language>("ja");
 
   useEffect(() => {
-    // 初期表示時に localStorage から言語を読み込む
+    // 初期表示時に localStorage と cookie から言語を読み込む
     const savedLang = localStorage.getItem("app_lang") as Language;
     if (savedLang && (savedLang === "ja" || savedLang === "en")) {
       setLanguageState(savedLang);
+      document.cookie = `app_lang=${savedLang}; path=/; max-age=31536000`;
     }
   }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     localStorage.setItem("app_lang", lang);
+    document.cookie = `app_lang=${lang}; path=/; max-age=31536000`;
+    router.refresh();
   };
 
   const t = (key: string, params?: Record<string, string | number>): string => {

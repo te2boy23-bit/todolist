@@ -10,6 +10,8 @@ import {
 } from "@/app/actions/project";
 import { useRouter } from "next/navigation";
 
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 export function ProjectCard({
   project,
   currentUserId,
@@ -18,6 +20,7 @@ export function ProjectCard({
   currentUserId: string;
 }) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isPending, startTransition] = useTransition();
@@ -88,12 +91,12 @@ export function ProjectCard({
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-2">
             <Wallet className="w-4 h-4 text-emerald-500" />
-            <span>目標: {project.target_amount.toLocaleString()}円</span>
+            <span>{t("project.targetAmount")}: {project.target_amount.toLocaleString()}{t("dashboard.currency")}</span>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-blue-500" />
             <span>
-              期間: {format(new Date(project.start_date), "yyyy/MM/dd")} 〜{" "}
+              {t("project.period")}: {format(new Date(project.start_date), "yyyy/MM/dd")} -{" "}
               {format(new Date(project.end_date), "yyyy/MM/dd")}
             </span>
           </div>
@@ -123,7 +126,7 @@ export function ProjectCard({
                 className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors disabled:opacity-50"
               >
                 <Trash2 className="w-4 h-4" />
-                削除する
+                {t("project.delete")}
               </button>
             ) : (
               <button
@@ -132,7 +135,7 @@ export function ProjectCard({
                 className="w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 flex items-center gap-2 transition-colors disabled:opacity-50"
               >
                 <LogOut className="w-4 h-4" />
-                退出する
+                {t("project.leave")}
               </button>
             )}
           </div>

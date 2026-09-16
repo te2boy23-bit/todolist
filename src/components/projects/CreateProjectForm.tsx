@@ -72,35 +72,37 @@ export function CreateProjectForm() {
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          プロジェクト名
+          {t("project.nameLabel")}
         </label>
         <input
           type="text"
           name="name"
           required
-          placeholder="例: 結婚式資金、ハワイ旅行 など"
+          placeholder={t("project.namePlaceholder")}
           className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          目標金額 (円)
+          {t("project.targetLabel")} ({t("dashboard.currency")})
         </label>
         <input
           type="number"
           name="target_amount"
           required
-          min="1"
-          placeholder="例: 1500000"
-          className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          min="0"
+          step="1000"
+          placeholder={t("project.targetPlaceholder")}
+          className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
         />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* 開始日 */}
         <div className="relative" ref={startRef}>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            開始日
+            {t("project.startDate")}
           </label>
           <input type="hidden" name="start_date" value={startDate} required />
           <button
@@ -138,29 +140,27 @@ export function CreateProjectForm() {
             </div>
           )}
         </div>
+        {/* 終了日 */}
         <div className="relative" ref={endRef}>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            目標（終了）日
+            {t("project.endDate")}
           </label>
           <input type="hidden" name="end_date" value={endDate} required />
           <button
             type="button"
-            onClick={() => {
-              setIsEndCalendarOpen(!isEndCalendarOpen);
-              setIsStartCalendarOpen(false);
-            }}
-            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-left text-gray-700"
+            onClick={() => setIsEndCalendarOpen(!isEndCalendarOpen)}
+            className="w-full text-left bg-white px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-50 transition-colors"
           >
-            {endDate
-              ? format(
-                  new Date(endDate),
-                  language === "ja" ? "yyyy年MM月dd日" : "MMM d, yyyy",
-                  { locale: language === "ja" ? ja : enUS },
-                )
-              : "日付を選択"}
+            {endDate ? (
+              <span className="text-gray-900">
+                {format(new Date(endDate), "yyyy/MM/dd")}
+              </span>
+            ) : (
+              <span className="text-gray-400">YYYY/MM/DD</span>
+            )}
           </button>
           {isEndCalendarOpen && (
-            <div className="absolute z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 right-0 sm:left-0">
+            <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl z-50 p-2">
               <DayPicker
                 mode="single"
                 selected={endDate ? new Date(endDate) : undefined}
@@ -173,7 +173,38 @@ export function CreateProjectForm() {
                 locale={language === "ja" ? ja : enUS}
                 captionLayout="dropdown"
                 startMonth={new Date(2020, 0)}
-                endMonth={new Date(new Date().getFullYear() + 10, 11)}
+                endMonth={new Date(2050, 11)}
+                className="bg-white"
+                classNames={{
+                  months:
+                    "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                  month: "space-y-4",
+                  caption: "flex justify-center pt-1 relative items-center",
+                  caption_label: "hidden",
+                  caption_dropdowns: "flex gap-2 items-center justify-center",
+                  dropdown:
+                    "p-1 bg-white border border-gray-200 rounded-md text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer hover:bg-gray-50",
+                  dropdown_month: "ml-2",
+                  dropdown_year: "mr-2",
+                  nav: "space-x-1 flex items-center",
+                  nav_button:
+                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+                  nav_button_previous: "absolute left-1",
+                  nav_button_next: "absolute right-1",
+                  table: "w-full border-collapse space-y-1",
+                  head_row: "flex",
+                  head_cell:
+                    "text-gray-500 rounded-md w-9 font-normal text-[0.8rem]",
+                  row: "flex w-full mt-2",
+                  cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-gray-100 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                  day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 rounded-md transition-colors",
+                  day_selected:
+                    "bg-blue-600 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white",
+                  day_today: "bg-gray-100 text-gray-900",
+                  day_outside: "text-gray-400 opacity-50",
+                  day_disabled: "text-gray-400 opacity-50",
+                  day_hidden: "invisible",
+                }}
               />
             </div>
           )}
@@ -183,10 +214,10 @@ export function CreateProjectForm() {
       <button
         type="submit"
         disabled={isPending}
-        className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-medium py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+        className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-6"
       >
         <Plus className="w-5 h-5" />
-        {isPending ? "作成中..." : "プロジェクトを作成"}
+        {isPending ? t("common.loading") : t("project.createBtn")}
       </button>
     </form>
   );
