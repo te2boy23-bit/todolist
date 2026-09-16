@@ -3,7 +3,11 @@
 import { Wallet, Calendar, MoreVertical, Trash2, LogOut } from "lucide-react";
 import { format } from "date-fns";
 import { useState, useRef, useEffect, useTransition } from "react";
-import { selectProject, deleteProject, leaveProject } from "@/app/actions/project";
+import {
+  selectProject,
+  deleteProject,
+  leaveProject,
+} from "@/app/actions/project";
 
 export function ProjectCard({
   project,
@@ -29,7 +33,10 @@ export function ProjectCard({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleAction = async (e: React.MouseEvent, actionType: "delete" | "leave") => {
+  const handleAction = async (
+    e: React.MouseEvent,
+    actionType: "delete" | "leave",
+  ) => {
     e.preventDefault();
     e.stopPropagation();
     setMenuOpen(false);
