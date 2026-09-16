@@ -4,6 +4,7 @@ import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { format } from "date-fns";
 import { FolderKanban } from "lucide-react";
 import Link from "next/link";
+import { ProjectInviteCode } from "@/components/projects/ProjectInviteCode";
 
 export function DashboardHeader({ project }: { project?: any }) {
   const { t } = useLanguage();
@@ -23,10 +24,15 @@ export function DashboardHeader({ project }: { project?: any }) {
           {project?.name || t("dashboard.title")}
         </h1>
         {project && (
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-gray-500 mb-4">
             {format(new Date(project.start_date), "yyyy/MM/dd")} 〜{" "}
             {format(new Date(project.end_date), "yyyy/MM/dd")}
           </p>
+        )}
+        {project && (
+          <div className="mt-4">
+            <ProjectInviteCode project={project} />
+          </div>
         )}
       </div>
     </header>

@@ -6,6 +6,16 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getProfile } from "./profile";
 
+// ランダムな6桁の招待コードを生成する関数
+function generateInviteCode() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
 // プロジェクト一覧の取得
 export async function getProjects() {
   const supabase = await createClient();
@@ -13,13 +23,11 @@ export async function getProjects() {
 
   if (!profile) return [];
 
-  // 自分がオーナー、またはパートナーがオーナーのプロジェクトを取得
+  // 自分がオーナー、または自分がパートナー(参加者)として登録されているプロジェクトを取得
   const { data, error } = await supabase
     .from("projects")
     .select("*")
-    .or(
-      `owner_id.eq.${profile.id}${profile.partner_id ? `,owner_id.eq.${profile.partner_id}` : ""}`,
-    )
+    .or(`owner_id.eq.${profile.id},partner_id.eq.${profile.id}`)
     .order("created_at", { ascending: false });
 
   if (error) {
@@ -46,6 +54,18 @@ export async function createProject(formData: FormData) {
     throw new Error("Missing fields");
   }
 
+  // 重複しない招待コードを生成（簡易的に複数回試行）
+  let inviteCode = generateInviteCode();
+  for (let i = 0; i < 5; i++) {
+    const { data: existing } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("invite_code", inviteCode)
+      .single();
+    if (!existing) break;
+    inviteCode = generateInviteCode();
+  }
+
   const { data, error } = await supabase
     .from("projects")
     .insert([
@@ -55,6 +75,7 @@ export async function createProject(formData: FormData) {
         start_date: startDate,
         end_date: endDate,
         owner_id: profile.id,
+        invite_code: inviteCode,
       },
     ])
     .select()
@@ -67,6 +88,54 @@ export async function createProject(formData: FormData) {
 
   // 作成したプロジェクトを選択状態にする
   await selectProject(data.id);
+}
+
+// 招待コードでプロジェクトに参加する
+export async function joinProject(inviteCode: string) {
+  const supabase = await createClient();
+  const profile = await getProfile();
+
+  if (!profile) throw new Error("Unauthorized");
+  if (!inviteCode) throw new Error("Invite code is required");
+
+  // 大文字に変換
+  const code = inviteCode.toUpperCase().trim();
+
+  // 招待コードからプロジェクトを検索
+  const { data: project, error: searchError } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("invite_code", code)
+    .single();
+
+  if (searchError || !project) {
+    return { success: false, error: "無効な招待コードです。" };
+  }
+
+  // 自分がオーナーの場合は参加不要
+  if (project.owner_id === profile.id) {
+    return { success: false, error: "あなたが作成したプロジェクトです。" };
+  }
+
+  // 既に参加済みの場合は不要
+  if (project.partner_id === profile.id) {
+    return { success: true };
+  }
+
+  // パートナーとして登録する（※既に誰かがいる場合は上書きするかエラーにするか。今回は上書きでOKとする）
+  const { error: updateError } = await supabase
+    .from("projects")
+    .update({ partner_id: profile.id })
+    .eq("id", project.id);
+
+  if (updateError) {
+    return { success: false, error: "プロジェクトの参加に失敗しました。" };
+  }
+
+  // 参加したプロジェクトを選択状態にする
+  await selectProject(project.id);
+
+  return { success: true };
 }
 
 // プロジェクトの選択（Cookieに保存）

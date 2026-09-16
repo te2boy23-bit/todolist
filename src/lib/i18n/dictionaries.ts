@@ -68,6 +68,14 @@ export const dictionaries = {
       enterCode: "相手の招待コードを入力",
       pairBtn: "連携",
     },
+    landing: {
+      titleLine1: "ふたりの目標を",
+      titleLine2: "形にする",
+      description:
+        "同棲、結婚、旅行。パートナーと一緒にお金を管理し、共通のTodoをこなして、ふたりの夢を叶えるための共有アプリです。",
+      loginBtn: "Googleでログイン / 新規登録",
+      freeNote: "※ アカウント作成は無料です",
+    },
   },
   en: {
     common: {
@@ -137,6 +145,14 @@ export const dictionaries = {
       or: "OR",
       enterCode: "Enter Partner's Code",
       pairBtn: "Pair",
+    },
+    landing: {
+      titleLine1: "Turn Your Goals",
+      titleLine2: "Into Reality",
+      description:
+        "Moving in, getting married, or traveling. A shared app to manage money together, complete todos, and make your dreams come true.",
+      loginBtn: "Login / Sign up with Google",
+      freeNote: "* Creating an account is free",
     },
   },
 };
