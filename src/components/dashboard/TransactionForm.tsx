@@ -29,7 +29,7 @@ export function TransactionForm({ myName, partnerName }: TransactionFormProps) {
   const [amount, setAmount] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
   const [transactionDate, setTransactionDate] = useState<string>(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
