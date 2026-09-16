@@ -17,8 +17,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cohabitation Savings Tracker",
-  description: "Track savings and tasks for cohabitation",
+  title: "ふたりの目標を形にする - 共有貯金＆Todoアプリ",
+  description:
+    "同棲、結婚、旅行。パートナーと一緒にお金を管理し、共通のTodoをこなして、ふたりの夢を叶えるための共有アプリです。",
+  openGraph: {
+    title: "ふたりの目標を形にする - 共有貯金＆Todoアプリ",
+    description:
+      "同棲や結婚、旅行の資金をふたりで楽しく管理！お金の記録とTodoリストを共有できる専用アプリです。",
+    type: "website",
+    locale: "ja_JP",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ふたりの目標を形にする - 共有貯金＆Todoアプリ",
+    description:
+      "同棲や結婚、旅行の資金をふたりで楽しく管理！お金の記録とTodoリストを共有できる専用アプリです。",
+  },
 };
 
 export default async function RootLayout({
