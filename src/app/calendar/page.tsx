@@ -19,11 +19,12 @@ export default async function CalendarPage() {
   try {
     const supabase = await createClient();
 
-    // トランザクション取得
+    // トランザクション取得（ダミーのプロフィールデータは除外）
     const { data: txData, error: txError } = await supabase
       .from("transactions")
       .select("*")
       .eq("project_id", project.id)
+      .neq("transaction_date", "2099-12-31")
       .order("transaction_date", { ascending: false });
 
     if (!txError && txData) {

@@ -21,11 +21,12 @@ export default async function DashboardPage() {
   try {
     const supabase = await createClient();
 
-    // プロジェクトに紐づくトランザクションを取得
+    // プロジェクトに紐づくトランザクションを取得（ダミーのプロフィールデータは除外）
     const { data: transactions, error } = await supabase
       .from("transactions")
       .select("*")
       .eq("project_id", project.id)
+      .neq("transaction_date", "2099-12-31")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
