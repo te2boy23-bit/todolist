@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useTransition, useRef } from "react";
+import { useState, useTransition, useRef, useCallback } from "react";
 import { updateProfile } from "@/app/actions/profile";
-import { User } from "lucide-react";
+import { User, Check, X } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import Cropper from "react-easy-crop";
+import { getCroppedImg } from "@/lib/cropImage";
 
 type Profile = {
   id: string;
@@ -26,7 +28,17 @@ export function PairingModal({ profile }: PairingModalProps) {
   const [success, setSuccess] = useState("");
   const [fileName, setFileName] = useState("");
 
+  // Crop states
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
 
   const handleSaveProfile = () => {
     startTransition(async () => {
@@ -44,6 +56,60 @@ export function PairingModal({ profile }: PairingModalProps) {
         setError("Error updating profile");
       }
     });
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setFileName(file.name);
+      
+      const reader = new FileReader();
+      reader.addEventListener("load", () => {
+        setImageSrc(reader.result?.toString() || null);
+      });
+      reader.readAsDataURL(file);
+      
+      // Reset input value so the same file can be selected again
+      e.target.value = '';
+    }
+  };
+
+  const handleCropSave = async () => {
+    if (!imageSrc || !croppedAreaPixels) return;
+
+    try {
+      startTransition(async () => {
+        setError("");
+        
+        // クロップした画像をBlobとして取得
+        const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+        if (!croppedImageBlob) throw new Error("Failed to crop image");
+
+        const { createClient } = await import("@/lib/supabase/client");
+        const supabase = createClient();
+
+        // 拡張子は元のファイルから適当に類推するか、jpeg固定にする
+        const fileExt = "jpg"; 
+        const uploadedName = `${profile.id}-${Math.random()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("avatars")
+          .upload(uploadedName, croppedImageBlob, { contentType: 'image/jpeg' });
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage
+          .from("avatars")
+          .getPublicUrl(uploadedName);
+
+        setAvatarUrl(data.publicUrl);
+        setImageSrc(null); // クロップ画面を閉じる
+      });
+    } catch (error) {
+      console.error("Upload error:", error);
+      setError("Upload Failed");
+      setImageSrc(null);
+    }
   };
 
   if (!isOpen) {
@@ -67,7 +133,8 @@ export function PairingModal({ profile }: PairingModalProps) {
 
   return (
     <>
-      {isOpen && (
+      {/* メインのプロフィール設定モーダル */}
+      {isOpen && !imageSrc && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
             <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
@@ -123,42 +190,7 @@ export function PairingModal({ profile }: PairingModalProps) {
                           accept="image/*"
                           ref={fileInputRef}
                           className="hidden"
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) {
-                              setFileName("");
-                              return;
-                            }
-
-                            setFileName(file.name);
-                            setError("");
-                            startTransition(async () => {
-                              try {
-                                const { createClient } =
-                                  await import("@/lib/supabase/client");
-                                const supabase = createClient();
-
-                                const fileExt = file.name.split(".").pop();
-                                const uploadedName = `${profile.id}-${Math.random()}.${fileExt}`;
-
-                                const { error: uploadError } =
-                                  await supabase.storage
-                                    .from("avatars")
-                                    .upload(uploadedName, file);
-
-                                if (uploadError) throw uploadError;
-
-                                const { data } = supabase.storage
-                                  .from("avatars")
-                                  .getPublicUrl(uploadedName);
-
-                                setAvatarUrl(data.publicUrl);
-                              } catch (error) {
-                                console.error("Upload error:", error);
-                                setError("Upload Failed");
-                              }
-                            });
-                          }}
+                          onChange={handleFileChange}
                         />
                         <button
                           type="button"
@@ -196,6 +228,62 @@ export function PairingModal({ profile }: PairingModalProps) {
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* クロップ用モーダル */}
+      {imageSrc && (
+        <div className="fixed inset-0 bg-black/90 z-[60] flex flex-col">
+          <div className="flex justify-between items-center p-4 bg-black/50 text-white z-10">
+            <button
+              onClick={() => setImageSrc(null)}
+              className="p-2 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <span className="font-medium">画像の切り抜き</span>
+            <button
+              onClick={handleCropSave}
+              disabled={isPending}
+              className="p-2 rounded-full hover:bg-white/10 transition-colors text-blue-400"
+            >
+              {isPending ? (
+                <span className="text-sm">保存中...</span>
+              ) : (
+                <Check className="w-6 h-6" />
+              )}
+            </button>
+          </div>
+          
+          <div className="relative flex-1">
+            <Cropper
+              image={imageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              cropShape="round"
+              showGrid={false}
+              onCropChange={setCrop}
+              onCropComplete={onCropComplete}
+              onZoomChange={setZoom}
+            />
+          </div>
+          
+          <div className="p-6 bg-black/50 flex flex-col items-center gap-4 z-10">
+            <span className="text-white text-sm">ズーム調整</span>
+            <input
+              type="range"
+              value={zoom}
+              min={1}
+              max={3}
+              step={0.1}
+              aria-labelledby="Zoom"
+              onChange={(e) => {
+                setZoom(Number(e.target.value))
+              }}
+              className="w-full max-w-sm accent-blue-500"
+            />
           </div>
         </div>
       )}

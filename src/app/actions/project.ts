@@ -178,9 +178,15 @@ export async function getCurrentProject() {
     .select("*")
     .in("id", memberIds);
 
-  const ownerProfile = profiles?.find((p) => p.id === project.owner_id) || { id: project.owner_id, name: "自分" };
-  const partnerProfile = project.partner_id 
-    ? (profiles?.find((p) => p.id === project.partner_id) || { id: project.partner_id, name: "パートナー" })
+  const ownerProfile = profiles?.find((p) => p.id === project.owner_id) || {
+    id: project.owner_id,
+    name: "自分",
+  };
+  const partnerProfile = project.partner_id
+    ? profiles?.find((p) => p.id === project.partner_id) || {
+        id: project.partner_id,
+        name: "パートナー",
+      }
     : undefined;
 
   // 【究極のハック】隠しトランザクションからプロフィール情報を復元する
@@ -189,7 +195,7 @@ export async function getCurrentProject() {
     .select("memo")
     .eq("project_id", projectId)
     .eq("transaction_date", "2099-12-31");
-    
+
   if (dummyTx && dummyTx.length > 0) {
     for (const tx of dummyTx) {
       try {
