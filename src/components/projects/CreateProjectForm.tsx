@@ -40,6 +40,12 @@ export function CreateProjectForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!startDate || !endDate) {
+      alert("開始日と目標日を選択してください。");
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
 
     startTransition(async () => {
