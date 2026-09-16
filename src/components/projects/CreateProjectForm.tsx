@@ -22,7 +22,10 @@ export function CreateProjectForm() {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (startRef.current && !startRef.current.contains(event.target as Node)) {
+      if (
+        startRef.current &&
+        !startRef.current.contains(event.target as Node)
+      ) {
         setIsStartCalendarOpen(false);
       }
       if (endRef.current && !endRef.current.contains(event.target as Node)) {
@@ -97,7 +100,13 @@ export function CreateProjectForm() {
             }}
             className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-left text-gray-700"
           >
-            {startDate ? format(new Date(startDate), language === "ja" ? "yyyy年MM月dd日" : "MMM d, yyyy", { locale: language === "ja" ? ja : enUS }) : "日付を選択"}
+            {startDate
+              ? format(
+                  new Date(startDate),
+                  language === "ja" ? "yyyy年MM月dd日" : "MMM d, yyyy",
+                  { locale: language === "ja" ? ja : enUS },
+                )
+              : "日付を選択"}
           </button>
           {isStartCalendarOpen && (
             <div className="absolute z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
@@ -131,7 +140,13 @@ export function CreateProjectForm() {
             }}
             className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-left text-gray-700"
           >
-            {endDate ? format(new Date(endDate), language === "ja" ? "yyyy年MM月dd日" : "MMM d, yyyy", { locale: language === "ja" ? ja : enUS }) : "日付を選択"}
+            {endDate
+              ? format(
+                  new Date(endDate),
+                  language === "ja" ? "yyyy年MM月dd日" : "MMM d, yyyy",
+                  { locale: language === "ja" ? ja : enUS },
+                )
+              : "日付を選択"}
           </button>
           {isEndCalendarOpen && (
             <div className="absolute z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 right-0 sm:left-0">
