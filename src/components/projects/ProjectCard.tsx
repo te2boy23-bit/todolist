@@ -1,8 +1,8 @@
 "use client";
 
-import { Wallet, Calendar, MoreVertical, Trash2, LogOut } from "lucide-react";
+import { Wallet, Calendar, Trash2, LogOut } from "lucide-react";
 import { format } from "date-fns";
-import { useState, useRef, useEffect, useTransition } from "react";
+import { useTransition } from "react";
 import {
   selectProject,
   deleteProject,
@@ -16,22 +16,9 @@ export function ProjectCard({
   project: any;
   currentUserId: string;
 }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const [isPending, startTransition] = useTransition();
 
   const isOwner = project.owner_id === currentUserId;
-
-  // メニュー外クリックで閉じる
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleAction = async (
     e: React.MouseEvent,
@@ -96,42 +83,26 @@ export function ProjectCard({
         </div>
       </button>
 
-      {/* 3点リーダーメニュー */}
-      <div className="absolute top-4 right-4" ref={menuRef}>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setMenuOpen(!menuOpen);
-          }}
-          className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-          aria-label="メニューを開く"
-        >
-          <MoreVertical className="w-5 h-5" />
-        </button>
-
-        {menuOpen && (
-          <div className="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-10 animate-in fade-in zoom-in-95 duration-100">
-            {isOwner ? (
-              <button
-                onClick={(e) => handleAction(e, "delete")}
-                disabled={isPending}
-                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors disabled:opacity-50"
-              >
-                <Trash2 className="w-4 h-4" />
-                削除する
-              </button>
-            ) : (
-              <button
-                onClick={(e) => handleAction(e, "leave")}
-                disabled={isPending}
-                className="w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 flex items-center gap-2 transition-colors disabled:opacity-50"
-              >
-                <LogOut className="w-4 h-4" />
-                退出する
-              </button>
-            )}
-          </div>
+      {/* 削除/退出ボタン（常に表示） */}
+      <div className="absolute top-4 right-4 z-10">
+        {isOwner ? (
+          <button
+            onClick={(e) => handleAction(e, "delete")}
+            disabled={isPending}
+            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all disabled:opacity-50"
+            title="プロジェクトを削除"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        ) : (
+          <button
+            onClick={(e) => handleAction(e, "leave")}
+            disabled={isPending}
+            className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-full transition-all disabled:opacity-50"
+            title="プロジェクトから退出"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
         )}
       </div>
     </div>
