@@ -55,9 +55,9 @@ export function ProjectCard({
         } else {
           await leaveProject(project.id);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
-        alert("操作に失敗しました。");
+        alert(`操作に失敗しました: ${error.message}`);
       }
     });
   };

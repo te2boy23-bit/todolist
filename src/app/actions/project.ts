@@ -214,7 +214,7 @@ export async function deleteProject(projectId: string) {
 
   if (error) {
     console.error("Error deleting project:", error);
-    throw new Error("Failed to delete project");
+    throw new Error(`Failed to delete project: ${error.message || JSON.stringify(error)}`);
   }
 
   // 現在選択中のプロジェクトだった場合はCookieをクリア
