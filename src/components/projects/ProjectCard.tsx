@@ -8,6 +8,7 @@ import {
   deleteProject,
   leaveProject,
 } from "@/app/actions/project";
+import { useRouter } from "next/navigation";
 
 export function ProjectCard({
   project,
@@ -16,6 +17,7 @@ export function ProjectCard({
   project: any;
   currentUserId: string;
 }) {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isPending, startTransition] = useTransition();
@@ -63,8 +65,10 @@ export function ProjectCard({
   };
 
   const handleSelect = () => {
-    startTransition(() => {
-      selectProject(project.id);
+    startTransition(async () => {
+      await selectProject(project.id);
+      router.push("/dashboard");
+      router.refresh();
     });
   };
 

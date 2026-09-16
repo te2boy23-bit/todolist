@@ -83,7 +83,9 @@ export async function createProject(formData: FormData) {
 
   if (error) {
     console.error("Error creating project:", error);
-    return { error: `Failed to create project: ${error.message || JSON.stringify(error)}` };
+    return {
+      error: `Failed to create project: ${error.message || JSON.stringify(error)}`,
+    };
   }
 
   // 作成したプロジェクトを選択状態にする
@@ -143,7 +145,6 @@ export async function joinProject(inviteCode: string) {
 export async function selectProject(projectId: string) {
   const cookieStore = await cookies();
   cookieStore.set("current_project_id", projectId, { path: "/" });
-  redirect("/dashboard");
 }
 
 // 現在選択中のプロジェクトIDを取得

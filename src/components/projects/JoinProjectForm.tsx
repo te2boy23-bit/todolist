@@ -3,8 +3,10 @@
 import { useTransition, useState } from "react";
 import { joinProject } from "@/app/actions/project";
 import { Link2, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function JoinProjectForm() {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
@@ -22,6 +24,8 @@ export function JoinProjectForm() {
         if (result.success) {
           setSuccess("プロジェクトに参加しました！");
           setInviteCode("");
+          router.push("/dashboard");
+          router.refresh();
         } else {
           setError(result.error || "エラーが発生しました");
         }

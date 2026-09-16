@@ -8,8 +8,10 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { format } from "date-fns";
 import { ja, enUS } from "date-fns/locale";
+import { useRouter } from "next/navigation";
 
 export function CreateProjectForm() {
+  const router = useRouter();
   const { t, language } = useLanguage();
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
@@ -53,12 +55,11 @@ export function CreateProjectForm() {
         const result = await createProject(formData);
         if (result && result.error) {
           alert(`エラー: ${result.error}`);
+        } else {
+          router.push("/dashboard");
+          router.refresh();
         }
       } catch (error: any) {
-        // redirectは内部でエラーを投げるので、それはそのまま投げる
-        if (error && error.message === "NEXT_REDIRECT") {
-          throw error;
-        }
         console.error("Create project error:", error);
         alert(
           `プロジェクトの作成に失敗しました: ${error.message || "不明なエラー"}`,
