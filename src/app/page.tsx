@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getProfile } from "@/app/actions/profile";
+import { LoginButton } from "@/components/auth/LoginButton";
 
 export default async function Home() {
   const profile = await getProfile();
@@ -9,17 +10,27 @@ export default async function Home() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 text-center">
-      <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-4">
-        Cohabitation Savings Tracker
-      </h1>
-      <p className="text-gray-500 mb-8 max-w-md">
-        パートナーと一緒にお金を管理し、同棲や結婚に向けた目標を達成するためのアプリです。
-      </p>
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <p className="text-sm font-medium text-gray-700 mb-4">
-          始めるには右上の「Googleでログイン」ボタンを押してください。
+    <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 text-center">
+      <div className="max-w-2xl w-full">
+        <h1 className="text-4xl sm:text-6xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
+          ふたりの目標を
+          <br className="sm:hidden" />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500">
+            形にする
+          </span>
+        </h1>
+        <p className="text-lg sm:text-xl text-gray-500 mb-10 max-w-xl mx-auto">
+          同棲、結婚、旅行。パートナーと一緒にお金を管理し、共通のTodoをこなして、ふたりの夢を叶えるための共有アプリです。
         </p>
+
+        <div className="flex flex-col items-center gap-4">
+          <LoginButton
+            text="Googleでログイン / 新規登録"
+            className="flex items-center gap-3 text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all w-full sm:w-auto justify-center"
+            iconSize={6}
+          />
+          <p className="text-sm text-gray-400">※ アカウント作成は無料です</p>
+        </div>
       </div>
     </div>
   );

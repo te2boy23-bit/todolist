@@ -6,7 +6,17 @@ import { LogIn, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Session } from "@supabase/supabase-js";
 
-export function LoginButton() {
+interface LoginButtonProps {
+  className?: string;
+  text?: string;
+  iconSize?: number;
+}
+
+export function LoginButton({
+  className,
+  text,
+  iconSize = 4,
+}: LoginButtonProps) {
   const router = useRouter();
   const supabase = createClient();
   const [session, setSession] = useState<Session | null>(null);
@@ -43,9 +53,12 @@ export function LoginButton() {
     return (
       <button
         onClick={handleLogout}
-        className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+        className={
+          className ||
+          "flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+        }
       >
-        <LogOut className="w-4 h-4" />
+        <LogOut className={`w-${iconSize} h-${iconSize}`} />
         ログアウト
       </button>
     );
@@ -54,10 +67,13 @@ export function LoginButton() {
   return (
     <button
       onClick={handleLogin}
-      className="flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md transition-colors"
+      className={
+        className ||
+        "flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md transition-colors"
+      }
     >
-      <LogIn className="w-4 h-4" />
-      Googleでログイン
+      <LogIn className={`w-${iconSize} h-${iconSize}`} />
+      {text || "Googleでログイン"}
     </button>
   );
 }
