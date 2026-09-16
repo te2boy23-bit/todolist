@@ -21,8 +21,12 @@ type FilterType = "all" | "me" | "partner";
 
 export function TransactionHistory({
   transactions,
+  myName,
+  partnerName,
 }: {
   transactions: Transaction[];
+  myName: string;
+  partnerName: string;
 }) {
   const { t, language } = useLanguage();
   const [isPending, startTransition] = useTransition();
@@ -76,7 +80,7 @@ export function TransactionHistory({
                 : "text-gray-500 hover:text-gray-700",
             )}
           >
-            {t("common.me")}
+            {myName}
           </button>
           <button
             onClick={() => setFilter("partner")}
@@ -87,7 +91,7 @@ export function TransactionHistory({
                 : "text-gray-500 hover:text-gray-700",
             )}
           >
-            {t("common.partner")}
+            {partnerName}
           </button>
         </div>
       </div>
@@ -122,7 +126,7 @@ export function TransactionHistory({
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <span className="flex items-center gap-1">
                   <User className="w-3 h-3" />
-                  {trx.payer === "me" ? t("common.me") : t("common.partner")}
+                  {trx.payer === "me" ? myName : partnerName}
                 </span>
                 <span>•</span>
                 <span>

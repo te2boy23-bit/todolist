@@ -151,21 +151,39 @@ export async function getCurrentProjectId() {
   return cookieStore.get("current_project_id")?.value;
 }
 
-// 現在選択中のプロジェクトの詳細を取得
+// 現在選択中のプロジェクトの詳細と、メンバーのプロフィール情報を取得
 export async function getCurrentProject() {
   const projectId = await getCurrentProjectId();
   if (!projectId) return null;
 
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { data: project, error } = await supabase
     .from("projects")
     .select("*")
     .eq("id", projectId)
     .single();
 
-  if (error || !data) {
+  if (error || !project) {
     return null;
   }
 
-  return data;
+  // オーナーとパートナーの情報を取得
+  const memberIds = [project.owner_id];
+  if (project.partner_id) {
+    memberIds.push(project.partner_id);
+  }
+
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("*")
+    .in("id", memberIds);
+
+  const ownerProfile = profiles?.find((p) => p.id === project.owner_id);
+  const partnerProfile = profiles?.find((p) => p.id === project.partner_id);
+
+  return {
+    ...project,
+    ownerProfile,
+    partnerProfile,
+  };
 }

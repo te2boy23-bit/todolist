@@ -4,6 +4,7 @@ import { TransactionHistory } from "@/components/dashboard/TransactionHistory";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProject } from "@/app/actions/project";
+import { getProfile } from "@/app/actions/profile";
 import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
@@ -46,6 +47,18 @@ export default async function DashboardPage() {
 
   const totalAmount = myContribution + partnerContribution;
 
+  // 自分のプロフィール
+  const profile = await getProfile();
+  // オーナーかどうかの判定
+  const isOwner = project.owner_id === profile?.id;
+  
+  // 表示名（自分）
+  const myName = profile?.name || "自分";
+  
+  // 表示名（相手）
+  const partnerProfile = isOwner ? project.partnerProfile : project.ownerProfile;
+  const partnerName = partnerProfile ? partnerProfile.name : "パートナー";
+
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -57,9 +70,15 @@ export default async function DashboardPage() {
             currentAmount={totalAmount}
             myContribution={myContribution}
             partnerContribution={partnerContribution}
+            myName={myName}
+            partnerName={partnerName}
           />
-          <TransactionForm />
-          <TransactionHistory transactions={recentTransactions} />
+          <TransactionForm myName={myName} partnerName={partnerName} />
+          <TransactionHistory 
+            transactions={recentTransactions} 
+            myName={myName} 
+            partnerName={partnerName} 
+          />
         </div>
       </div>
     </div>

@@ -16,7 +16,12 @@ import { useRouter } from "next/navigation";
 type TransactionType = "income" | "deposit" | "expense";
 type PayerType = "me" | "partner";
 
-export function TransactionForm() {
+interface TransactionFormProps {
+  myName: string;
+  partnerName: string;
+}
+
+export function TransactionForm({ myName, partnerName }: TransactionFormProps) {
   const { t } = useLanguage();
   const router = useRouter();
   const [type, setType] = useState<TransactionType>("deposit");
@@ -80,7 +85,7 @@ export function TransactionForm() {
               )}
             >
               <User className="w-4 h-4" />
-              {t("common.me")}
+              {myName}
             </button>
             <button
               type="button"
@@ -93,7 +98,7 @@ export function TransactionForm() {
               )}
             >
               <User className="w-4 h-4" />
-              {t("common.partner")}
+              {partnerName}
             </button>
           </div>
         </div>

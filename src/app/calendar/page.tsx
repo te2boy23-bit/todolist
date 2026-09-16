@@ -1,7 +1,8 @@
 import { CalendarView } from "@/components/calendar/CalendarView";
-import { DashboardHeader } from "@/components/dashboard/DashboardHeader"; // 共通のヘッダーを使うか、直書きするか
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProject } from "@/app/actions/project";
+import { getProfile } from "@/app/actions/profile";
 import { redirect } from "next/navigation";
 
 export default async function CalendarPage() {
@@ -50,6 +51,18 @@ export default async function CalendarPage() {
     console.error("Supabase fetch error, using empty data", error);
   }
 
+  // 自分のプロフィール
+  const profile = await getProfile();
+  // オーナーかどうかの判定
+  const isOwner = project.owner_id === profile?.id;
+  
+  // 表示名（自分）
+  const myName = profile?.name || "自分";
+  
+  // 表示名（相手）
+  const partnerProfile = isOwner ? project.partnerProfile : project.ownerProfile;
+  const partnerName = partnerProfile ? partnerProfile.name : "パートナー";
+
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -59,6 +72,8 @@ export default async function CalendarPage() {
           transactions={transactions}
           currentBalance={currentBalance}
           todos={todos}
+          myName={myName}
+          partnerName={partnerName}
         />
       </div>
     </div>

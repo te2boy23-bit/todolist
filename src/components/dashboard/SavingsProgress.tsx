@@ -11,6 +11,8 @@ interface SavingsProgressProps {
   currentAmount: number;
   myContribution: number;
   partnerContribution: number;
+  myName: string;
+  partnerName: string;
 }
 
 export function SavingsProgress({
@@ -18,6 +20,8 @@ export function SavingsProgress({
   currentAmount,
   myContribution,
   partnerContribution,
+  myName,
+  partnerName,
 }: SavingsProgressProps) {
   const { t } = useLanguage();
   const targetAmount = project ? project.target_amount : 1500000;
@@ -101,7 +105,7 @@ export function SavingsProgress({
         <div className="bg-blue-50/50 rounded-lg p-3">
           <div className="text-xs text-blue-600 font-medium flex items-center gap-1 mb-1">
             <User className="w-3 h-3" />
-            {t("dashboard.myContribution")}
+            {myName}
           </div>
           <div className="font-semibold text-gray-900">
             {myContribution.toLocaleString()}{" "}
@@ -113,7 +117,7 @@ export function SavingsProgress({
         <div className="bg-pink-50/50 rounded-lg p-3">
           <div className="text-xs text-pink-600 font-medium flex items-center gap-1 mb-1">
             <User className="w-3 h-3" />
-            {t("dashboard.partnerContribution")}
+            {partnerName}
           </div>
           <div className="font-semibold text-gray-900">
             {partnerContribution.toLocaleString()}{" "}

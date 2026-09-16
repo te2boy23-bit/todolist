@@ -29,12 +29,16 @@ interface CalendarViewProps {
   transactions: Transaction[];
   todos?: Todo[];
   currentBalance: number;
+  myName: string;
+  partnerName: string;
 }
 
 export function CalendarView({
   transactions,
   todos = [],
   currentBalance,
+  myName,
+  partnerName,
 }: CalendarViewProps) {
   const { t, language } = useLanguage();
   const [selected, setSelected] = useState<Date | undefined>(new Date());
@@ -290,8 +294,8 @@ export function CalendarView({
                           <div className="flex items-center gap-1 text-xs text-gray-500">
                             <User className="w-3 h-3" />
                             {trx.payer === "me"
-                              ? t("common.me")
-                              : t("common.partner")}
+                              ? myName
+                              : partnerName}
                           </div>
                         </div>
 
