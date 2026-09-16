@@ -12,7 +12,8 @@ export function ShareProjectModal({ project }: { project: any }) {
   if (!project) return null;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(project.invite_code);
+    const textToCopy = `ふたりの共有アプリに招待されました！✨\n\n招待コード: ${project.invite_code}\n\n▼ここからアプリを開いてログインし、招待コードを入力して参加してね！\n${window.location.origin}`;
+    navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -82,7 +83,7 @@ export function ShareProjectModal({ project }: { project: any }) {
                       ) : (
                         <>
                           <Copy className="w-4 h-4" />
-                          <span>コードをコピー</span>
+                          <span>招待メッセージをコピー</span>
                         </>
                       )}
                     </button>

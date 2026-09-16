@@ -26,7 +26,9 @@ export function LandingHero() {
 
           <div className="flex items-center w-full max-w-sm my-2">
             <div className="flex-grow border-t border-gray-200"></div>
-            <span className="flex-shrink-0 mx-4 text-gray-400 text-sm">または</span>
+            <span className="flex-shrink-0 mx-4 text-gray-400 text-sm">
+              または
+            </span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
 
