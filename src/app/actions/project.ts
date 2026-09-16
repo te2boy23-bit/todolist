@@ -54,6 +54,31 @@ export async function createProject(formData: FormData) {
     return { error: "Missing fields" };
   }
 
+  // まずプロフィールが存在するか確認
+  const { data: existingProfile } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", profile.id)
+    .single();
+
+  if (!existingProfile) {
+    // プロフィールが存在しない場合、作成を試みる
+    const { error: insertProfileError } = await supabase.from("profiles").insert([
+      {
+        id: profile.id,
+        display_name: profile.name || "User",
+        avatar_url: profile.avatar_url || null,
+      },
+    ]);
+    
+    if (insertProfileError) {
+      console.error("Failed to create profile:", insertProfileError);
+      return { 
+        error: `プロフィール作成エラー: ${insertProfileError.message}` 
+      };
+    }
+  }
+
   // 重複しない招待コードを生成（簡易的に複数回試行）
   let inviteCode = generateInviteCode();
   for (let i = 0; i < 5; i++) {

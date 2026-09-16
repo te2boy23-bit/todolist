@@ -30,9 +30,19 @@ export async function getProfile() {
       avatar_url: user.user_metadata?.avatar_url || null,
     };
 
-    // 一応INSERTも試みる（失敗しても握り潰す）
-    await supabase.from("profiles").insert([profile]).select().single();
+    // 一応INSERTも試みる
+    const { error: insertError } = await supabase.from("profiles").insert([{
+      id: profile.id,
+      display_name: profile.name,
+      avatar_url: profile.avatar_url
+    }]);
+    if (insertError) {
+      console.error("Failed to insert into profiles:", insertError);
+    }
   } else {
+    // テーブルにデータがある場合、name プロパティとして display_name をセットする
+    profile.name = profile.display_name || "User";
+    
     // テーブルのデータがあっても、user_metadataの方が新しければそちらを優先
     if (user.user_metadata?.full_name) {
       profile.name = user.user_metadata.full_name;
@@ -57,14 +67,14 @@ export async function updateProfile(formData: FormData) {
   const avatarUrl = formData.get("avatar_url") as string;
 
   const updates: any = {};
-  if (name) updates.name = name;
+  if (name) updates.display_name = name;
   if (avatarUrl !== null) updates.avatar_url = avatarUrl;
 
   if (Object.keys(updates).length > 0) {
     // RLS問題を完全に回避するため、Supabase Authのuser_metadataに保存する
     const { error: authError } = await supabase.auth.updateUser({
       data: {
-        full_name: updates.name,
+        full_name: updates.display_name,
         avatar_url: updates.avatar_url,
       },
     });
@@ -90,7 +100,7 @@ export async function updateProfile(formData: FormData) {
         const profileMemo = JSON.stringify({
           isProfile: true,
           userId: user.id,
-          name: updates.name || "User",
+          name: updates.display_name || "User",
           avatar_url: updates.avatar_url || null,
         });
 
