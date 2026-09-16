@@ -19,10 +19,10 @@ export default async function ProjectsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8 pb-24">
       <div className="space-y-2">
-        <h1 className="text-xl font-bold text-gray-900">{t("project.listTitle")}</h1>
-        <p className="text-gray-500 text-sm">
-          {t("project.listDesc")}
-        </p>
+        <h1 className="text-xl font-bold text-gray-900">
+          {t("project.listTitle")}
+        </h1>
+        <p className="text-gray-500 text-sm">{t("project.listDesc")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

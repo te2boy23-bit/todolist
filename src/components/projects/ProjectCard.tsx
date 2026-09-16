@@ -91,12 +91,17 @@ export function ProjectCard({
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-2">
             <Wallet className="w-4 h-4 text-emerald-500" />
-            <span>{t("project.targetAmount")}: {project.target_amount.toLocaleString()}{t("dashboard.currency")}</span>
+            <span>
+              {t("project.targetAmount")}:{" "}
+              {project.target_amount.toLocaleString()}
+              {t("dashboard.currency")}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-blue-500" />
             <span>
-              {t("project.period")}: {format(new Date(project.start_date), "yyyy/MM/dd")} -{" "}
+              {t("project.period")}:{" "}
+              {format(new Date(project.start_date), "yyyy/MM/dd")} -{" "}
               {format(new Date(project.end_date), "yyyy/MM/dd")}
             </span>
           </div>

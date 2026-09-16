@@ -12,10 +12,12 @@ export const dictionaries = {
     },
     project: {
       listTitle: "プロジェクト一覧",
-      listDesc: "管理する目標（結婚資金、旅行など）を選択するか、新しく作成・参加してください。",
+      listDesc:
+        "管理する目標（結婚資金、旅行など）を選択するか、新しく作成・参加してください。",
       createNew: "新しく作成する",
       joinWithCode: "招待コードで参加",
-      joinDesc: "パートナーから教えてもらった6桁の招待コードを入力して、プロジェクトに参加します。",
+      joinDesc:
+        "パートナーから教えてもらった6桁の招待コードを入力して、プロジェクトに参加します。",
       nameLabel: "プロジェクト名",
       namePlaceholder: "例：結婚資金、旅行など",
       targetLabel: "目標金額",
@@ -118,7 +120,8 @@ export const dictionaries = {
       listDesc: "Select a goal to manage, or create / join a new one.",
       createNew: "Create New Project",
       joinWithCode: "Join with Invite Code",
-      joinDesc: "Enter the 6-character invite code from your partner to join their project.",
+      joinDesc:
+        "Enter the 6-character invite code from your partner to join their project.",
       nameLabel: "Project Name",
       namePlaceholder: "e.g. Wedding, Travel",
       targetLabel: "Target Amount",

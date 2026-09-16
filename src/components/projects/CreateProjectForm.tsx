@@ -174,37 +174,6 @@ export function CreateProjectForm() {
                 captionLayout="dropdown"
                 startMonth={new Date(2020, 0)}
                 endMonth={new Date(2050, 11)}
-                className="bg-white"
-                classNames={{
-                  months:
-                    "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                  month: "space-y-4",
-                  caption: "flex justify-center pt-1 relative items-center",
-                  caption_label: "hidden",
-                  caption_dropdowns: "flex gap-2 items-center justify-center",
-                  dropdown:
-                    "p-1 bg-white border border-gray-200 rounded-md text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer hover:bg-gray-50",
-                  dropdown_month: "ml-2",
-                  dropdown_year: "mr-2",
-                  nav: "space-x-1 flex items-center",
-                  nav_button:
-                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-                  nav_button_previous: "absolute left-1",
-                  nav_button_next: "absolute right-1",
-                  table: "w-full border-collapse space-y-1",
-                  head_row: "flex",
-                  head_cell:
-                    "text-gray-500 rounded-md w-9 font-normal text-[0.8rem]",
-                  row: "flex w-full mt-2",
-                  cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-gray-100 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                  day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-gray-100 rounded-md transition-colors",
-                  day_selected:
-                    "bg-blue-600 text-white hover:bg-blue-600 hover:text-white focus:bg-blue-600 focus:text-white",
-                  day_today: "bg-gray-100 text-gray-900",
-                  day_outside: "text-gray-400 opacity-50",
-                  day_disabled: "text-gray-400 opacity-50",
-                  day_hidden: "invisible",
-                }}
               />
             </div>
           )}
