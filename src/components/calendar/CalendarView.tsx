@@ -162,6 +162,9 @@ export function CalendarView({
             selected={selected}
             onSelect={setSelected}
             locale={language === "ja" ? ja : enUS}
+            captionLayout="dropdown"
+            startMonth={new Date(2020, 0)}
+            endMonth={new Date(new Date().getFullYear() + 10, 11)}
             modifiers={{
               hasRecord: (date) => {
                 const dStr = format(date, "yyyy-MM-dd");
@@ -187,10 +190,10 @@ export function CalendarView({
           </h3>
 
           <div className="mb-6">
-            <TransactionForm 
-              myName={myName} 
-              partnerName={partnerName} 
-              initialDate={selectedDateStr || undefined} 
+            <TransactionForm
+              myName={myName}
+              partnerName={partnerName}
+              initialDate={selectedDateStr || undefined}
             />
           </div>
 

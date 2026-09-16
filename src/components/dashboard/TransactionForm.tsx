@@ -26,7 +26,11 @@ interface TransactionFormProps {
   initialDate?: string;
 }
 
-export function TransactionForm({ myName, partnerName, initialDate }: TransactionFormProps) {
+export function TransactionForm({
+  myName,
+  partnerName,
+  initialDate,
+}: TransactionFormProps) {
   const { t, language } = useLanguage();
   const router = useRouter();
   const [type, setType] = useState<TransactionType>("deposit");
@@ -38,7 +42,7 @@ export function TransactionForm({ myName, partnerName, initialDate }: Transactio
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   // initialDateが変更されたらステートを更新する
@@ -51,7 +55,10 @@ export function TransactionForm({ myName, partnerName, initialDate }: Transactio
   // 外側をクリックしたらカレンダーを閉じる
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsCalendarOpen(false);
       }
     }
@@ -193,7 +200,13 @@ export function TransactionForm({ myName, partnerName, initialDate }: Transactio
                     : "border-gray-200 focus:border-emerald-500 focus:ring-emerald-200",
               )}
             >
-              {transactionDate ? format(new Date(transactionDate), language === "ja" ? "yyyy年MM月dd日" : "MMM d, yyyy", { locale: language === "ja" ? ja : enUS }) : "日付を選択"}
+              {transactionDate
+                ? format(
+                    new Date(transactionDate),
+                    language === "ja" ? "yyyy年MM月dd日" : "MMM d, yyyy",
+                    { locale: language === "ja" ? ja : enUS },
+                  )
+                : "日付を選択"}
             </button>
             {isCalendarOpen && (
               <div className="absolute z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2">
@@ -207,6 +220,9 @@ export function TransactionForm({ myName, partnerName, initialDate }: Transactio
                     }
                   }}
                   locale={language === "ja" ? ja : enUS}
+                  captionLayout="dropdown"
+                  startMonth={new Date(2020, 0)}
+                  endMonth={new Date(new Date().getFullYear() + 10, 11)}
                 />
               </div>
             )}
