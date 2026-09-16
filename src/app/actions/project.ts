@@ -43,7 +43,7 @@ export async function createProject(formData: FormData) {
   const supabase = await createClient();
   const profile = await getProfile();
 
-  if (!profile) throw new Error("Unauthorized");
+  if (!profile) return { error: "Unauthorized" };
 
   const name = formData.get("name") as string;
   const targetAmount = parseInt(formData.get("target_amount") as string, 10);
@@ -51,7 +51,7 @@ export async function createProject(formData: FormData) {
   const endDate = formData.get("end_date") as string;
 
   if (!name || !targetAmount || !startDate || !endDate) {
-    throw new Error("Missing fields");
+    return { error: "Missing fields" };
   }
 
   // 重複しない招待コードを生成（簡易的に複数回試行）
@@ -83,11 +83,12 @@ export async function createProject(formData: FormData) {
 
   if (error) {
     console.error("Error creating project:", error);
-    throw new Error(`Failed to create project: ${error.message || JSON.stringify(error)}`);
+    return { error: `Failed to create project: ${error.message || JSON.stringify(error)}` };
   }
 
   // 作成したプロジェクトを選択状態にする
   await selectProject(data.id);
+  return { success: true };
 }
 
 // 招待コードでプロジェクトに参加する

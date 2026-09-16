@@ -50,15 +50,19 @@ export function CreateProjectForm() {
 
     startTransition(async () => {
       try {
-        await createProject(formData);
-        // ここには到達しない(redirectされるため)
+        const result = await createProject(formData);
+        if (result && result.error) {
+          alert(`エラー: ${result.error}`);
+        }
       } catch (error: any) {
         // redirectは内部でエラーを投げるので、それはそのまま投げる
         if (error && error.message === "NEXT_REDIRECT") {
           throw error;
         }
-        console.error(error);
-        alert(`プロジェクトの作成に失敗しました: ${error.message || "不明なエラー"}`);
+        console.error("Create project error:", error);
+        alert(
+          `プロジェクトの作成に失敗しました: ${error.message || "不明なエラー"}`,
+        );
       }
     });
   };
