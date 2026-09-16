@@ -63,18 +63,20 @@ export async function createProject(formData: FormData) {
 
   if (!existingProfile) {
     // プロフィールが存在しない場合、作成を試みる
-    const { error: insertProfileError } = await supabase.from("profiles").insert([
-      {
-        id: profile.id,
-        display_name: profile.name || "User",
-        avatar_url: profile.avatar_url || null,
-      },
-    ]);
-    
+    const { error: insertProfileError } = await supabase
+      .from("profiles")
+      .insert([
+        {
+          id: profile.id,
+          display_name: profile.name || "User",
+          avatar_url: profile.avatar_url || null,
+        },
+      ]);
+
     if (insertProfileError) {
       console.error("Failed to create profile:", insertProfileError);
-      return { 
-        error: `プロフィール作成エラー: ${insertProfileError.message}` 
+      return {
+        error: `プロフィール作成エラー: ${insertProfileError.message}`,
       };
     }
   }

@@ -46,7 +46,7 @@ export function JoinProjectForm() {
           <input
             type="text"
             value={inviteCode}
-            onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+            onChange={(e) => setInviteCode(e.target.value)}
             required
             maxLength={6}
             placeholder="ABCDEF"

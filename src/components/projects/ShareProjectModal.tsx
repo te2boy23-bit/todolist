@@ -66,7 +66,7 @@ export function ShareProjectModal({ project }: { project: any }) {
                     以下の招待コードをパートナーに教えて、プロジェクトに参加してもらいましょう。
                   </p>
                   <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 flex flex-col items-center gap-3">
-                    <code className="text-4xl font-mono font-bold tracking-[0.2em] text-blue-600">
+                    <code className="text-3xl sm:text-4xl font-mono font-bold tracking-widest text-blue-600 break-all text-center">
                       {project.invite_code}
                     </code>
                     <button

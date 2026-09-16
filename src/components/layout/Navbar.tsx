@@ -79,7 +79,7 @@ export function Navbar({
         </div>
 
         {/* Right side controls */}
-        <div className="ml-4 flex items-center gap-2 sm:gap-3">
+        <div className="ml-2 sm:ml-4 flex items-center gap-1.5 sm:gap-3">
           {/* Project Selector */}
           {profile && projects.length > 0 && (
             <div className="hidden sm:flex items-center gap-2">
@@ -108,17 +108,17 @@ export function Navbar({
           {/* Language Toggle */}
           <button
             onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
-            className="flex items-center gap-1 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-md transition-colors text-xs font-medium"
+            className="flex items-center gap-1 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 px-2 sm:px-3 py-2 rounded-md transition-colors text-xs font-medium"
             title="Toggle Language"
           >
             <Globe className="w-4 h-4" />
             <span className="uppercase hidden sm:inline">{language}</span>
           </button>
 
-          <div className="border-l border-gray-200 h-6 mx-1 hidden sm:block"></div>
+          <div className="border-l border-gray-200 h-6 mx-0.5 sm:mx-1 hidden sm:block"></div>
 
           {/* Login / Profile */}
-          <div className="flex items-center">
+          <div className="flex items-center ml-1 sm:ml-0">
             {profile ? (
               <div className="flex items-center gap-2">
                 <PairingModal profile={profile} />

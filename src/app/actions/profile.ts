@@ -31,18 +31,20 @@ export async function getProfile() {
     };
 
     // 一応INSERTも試みる
-    const { error: insertError } = await supabase.from("profiles").insert([{
-      id: profile.id,
-      display_name: profile.name,
-      avatar_url: profile.avatar_url
-    }]);
+    const { error: insertError } = await supabase.from("profiles").insert([
+      {
+        id: profile.id,
+        display_name: profile.name,
+        avatar_url: profile.avatar_url,
+      },
+    ]);
     if (insertError) {
       console.error("Failed to insert into profiles:", insertError);
     }
   } else {
     // テーブルにデータがある場合、name プロパティとして display_name をセットする
     profile.name = profile.display_name || "User";
-    
+
     // テーブルのデータがあっても、user_metadataの方が新しければそちらを優先
     if (user.user_metadata?.full_name) {
       profile.name = user.user_metadata.full_name;
