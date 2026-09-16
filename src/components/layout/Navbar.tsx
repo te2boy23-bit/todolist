@@ -16,6 +16,8 @@ import { PairingModal } from "@/components/profile/PairingModal";
 import { selectProject } from "@/app/actions/project";
 import { useTransition } from "react";
 
+import { ShareProjectModal } from "@/components/projects/ShareProjectModal";
+
 export function Navbar({
   profile,
   projects = [],
@@ -100,6 +102,11 @@ export function Navbar({
             </div>
           )}
 
+          {/* Share Button (Current Project) */}
+          {currentProject && (
+            <ShareProjectModal project={currentProject} />
+          )}
+
           {/* Language Toggle */}
           <button
             onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
@@ -107,7 +114,7 @@ export function Navbar({
             title="Toggle Language"
           >
             <Globe className="w-4 h-4" />
-            <span className="uppercase">{language}</span>
+            <span className="uppercase hidden sm:inline">{language}</span>
           </button>
 
           <div className="border-l border-gray-200 h-6 mx-1 hidden sm:block"></div>

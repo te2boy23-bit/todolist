@@ -55,12 +55,14 @@ export default async function CalendarPage() {
   const profile = await getProfile();
   // オーナーかどうかの判定
   const isOwner = project.owner_id === profile?.id;
-  
+
   // 表示名（自分）
   const myName = profile?.name || "自分";
-  
+
   // 表示名（相手）
-  const partnerProfile = isOwner ? project.partnerProfile : project.ownerProfile;
+  const partnerProfile = isOwner
+    ? project.partnerProfile
+    : project.ownerProfile;
   const partnerName = partnerProfile ? partnerProfile.name : "パートナー";
 
   return (

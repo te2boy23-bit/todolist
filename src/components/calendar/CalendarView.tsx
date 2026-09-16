@@ -293,9 +293,7 @@ export function CalendarView({
                           </div>
                           <div className="flex items-center gap-1 text-xs text-gray-500">
                             <User className="w-3 h-3" />
-                            {trx.payer === "me"
-                              ? myName
-                              : partnerName}
+                            {trx.payer === "me" ? myName : partnerName}
                           </div>
                         </div>
 

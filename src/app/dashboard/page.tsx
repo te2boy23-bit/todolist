@@ -51,12 +51,14 @@ export default async function DashboardPage() {
   const profile = await getProfile();
   // オーナーかどうかの判定
   const isOwner = project.owner_id === profile?.id;
-  
+
   // 表示名（自分）
   const myName = profile?.name || "自分";
-  
+
   // 表示名（相手）
-  const partnerProfile = isOwner ? project.partnerProfile : project.ownerProfile;
+  const partnerProfile = isOwner
+    ? project.partnerProfile
+    : project.ownerProfile;
   const partnerName = partnerProfile ? partnerProfile.name : "パートナー";
 
   return (
@@ -74,10 +76,10 @@ export default async function DashboardPage() {
             partnerName={partnerName}
           />
           <TransactionForm myName={myName} partnerName={partnerName} />
-          <TransactionHistory 
-            transactions={recentTransactions} 
-            myName={myName} 
-            partnerName={partnerName} 
+          <TransactionHistory
+            transactions={recentTransactions}
+            myName={myName}
+            partnerName={partnerName}
           />
         </div>
       </div>
