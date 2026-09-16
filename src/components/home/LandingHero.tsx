@@ -22,21 +22,21 @@ export function LandingHero() {
         </p>
 
         <div className="flex flex-col items-center gap-4 w-full">
-          <LoginButton
-            text={t("landing.loginBtn")}
-            className="flex items-center gap-3 text-lg font-bold text-white bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all w-full max-w-sm justify-center"
-            iconSize={6}
-          />
-          
-          <div className="flex items-center w-full max-w-sm my-4">
+          <EmailAuthForm />
+
+          <div className="flex items-center w-full max-w-sm my-2">
             <div className="flex-grow border-t border-gray-200"></div>
             <span className="flex-shrink-0 mx-4 text-gray-400 text-sm">または</span>
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
 
-          <EmailAuthForm />
+          <LoginButton
+            text={t("landing.loginBtn")}
+            className="flex items-center gap-3 text-lg font-bold text-gray-700 bg-white hover:bg-gray-50 border-2 border-gray-200 px-8 py-3.5 rounded-xl shadow-sm hover:shadow-md transition-all w-full max-w-sm justify-center"
+            iconSize={5}
+          />
 
-          <p className="text-sm text-gray-400 mt-4">{t("landing.freeNote")}</p>
+          <p className="text-sm text-gray-400 mt-2">{t("landing.freeNote")}</p>
         </div>
       </div>
     </div>

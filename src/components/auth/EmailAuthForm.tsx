@@ -43,7 +43,7 @@ export function EmailAuthForm() {
           },
         });
         if (signUpError) throw signUpError;
-        
+
         // Supabaseの設定で「Confirm email」がオフならそのままログインされる
         setMessage("登録が完了しました！ダッシュボードに移動します。");
         setTimeout(() => {
@@ -68,14 +68,45 @@ export function EmailAuthForm() {
   };
 
   return (
-    <div className="w-full max-w-sm mx-auto bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-      <h3 className="text-xl font-bold text-gray-800 mb-6">
-        {isLogin ? "メールアドレスでログイン" : "メールアドレスで新規登録"}
-      </h3>
+    <div className="w-full max-w-sm mx-auto bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
       
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {/* タブ切り替え部分 */}
+      <div className="flex bg-gray-100 p-1 rounded-xl mb-6">
+        <button
+          type="button"
+          onClick={() => {
+            setIsLogin(false);
+            setError(null);
+            setMessage(null);
+          }}
+          className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${
+            !isLogin 
+              ? "bg-white text-gray-900 shadow-sm" 
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          新規登録
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setIsLogin(true);
+            setError(null);
+            setMessage(null);
+          }}
+          className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all ${
+            isLogin 
+              ? "bg-white text-gray-900 shadow-sm" 
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          ログイン
+        </button>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-4 px-4 pb-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1 text-left">
+          <label className="block text-sm font-bold text-gray-700 mb-1 text-left">
             メールアドレス
           </label>
           <div className="relative">
@@ -86,15 +117,15 @@ export function EmailAuthForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="example@docomo.ne.jp"
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white"
               disabled={isLoading}
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1 text-left">
-            パスワード (6文字以上)
+          <label className="block text-sm font-bold text-gray-700 mb-1 text-left">
+            パスワード <span className="text-xs text-gray-400 font-normal">(6文字以上)</span>
           </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -105,20 +136,20 @@ export function EmailAuthForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all bg-gray-50 focus:bg-white"
               disabled={isLoading}
             />
           </div>
         </div>
 
         {error && (
-          <p className="text-sm text-red-500 bg-red-50 p-2 rounded-lg text-left">
+          <p className="text-sm text-red-500 bg-red-50 p-3 rounded-lg text-left font-medium border border-red-100">
             {error}
           </p>
         )}
         
         {message && (
-          <p className="text-sm text-emerald-500 bg-emerald-50 p-2 rounded-lg text-left">
+          <p className="text-sm text-emerald-500 bg-emerald-50 p-3 rounded-lg text-left font-medium border border-emerald-100">
             {message}
           </p>
         )}
@@ -126,34 +157,18 @@ export function EmailAuthForm() {
         <button
           type="submit"
           disabled={isLoading || !email || password.length < 6}
-          className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white font-medium py-3 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white font-bold py-3.5 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 mt-2"
         >
           {isLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
-              {isLogin ? "ログインする" : "登録する"}
-              <ArrowRight className="w-4 h-4" />
+              {isLogin ? "ログインして始める" : "登録して始める"}
+              <ArrowRight className="w-5 h-5" />
             </>
           )}
         </button>
       </form>
-
-      <div className="mt-6 text-center">
-        <button
-          type="button"
-          onClick={() => {
-            setIsLogin(!isLogin);
-            setError(null);
-            setMessage(null);
-          }}
-          className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-        >
-          {isLogin
-            ? "初めての方はこちら（新規登録）"
-            : "既にアカウントをお持ちの方（ログイン）"}
-        </button>
-      </div>
     </div>
   );
 }
