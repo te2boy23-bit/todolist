@@ -3,7 +3,6 @@
 import { useTransition, useRef, useState } from "react";
 import { createProject } from "@/app/actions/project";
 import { Plus } from "lucide-react";
-import { DatePicker } from "@/components/ui/DatePicker";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
 export function CreateProjectForm() {
@@ -66,22 +65,26 @@ export function CreateProjectForm() {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             開始日
           </label>
-          <DatePicker
+          <input
+            type="date"
             name="start_date"
             required
             value={startDate}
-            onChange={setStartDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             目標（終了）日
           </label>
-          <DatePicker
+          <input
+            type="date"
             name="end_date"
             required
             value={endDate}
-            onChange={setEndDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           />
         </div>
       </div>
