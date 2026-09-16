@@ -28,7 +28,9 @@ export async function addTransaction(data: {
 
   if (error) {
     console.error("Error inserting transaction:", error);
-    throw new Error("Failed to add transaction");
+    throw new Error(
+      `Failed to add transaction: ${error.message || JSON.stringify(error)}`,
+    );
   }
 
   // データ更新後に画面をリフレッシュ

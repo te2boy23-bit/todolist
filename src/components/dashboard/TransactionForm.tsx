@@ -46,9 +46,9 @@ export function TransactionForm({ myName, partnerName }: TransactionFormProps) {
       setAmount("");
       setMemo("");
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to add transaction", error);
-      alert("エラーが発生しました。Supabaseの設定を確認してください。");
+      alert(`エラーが発生しました: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }

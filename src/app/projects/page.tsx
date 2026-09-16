@@ -1,10 +1,9 @@
-import { getProjects, selectProject } from "@/app/actions/project";
+import { getProjects } from "@/app/actions/project";
 import { getProfile } from "@/app/actions/profile";
 import { redirect } from "next/navigation";
 import { CreateProjectForm } from "@/components/projects/CreateProjectForm";
 import { JoinProjectForm } from "@/components/projects/JoinProjectForm";
-import { Wallet, Calendar } from "lucide-react";
-import { format } from "date-fns";
+import { ProjectCard } from "@/components/projects/ProjectCard";
 
 export default async function ProjectsPage() {
   const profile = await getProfile();
@@ -27,30 +26,11 @@ export default async function ProjectsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {projects.map((project: any) => (
-          <form key={project.id} action={selectProject.bind(null, project.id)}>
-            <button
-              type="submit"
-              className="w-full text-left bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-blue-300 hover:shadow-md transition-all group"
-            >
-              <h2 className="text-xl font-bold text-gray-800 mb-4 group-hover:text-blue-600 transition-colors">
-                {project.name}
-              </h2>
-
-              <div className="space-y-2 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <Wallet className="w-4 h-4 text-emerald-500" />
-                  <span>目標: {project.target_amount.toLocaleString()}円</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-blue-500" />
-                  <span>
-                    期間: {format(new Date(project.start_date), "yyyy/MM/dd")}{" "}
-                    〜 {format(new Date(project.end_date), "yyyy/MM/dd")}
-                  </span>
-                </div>
-              </div>
-            </button>
-          </form>
+          <ProjectCard
+            key={project.id}
+            project={project}
+            currentUserId={profile.id}
+          />
         ))}
       </div>
 

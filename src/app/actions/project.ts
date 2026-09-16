@@ -187,3 +187,71 @@ export async function getCurrentProject() {
     partnerProfile,
   };
 }
+
+// プロジェクトの削除
+export async function deleteProject(projectId: string) {
+  const supabase = await createClient();
+  const profile = await getProfile();
+
+  if (!profile) throw new Error("Unauthorized");
+
+  // オーナーであるか確認
+  const { data: project } = await supabase
+    .from("projects")
+    .select("owner_id")
+    .eq("id", projectId)
+    .single();
+
+  if (!project || project.owner_id !== profile.id) {
+    throw new Error("Only the owner can delete the project.");
+  }
+
+  // 削除実行 (ON DELETE CASCADE が設定されていれば関連データも消える)
+  const { error } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", projectId);
+
+  if (error) {
+    console.error("Error deleting project:", error);
+    throw new Error("Failed to delete project");
+  }
+
+  // 現在選択中のプロジェクトだった場合はCookieをクリア
+  const currentProjectId = await getCurrentProjectId();
+  if (currentProjectId === projectId) {
+    const cookieStore = await cookies();
+    cookieStore.delete("current_project_id");
+  }
+
+  revalidatePath("/projects");
+}
+
+// プロジェクトから退出する (パートナーの場合)
+export async function leaveProject(projectId: string) {
+  const supabase = await createClient();
+  const profile = await getProfile();
+
+  if (!profile) throw new Error("Unauthorized");
+
+  // パートナーであることを確認し、partner_id を null にする
+  const { error } = await supabase
+    .from("projects")
+    .update({ partner_id: null })
+    .eq("id", projectId)
+    .eq("partner_id", profile.id);
+
+  if (error) {
+    console.error("Error leaving project:", error);
+    throw new Error("Failed to leave project");
+  }
+
+  // 現在選択中のプロジェクトだった場合はCookieをクリア
+  const currentProjectId = await getCurrentProjectId();
+  if (currentProjectId === projectId) {
+    const cookieStore = await cookies();
+    cookieStore.delete("current_project_id");
+  }
+
+  revalidatePath("/projects");
+}
