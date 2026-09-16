@@ -28,6 +28,9 @@ export function TransactionForm({ myName, partnerName }: TransactionFormProps) {
   const [payer, setPayer] = useState<PayerType>("me");
   const [amount, setAmount] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
+  const [transactionDate, setTransactionDate] = useState<string>(
+    new Date().toISOString().split("T")[0]
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,10 +44,12 @@ export function TransactionForm({ myName, partnerName }: TransactionFormProps) {
         payer,
         amount: Number(amount),
         memo,
+        transaction_date: transactionDate,
       });
 
       setAmount("");
       setMemo("");
+      setTransactionDate(new Date().toISOString().split("T")[0]);
       router.refresh();
     } catch (error: any) {
       console.error("Failed to add transaction", error);
@@ -144,9 +149,26 @@ export function TransactionForm({ myName, partnerName }: TransactionFormProps) {
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
-        <div className="flex-1">
-          <div className="relative">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="w-full sm:w-1/3">
+            <input
+              type="date"
+              value={transactionDate}
+              onChange={(e) => setTransactionDate(e.target.value)}
+              className={cn(
+                "w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none transition-all",
+                type === "deposit"
+                  ? "border-gray-200 focus:border-blue-500 focus:ring-blue-200"
+                  : type === "expense"
+                    ? "border-gray-200 focus:border-red-500 focus:ring-red-200"
+                    : "border-gray-200 focus:border-emerald-500 focus:ring-emerald-200",
+              )}
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className="w-full sm:w-1/3 relative">
             <input
               type="number"
               min="1"
@@ -168,23 +190,23 @@ export function TransactionForm({ myName, partnerName }: TransactionFormProps) {
               {t("dashboard.currency")}
             </span>
           </div>
-        </div>
-        <div className="flex-1">
-          <input
-            type="text"
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            placeholder={t("transaction.memoPlaceholder")}
-            className={cn(
-              "w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none transition-all",
-              type === "deposit"
-                ? "border-gray-200 focus:border-blue-500 focus:ring-blue-200"
-                : type === "expense"
-                  ? "border-gray-200 focus:border-red-500 focus:ring-red-200"
-                  : "border-gray-200 focus:border-emerald-500 focus:ring-emerald-200",
-            )}
-            disabled={isSubmitting}
-          />
+          <div className="w-full sm:w-1/3">
+            <input
+              type="text"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              placeholder={t("transaction.memoPlaceholder")}
+              className={cn(
+                "w-full px-4 py-3 rounded-lg border focus:ring-2 outline-none transition-all",
+                type === "deposit"
+                  ? "border-gray-200 focus:border-blue-500 focus:ring-blue-200"
+                  : type === "expense"
+                    ? "border-gray-200 focus:border-red-500 focus:ring-red-200"
+                    : "border-gray-200 focus:border-emerald-500 focus:ring-emerald-200",
+              )}
+              disabled={isSubmitting}
+            />
+          </div>
         </div>
         <button
           type="submit"

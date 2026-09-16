@@ -9,6 +9,7 @@ export async function addTransaction(data: {
   payer: "me" | "partner";
   amount: number;
   memo: string;
+  transaction_date?: string;
 }) {
   const projectId = await getCurrentProjectId();
   if (!projectId) throw new Error("No project selected");
@@ -21,7 +22,7 @@ export async function addTransaction(data: {
       payer: data.payer,
       amount: data.amount,
       memo: data.memo,
-      transaction_date: new Date().toISOString().split("T")[0],
+      transaction_date: data.transaction_date || new Date().toISOString().split("T")[0],
       project_id: projectId,
     },
   ]);
