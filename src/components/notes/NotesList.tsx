@@ -38,6 +38,15 @@ export function NotesList({
       // 注: サーバーアクション内でrevalidatePathしているため、画面が更新されますが、
       // クライアント側でもオプティミスティックに更新できればなお良し。今回はリロードに任せます。
       window.location.reload();
+      try {
+        await addNote(title, text);
+        setIsAdding(false);
+        setTitle("");
+        setText("");
+      } catch (error) {
+        console.error("Failed to add note:", error);
+        alert("メモの追加に失敗しました。");
+      }
     });
   };
 
@@ -47,6 +56,12 @@ export function NotesList({
     startTransition(async () => {
       await deleteNote(id);
       window.location.reload();
+      try {
+        await deleteNote(id);
+      } catch (error) {
+        console.error("Failed to delete note:", error);
+        alert("メモの削除に失敗しました。");
+      }
     });
   };
 
@@ -102,11 +117,13 @@ export function NotesList({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {notes.length === 0 && !isAdding && (
+        {initialNotes.length === 0 && !isAdding && (
           <div className="col-span-full py-12 text-center text-gray-500 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
             メモがありません
           </div>
         )}
         {notes.map((note) => (
+        {initialNotes.map((note) => (
           <div
             key={note.id}
             className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 group"
