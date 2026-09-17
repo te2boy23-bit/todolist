@@ -104,7 +104,10 @@ export function Navbar({
           )}
 
           {/* Share Button (Current Project) */}
-          {currentProject && <ShareProjectModal project={currentProject} />}
+          {currentProject &&
+            currentProject.invite_code !== "PRIVATE_PASSBOOK" && (
+              <ShareProjectModal project={currentProject} />
+            )}
 
           {/* Language Toggle */}
           <button
@@ -137,22 +140,25 @@ export function Navbar({
       </div>
 
       {/* チャットドロワー */}
-      {currentProject && profile && pathname !== "/projects" && (
-        <ChatDrawer
-          projectId={currentProject.id}
-          currentUserId={profile.id}
-          myProfile={
-            currentProject.ownerProfile?.id === profile.id
-              ? currentProject.ownerProfile
-              : currentProject.partnerProfile
-          }
-          partnerProfile={
-            currentProject.ownerProfile?.id === profile.id
-              ? currentProject.partnerProfile
-              : currentProject.ownerProfile
-          }
-        />
-      )}
+      {currentProject &&
+        currentProject.invite_code !== "PRIVATE_PASSBOOK" &&
+        profile &&
+        pathname !== "/projects" && (
+          <ChatDrawer
+            projectId={currentProject.id}
+            currentUserId={profile.id}
+            myProfile={
+              currentProject.ownerProfile?.id === profile.id
+                ? currentProject.ownerProfile
+                : currentProject.partnerProfile
+            }
+            partnerProfile={
+              currentProject.ownerProfile?.id === profile.id
+                ? currentProject.partnerProfile
+                : currentProject.ownerProfile
+            }
+          />
+        )}
     </nav>
   );
 }

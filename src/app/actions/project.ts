@@ -35,7 +35,41 @@ export async function getProjects() {
     return [];
   }
 
-  return data;
+  // 「マイ通帳」が存在するかチェック
+  const hasPassbook = data.some(
+    (p) => p.invite_code === "PRIVATE_PASSBOOK" && p.owner_id === profile.id,
+  );
+
+  if (!hasPassbook) {
+    // なければ作成
+    const { data: passbook, error: insertError } = await supabase
+      .from("projects")
+      .insert([
+        {
+          name: "マイ通帳 (個人用)",
+          target_amount: 1000000,
+          start_date: new Date().toISOString().split("T")[0],
+          end_date: new Date(new Date().getFullYear() + 10, 11, 31)
+            .toISOString()
+            .split("T")[0],
+          owner_id: profile.id,
+          invite_code: "PRIVATE_PASSBOOK",
+        },
+      ])
+      .select()
+      .single();
+
+    if (!insertError && passbook) {
+      data.push(passbook);
+    }
+  }
+
+  // ソート: マイ通帳を一番上に、残りは作成日時降順
+  return data.sort((a, b) => {
+    if (a.invite_code === "PRIVATE_PASSBOOK") return -1;
+    if (b.invite_code === "PRIVATE_PASSBOOK") return 1;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
 }
 
 // プロジェクトの作成

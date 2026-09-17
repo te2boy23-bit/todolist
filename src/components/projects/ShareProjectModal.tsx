@@ -12,7 +12,7 @@ export function ShareProjectModal({ project }: { project: any }) {
   if (!project) return null;
 
   const handleCopy = () => {
-    const textToCopy = `ふたりの共有アプリに招待されました！✨\n\n招待コード: ${project.invite_code}\n\n▼ここからアプリを開いてログインし、招待コードを入力して参加してね！\nhttps://todolist-tepe3.vercel.app/`;
+    const textToCopy = `プロジェクトに招待されました！✨\n\n招待コード: ${project.invite_code}\n\n▼ここからアプリを開いてログインし、招待コードを入力して参加してね！\nhttps://todolist-tepe3.vercel.app/`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -57,13 +57,13 @@ export function ShareProjectModal({ project }: { project: any }) {
                   <Users className="w-8 h-8 mx-auto opacity-75" />
                   <p className="font-medium">このプロジェクトは共有済みです</p>
                   <p className="text-xs opacity-75">
-                    パートナーと目標・支出・ToDoを共有しています。
+                    友人や恋人と目標・支出・ToDoを共有しています。
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   <p className="text-sm text-gray-600 text-center">
-                    以下の招待コードをパートナーに教えて、プロジェクトに参加してもらいましょう。
+                    以下の招待コードを友人や恋人に教えて、プロジェクトに参加してもらいましょう。
                   </p>
                   <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 flex flex-col items-center gap-3">
                     <code className="text-3xl sm:text-4xl font-mono font-bold tracking-widest text-blue-600 break-all text-center">

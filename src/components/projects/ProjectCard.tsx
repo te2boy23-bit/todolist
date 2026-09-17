@@ -26,6 +26,7 @@ export function ProjectCard({
   const [isPending, startTransition] = useTransition();
 
   const isOwner = project.owner_id === currentUserId;
+  const isPrivatePassbook = project.invite_code === "PRIVATE_PASSBOOK";
 
   // メニュー外クリックで閉じる
   useEffect(() => {
@@ -45,6 +46,11 @@ export function ProjectCard({
     e.preventDefault();
     e.stopPropagation();
     setMenuOpen(false);
+
+    if (actionType === "delete" && isPrivatePassbook) {
+      alert("マイ通帳は削除できません。");
+      return;
+    }
 
     const msg =
       actionType === "delete"
@@ -80,10 +86,16 @@ export function ProjectCard({
       <button
         onClick={handleSelect}
         disabled={isPending}
-        className="w-full text-left bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-blue-300 hover:shadow-md transition-all group disabled:opacity-50"
+        className={`w-full text-left p-6 rounded-2xl shadow-sm border transition-all group disabled:opacity-50 ${
+          isPrivatePassbook
+            ? "bg-gradient-to-br from-indigo-50 to-blue-50 border-indigo-200 hover:border-indigo-400 hover:shadow-md"
+            : "bg-white border-gray-100 hover:border-blue-300 hover:shadow-md"
+        }`}
       >
         <div className="flex justify-between items-start mb-4">
-          <h2 className="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors pr-8">
+          <h2
+            className={`text-xl font-bold transition-colors pr-8 ${isPrivatePassbook ? "text-indigo-800" : "text-gray-800 group-hover:text-blue-600"}`}
+          >
             {project.name}
           </h2>
         </div>
@@ -108,44 +120,46 @@ export function ProjectCard({
         </div>
       </button>
 
-      {/* 3点リーダーメニュー（常に表示） */}
-      <div className="absolute top-4 right-4 z-10" ref={menuRef}>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setMenuOpen(!menuOpen);
-          }}
-          className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
-          aria-label="メニューを開く"
-        >
-          <MoreVertical className="w-5 h-5" />
-        </button>
+      {/* 3点リーダーメニュー（常に表示、マイ通帳以外） */}
+      {!isPrivatePassbook && (
+        <div className="absolute top-4 right-4 z-10" ref={menuRef}>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setMenuOpen(!menuOpen);
+            }}
+            className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="メニューを開く"
+          >
+            <MoreVertical className="w-5 h-5" />
+          </button>
 
-        {menuOpen && (
-          <div className="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-20 animate-in fade-in zoom-in-95 duration-100">
-            {isOwner ? (
-              <button
-                onClick={(e) => handleAction(e, "delete")}
-                disabled={isPending}
-                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors disabled:opacity-50"
-              >
-                <Trash2 className="w-4 h-4" />
-                {t("project.delete")}
-              </button>
-            ) : (
-              <button
-                onClick={(e) => handleAction(e, "leave")}
-                disabled={isPending}
-                className="w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 flex items-center gap-2 transition-colors disabled:opacity-50"
-              >
-                <LogOut className="w-4 h-4" />
-                {t("project.leave")}
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+          {menuOpen && (
+            <div className="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-20 animate-in fade-in zoom-in-95 duration-100">
+              {isOwner ? (
+                <button
+                  onClick={(e) => handleAction(e, "delete")}
+                  disabled={isPending}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors disabled:opacity-50"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  {t("project.delete")}
+                </button>
+              ) : (
+                <button
+                  onClick={(e) => handleAction(e, "leave")}
+                  disabled={isPending}
+                  className="w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 flex items-center gap-2 transition-colors disabled:opacity-50"
+                >
+                  <LogOut className="w-4 h-4" />
+                  {t("project.leave")}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

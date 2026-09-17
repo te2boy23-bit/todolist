@@ -3,13 +3,17 @@
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { LoginButton } from "@/components/auth/LoginButton";
 import { EmailAuthForm } from "@/components/auth/EmailAuthForm";
+import Image from "next/image";
 
 export function LandingHero() {
   const { t } = useLanguage();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 text-center">
-      <div className="max-w-2xl w-full">
+      <div className="max-w-2xl w-full flex flex-col items-center">
+        <div className="w-24 h-24 mb-6 rounded-2xl overflow-hidden shadow-sm relative border border-gray-100">
+          <Image src="/logo.jpg" alt="App Logo" fill className="object-cover" />
+        </div>
         <h1 className="text-4xl sm:text-6xl font-extrabold text-gray-900 tracking-tight mb-6 leading-tight">
           {t("landing.titleLine1")}
           <br className="sm:hidden" />

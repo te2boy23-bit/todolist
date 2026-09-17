@@ -1,9 +1,11 @@
 import { getProjects } from "@/app/actions/project";
 import { getProfile } from "@/app/actions/profile";
+import { getMyTotalAssets } from "@/app/actions/assets";
 import { redirect } from "next/navigation";
 import { CreateProjectForm } from "@/components/projects/CreateProjectForm";
 import { JoinProjectForm } from "@/components/projects/JoinProjectForm";
 import { ProjectCard } from "@/components/projects/ProjectCard";
+import { TotalAssetsSummary } from "@/components/projects/TotalAssetsSummary";
 import { getDictionary } from "@/lib/i18n/server";
 
 export default async function ProjectsPage() {
@@ -14,10 +16,13 @@ export default async function ProjectsPage() {
   }
 
   const projects = await getProjects();
+  const assets = await getMyTotalAssets(profile.id, projects);
   const { t } = await getDictionary();
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8 pb-24">
+      <TotalAssetsSummary assets={assets} />
+
       <div className="space-y-2">
         <h1 className="text-xl font-bold text-gray-900">
           {t("project.listTitle")}
