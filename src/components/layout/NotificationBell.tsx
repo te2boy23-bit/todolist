@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { Bell, Check, Trash2, X } from "lucide-react";
 import {
   getNotifications,
@@ -10,7 +11,10 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { ja } from "date-fns/locale";
 
+import { useLanguage } from "@/components/i18n/LanguageProvider";
+
 export function NotificationBell() {
+  const { t } = useLanguage();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -54,92 +58,97 @@ export function NotificationBell() {
         )}
       </button>
 
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          ></div>
-          <div className="fixed sm:absolute top-14 sm:top-auto sm:mt-2 left-1/2 sm:left-auto sm:right-0 -translate-x-1/2 sm:translate-x-0 w-[calc(100vw-2rem)] max-w-sm sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between p-4 border-b border-gray-50 bg-gray-50/50">
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-gray-900 text-sm">お知らせ</h3>
-                {unreadCount > 0 && (
-                  <span className="px-2 py-0.5 bg-red-100 text-red-600 rounded-full text-[10px] font-bold">
-                    {unreadCount}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-3">
-                {unreadCount > 0 && (
-                  <button
-                    onClick={handleMarkAllAsRead}
-                    className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
-                  >
-                    <Check className="w-3 h-3" />
-                    すべて既読
-                  </button>
-                )}
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            <div className="max-h-[60vh] overflow-y-auto">
-              {notifications.length === 0 ? (
-                <div className="p-8 text-center text-gray-500 text-sm">
-                  通知はありません
+      {isOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setIsOpen(false)}
+            ></div>
+            <div className="fixed top-16 left-1/2 -translate-x-1/2 w-[calc(100vw-2rem)] max-w-sm sm:w-96 sm:top-16 sm:left-auto sm:right-4 sm:translate-x-0 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="flex items-center justify-between p-4 border-b border-gray-50 bg-gray-50/50">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-gray-900 text-sm">
+                    {t("notification.title")}
+                  </h3>
+                  {unreadCount > 0 && (
+                    <span className="px-2 py-0.5 bg-red-100 text-red-600 rounded-full text-[10px] font-bold">
+                      {unreadCount}
+                    </span>
+                  )}
                 </div>
-              ) : (
-                <div className="divide-y divide-gray-50">
-                  {notifications.map((n) => (
-                    <div
-                      key={n.id}
-                      onClick={() => {
-                        if (!n.is_read)
-                          handleMarkAsRead(n.id, {
-                            stopPropagation: () => {},
-                          } as any);
-                      }}
-                      className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
-                        !n.is_read ? "bg-blue-50/50" : ""
-                      }`}
+                <div className="flex items-center gap-3">
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={handleMarkAllAsRead}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
                     >
-                      <div className="flex justify-between items-start gap-2">
-                        <div>
-                          <h4
-                            className={`text-sm font-semibold mb-1 ${!n.is_read ? "text-gray-900" : "text-gray-600"}`}
-                          >
-                            {n.title}
-                          </h4>
-                          <p
-                            className={`text-xs ${!n.is_read ? "text-gray-700" : "text-gray-500"} mb-2`}
-                          >
-                            {n.content}
-                          </p>
-                          <span className="text-[10px] text-gray-400">
-                            {formatDistanceToNow(new Date(n.created_at), {
-                              addSuffix: true,
-                              locale: ja,
-                            })}
-                          </span>
-                        </div>
-                        {!n.is_read && (
-                          <div className="w-2 h-2 rounded-full bg-blue-500 mt-1 flex-shrink-0"></div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                      <Check className="w-3 h-3" />
+                      {t("notification.markAllRead")}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
-              )}
+              </div>
+
+              <div className="max-h-[60vh] overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="p-8 text-center text-gray-500 text-sm">
+                    {t("notification.noNotifications")}
+                  </div>
+                ) : (
+                  <div className="divide-y divide-gray-50">
+                    {notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        onClick={() => {
+                          if (!n.is_read)
+                            handleMarkAsRead(n.id, {
+                              stopPropagation: () => {},
+                            } as any);
+                        }}
+                        className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
+                          !n.is_read ? "bg-blue-50/50" : ""
+                        }`}
+                      >
+                        <div className="flex justify-between items-start gap-2">
+                          <div>
+                            <h4
+                              className={`text-sm font-semibold mb-1 ${!n.is_read ? "text-gray-900" : "text-gray-600"}`}
+                            >
+                              {n.title}
+                            </h4>
+                            <p
+                              className={`text-xs ${!n.is_read ? "text-gray-700" : "text-gray-500"} mb-2`}
+                            >
+                              {n.content}
+                            </p>
+                            <span className="text-[10px] text-gray-400">
+                              {formatDistanceToNow(new Date(n.created_at), {
+                                addSuffix: true,
+                                locale: ja,
+                              })}
+                            </span>
+                          </div>
+                          {!n.is_read && (
+                            <div className="w-2 h-2 rounded-full bg-blue-500 mt-1 flex-shrink-0"></div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>,
+          document.body,
+        )}
     </div>
   );
 }

@@ -61,29 +61,39 @@ export function Navbar({
           <div className="w-7 h-7 rounded-lg overflow-hidden shadow-sm relative border border-gray-100">
             <Image src="/logo.jpg" alt="Logo" fill className="object-cover" />
           </div>
-          <span className="font-bold text-gray-800 text-sm tracking-tight">
+          <span className="font-bold text-gray-800 text-sm tracking-tight hidden xs:inline">
             Todo & Money
           </span>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 xs:gap-2">
           {profile && projects.length > 0 && (
             <select
               disabled={isPending}
               value={currentProject?.id || ""}
               onChange={handleProjectChange}
-              className="bg-gray-100 border-none text-gray-700 text-xs rounded-full focus:ring-2 focus:ring-blue-500 block px-2 py-1 max-w-[100px] truncate"
+              className="bg-gray-100 border-none text-gray-700 text-xs rounded-full focus:ring-2 focus:ring-blue-500 block px-2 py-1 max-w-[80px] xs:max-w-[100px] truncate"
             >
               <option value="" disabled>
-                選択...
+                {t("project.select")}
               </option>
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name}
+                  {p.name === "マイ通帳 (個人用)" ? t("project.passbookName") : p.name}
                 </option>
               ))}
             </select>
           )}
-          <div className="scale-90 flex items-center gap-2">
+          
+          <button
+            onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
+            className="flex items-center gap-1 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-lg transition-colors text-[10px] font-medium"
+            title="Toggle Language"
+          >
+            <Globe className="w-3 h-3" />
+            <span className="uppercase">{language}</span>
+          </button>
+
+          <div className="scale-90 flex items-center gap-1">
             <NotificationBell />
             {profile && <PushNotificationManager userId={profile.id} />}
           </div>
@@ -167,11 +177,11 @@ export function Navbar({
                   className="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block px-2 py-1.5 w-auto max-w-[150px] truncate"
                 >
                   <option value="" disabled>
-                    プロジェクト選択
+                    {t("project.select")}
                   </option>
                   {projects.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name}
+                      {p.name === "マイ通帳 (個人用)" ? t("project.passbookName") : p.name}
                     </option>
                   ))}
                 </select>

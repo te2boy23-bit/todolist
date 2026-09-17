@@ -103,6 +103,11 @@ export const dictionaries = {
       loginBtn: "Googleでログイン / 新規登録",
       freeNote: "※ アカウント作成は無料です",
     },
+    notification: {
+      title: "お知らせ",
+      markAllRead: "すべて既読",
+      noNotifications: "通知はありません",
+    },
   },
   en: {
     common: {
@@ -138,6 +143,7 @@ export const dictionaries = {
       leave: "Leave",
       select: "Select Project",
       share: "Share",
+      passbookName: "My Passbook (Personal)",
     },
     dashboard: {
       title: "Goal Savings Tracker",
@@ -162,6 +168,7 @@ export const dictionaries = {
       amountPlaceholder: "Amount (e.g. 50000)",
       memoPlaceholder: "Memo (Optional)",
       submit: "Submit",
+      recordIncome: "Record Income",
     },
     calendar: {
       title: "Calendar",
@@ -206,6 +213,11 @@ export const dictionaries = {
         "Traveling, moving in, or hobbies. A shared app to manage money together, complete todos, and make your dreams come true with friends or your partner.",
       loginBtn: "Login / Sign up with Google",
       freeNote: "* Creating an account is free",
+    },
+    notification: {
+      title: "Notifications",
+      markAllRead: "Mark all as read",
+      noNotifications: "No notifications",
     },
   },
 };

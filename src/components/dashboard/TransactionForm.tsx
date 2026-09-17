@@ -186,7 +186,7 @@ export function TransactionForm({
             type="button"
             className="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors bg-white text-emerald-700 shadow-sm"
           >
-            収入を記録
+            {t("transaction.recordIncome")}
           </button>
         </div>
       )}
