@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useTransition } from "react";
 import { Bell, Check, Trash2, X } from "lucide-react";
-import { getNotifications, markAsRead, markAllAsRead } from "@/app/actions/notification";
+import {
+  getNotifications,
+  markAsRead,
+  markAllAsRead,
+} from "@/app/actions/notification";
 import { formatDistanceToNow } from "date-fns";
 import { ja } from "date-fns/locale";
 
@@ -28,7 +32,7 @@ export function NotificationBell() {
   const handleMarkAsRead = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
     );
     await markAsRead(id);
   };
@@ -56,20 +60,35 @@ export function NotificationBell() {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           ></div>
-          <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between p-4 border-b border-gray-50">
-              <h3 className="font-bold text-gray-900">お知らせ</h3>
-              {unreadCount > 0 && (
+          <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-sm sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-4 border-b border-gray-50 bg-gray-50/50">
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-gray-900 text-sm">お知らせ</h3>
+                {unreadCount > 0 && (
+                  <span className="px-2 py-0.5 bg-red-100 text-red-600 rounded-full text-[10px] font-bold">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                {unreadCount > 0 && (
+                  <button
+                    onClick={handleMarkAllAsRead}
+                    className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                  >
+                    <Check className="w-3 h-3" />
+                    すべて既読
+                  </button>
+                )}
                 <button
-                  onClick={handleMarkAllAsRead}
-                  className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
+                  onClick={() => setIsOpen(false)}
+                  className="text-gray-400 hover:text-gray-600"
                 >
-                  <Check className="w-3 h-3" />
-                  すべて既読にする
+                  <X className="w-4 h-4" />
                 </button>
-              )}
+              </div>
             </div>
-            
+
             <div className="max-h-[60vh] overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="p-8 text-center text-gray-500 text-sm">
@@ -81,7 +100,10 @@ export function NotificationBell() {
                     <div
                       key={n.id}
                       onClick={() => {
-                        if (!n.is_read) handleMarkAsRead(n.id, { stopPropagation: () => {} } as any);
+                        if (!n.is_read)
+                          handleMarkAsRead(n.id, {
+                            stopPropagation: () => {},
+                          } as any);
                       }}
                       className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
                         !n.is_read ? "bg-blue-50/50" : ""
@@ -89,14 +111,21 @@ export function NotificationBell() {
                     >
                       <div className="flex justify-between items-start gap-2">
                         <div>
-                          <h4 className={`text-sm font-semibold mb-1 ${!n.is_read ? "text-gray-900" : "text-gray-600"}`}>
+                          <h4
+                            className={`text-sm font-semibold mb-1 ${!n.is_read ? "text-gray-900" : "text-gray-600"}`}
+                          >
                             {n.title}
                           </h4>
-                          <p className={`text-xs ${!n.is_read ? "text-gray-700" : "text-gray-500"} mb-2`}>
+                          <p
+                            className={`text-xs ${!n.is_read ? "text-gray-700" : "text-gray-500"} mb-2`}
+                          >
                             {n.content}
                           </p>
                           <span className="text-[10px] text-gray-400">
-                            {formatDistanceToNow(new Date(n.created_at), { addSuffix: true, locale: ja })}
+                            {formatDistanceToNow(new Date(n.created_at), {
+                              addSuffix: true,
+                              locale: ja,
+                            })}
                           </span>
                         </div>
                         {!n.is_read && (

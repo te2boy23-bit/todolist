@@ -96,35 +96,34 @@ export function PushNotificationManager({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center">
       {subscription ? (
         <button
           onClick={unsubscribeFromPush}
           disabled={loading}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-full transition-colors whitespace-nowrap shrink-0"
+          title="プッシュ通知をオフにする"
+          className="flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors shrink-0"
         >
           {loading ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+            <Loader2 className="w-4 h-4 animate-spin shrink-0" />
           ) : (
-            <BellOff className="w-3.5 h-3.5 shrink-0" />
+            <BellOff className="w-4 h-4 shrink-0" />
           )}
-          通知をオフにする
         </button>
       ) : (
         <button
           onClick={subscribeToPush}
           disabled={loading}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-full transition-colors whitespace-nowrap shrink-0"
+          title="プッシュ通知をオンにする"
+          className="flex items-center justify-center w-8 h-8 text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors shrink-0"
         >
           {loading ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+            <Loader2 className="w-4 h-4 animate-spin shrink-0" />
           ) : (
-            <Bell className="w-3.5 h-3.5 shrink-0" />
+            <Bell className="w-4 h-4 shrink-0" />
           )}
-          通知をオンにする
         </button>
       )}
-      {message && <span className="text-xs text-blue-600">{message}</span>}
     </div>
   );
 }
