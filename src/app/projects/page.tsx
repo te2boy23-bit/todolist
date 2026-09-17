@@ -8,6 +8,8 @@ import { ProjectCard } from "@/components/projects/ProjectCard";
 import { TotalAssetsSummary } from "@/components/projects/TotalAssetsSummary";
 import { getDictionary } from "@/lib/i18n/server";
 
+import { PassbookCard } from "@/components/projects/PassbookCard";
+
 export default async function ProjectsPage() {
   const profile = await getProfile();
 
@@ -19,19 +21,28 @@ export default async function ProjectsPage() {
   const assets = await getMyTotalAssets(profile.id, projects);
   const { t } = await getDictionary();
 
+  const passbook = projects.find((p: any) =>
+    p.invite_code?.startsWith("PRIVATE_"),
+  );
+  const sharedProjects = projects.filter(
+    (p: any) => !p.invite_code?.startsWith("PRIVATE_"),
+  );
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8 pb-24">
       <TotalAssetsSummary assets={assets} />
 
+      <PassbookCard project={passbook} />
+
       <div className="space-y-2">
         <h1 className="text-xl font-bold text-gray-900">
-          {t("project.listTitle")}
+          共有プロジェクト一覧
         </h1>
         <p className="text-gray-500 text-sm">{t("project.listDesc")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projects.map((project: any) => (
+        {sharedProjects.map((project: any) => (
           <ProjectCard
             key={project.id}
             project={project}

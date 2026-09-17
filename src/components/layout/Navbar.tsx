@@ -8,6 +8,7 @@ import {
   Calendar,
   Globe,
   FolderKanban,
+  FileText,
 } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
@@ -39,6 +40,7 @@ export function Navbar({
     { name: t("common.money"), path: "/dashboard", icon: Wallet },
     { name: t("common.todo"), path: "/todos", icon: CheckSquare },
     { name: t("common.calendar"), path: "/calendar", icon: Calendar },
+    { name: "メモ", path: "/notes", icon: FileText },
   ];
 
   const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

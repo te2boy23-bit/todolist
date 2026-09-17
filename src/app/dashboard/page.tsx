@@ -74,26 +74,52 @@ export default async function DashboardPage() {
   }
 
   const totalAmount = myContribution + partnerContribution;
+  const isSingle = !project.partner_id;
+  const isPassbook = project.invite_code?.startsWith("PRIVATE_");
 
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        <DashboardHeader project={project} profile={profile} />
+        {!isPassbook && <DashboardHeader project={project} profile={profile} />}
+
+        {isPassbook && (
+          <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl shadow-lg p-8 text-white relative overflow-hidden">
+            <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+            <h1 className="text-2xl font-bold mb-2 relative z-10">個人通帳</h1>
+            <p className="text-slate-400 text-sm mb-6 relative z-10">
+              記録した収入と出費、貯金のみを管理します。
+            </p>
+            <div className="flex items-baseline gap-2 relative z-10">
+              <span className="text-4xl font-bold">
+                {myContribution.toLocaleString()}
+              </span>
+              <span className="text-slate-400">円</span>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-8">
-          <SavingsProgress
-            project={project}
-            currentAmount={totalAmount}
-            myContribution={myContribution}
-            partnerContribution={partnerContribution}
+          {!isPassbook && (
+            <SavingsProgress
+              project={project}
+              currentAmount={totalAmount}
+              myContribution={myContribution}
+              partnerContribution={partnerContribution}
+              myName={myName}
+              partnerName={partnerName}
+              isSingle={isSingle}
+            />
+          )}
+          <TransactionForm
             myName={myName}
             partnerName={partnerName}
+            isSingle={isSingle || isPassbook}
           />
-          <TransactionForm myName={myName} partnerName={partnerName} />
           <TransactionHistory
             transactions={recentTransactions}
             myName={myName}
             partnerName={partnerName}
+            isSingle={isSingle || isPassbook}
           />
         </div>
       </div>

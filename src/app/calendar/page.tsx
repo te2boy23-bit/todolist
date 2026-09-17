@@ -77,10 +77,24 @@ export default async function CalendarPage() {
     console.error("Supabase fetch error, using empty data", error);
   }
 
+  const isSingle = !project.partner_id;
+  const isPassbook = project.invite_code?.startsWith("PRIVATE_");
+
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        <DashboardHeader project={project} profile={profile} />
+        {!isPassbook && <DashboardHeader project={project} profile={profile} />}
+
+        {isPassbook && (
+          <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl shadow-lg p-6 text-white relative overflow-hidden flex items-center justify-between">
+            <h1 className="text-xl font-bold relative z-10">
+              個人通帳 - カレンダー
+            </h1>
+            <div className="text-sm text-slate-400 relative z-10">
+              月別の記録
+            </div>
+          </div>
+        )}
 
         <CalendarView
           transactions={transactions}
@@ -88,6 +102,7 @@ export default async function CalendarPage() {
           todos={todos}
           myName={myName}
           partnerName={partnerName}
+          isSingle={isSingle || isPassbook}
         />
       </div>
     </div>

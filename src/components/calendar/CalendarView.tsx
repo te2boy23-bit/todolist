@@ -12,11 +12,11 @@ import { TransactionForm } from "@/components/dashboard/TransactionForm";
 
 type Transaction = {
   id: string;
-  type: "income" | "deposit" | "expense";
-  payer: "me" | "partner";
+  type: "deposit" | "expense" | "income";
   amount: number;
-  memo: string;
+  payer: "me" | "partner";
   transaction_date: string;
+  memo: string;
 };
 
 type Todo = {
@@ -28,18 +28,20 @@ type Todo = {
 
 interface CalendarViewProps {
   transactions: Transaction[];
-  todos?: Todo[];
   currentBalance: number;
+  todos: Todo[];
   myName: string;
   partnerName: string;
+  isSingle?: boolean;
 }
 
 export function CalendarView({
   transactions,
-  todos = [],
   currentBalance,
+  todos = [],
   myName,
   partnerName,
+  isSingle,
 }: CalendarViewProps) {
   const { t, language } = useLanguage();
   const [selected, setSelected] = useState<Date | undefined>(new Date());

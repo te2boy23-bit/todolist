@@ -13,6 +13,7 @@ interface SavingsProgressProps {
   partnerContribution: number;
   myName: string;
   partnerName: string;
+  isSingle?: boolean;
 }
 
 export function SavingsProgress({
@@ -22,6 +23,7 @@ export function SavingsProgress({
   partnerContribution,
   myName,
   partnerName,
+  isSingle,
 }: SavingsProgressProps) {
   const { t } = useLanguage();
   const targetAmount = project ? project.target_amount : 1500000;
@@ -101,11 +103,14 @@ export function SavingsProgress({
       </div>
 
       {/* Contributions */}
-      <div className="grid grid-cols-2 gap-4 border-t pt-4">
+      {/* Contributions */}
+      <div
+        className={`grid gap-4 border-t pt-4 ${isSingle ? "grid-cols-1" : "grid-cols-2"}`}
+      >
         <div className="bg-blue-50/50 rounded-lg p-3">
           <div className="text-xs text-blue-600 font-medium flex items-center gap-1 mb-1">
             <User className="w-3 h-3" />
-            {myName}
+            {isSingle ? "現在の貯金" : myName}
           </div>
           <div className="font-semibold text-gray-900">
             {myContribution.toLocaleString()}{" "}
@@ -114,18 +119,20 @@ export function SavingsProgress({
             </span>
           </div>
         </div>
-        <div className="bg-pink-50/50 rounded-lg p-3">
-          <div className="text-xs text-pink-600 font-medium flex items-center gap-1 mb-1">
-            <User className="w-3 h-3" />
-            {partnerName}
+        {!isSingle && (
+          <div className="bg-pink-50/50 rounded-lg p-3">
+            <div className="text-xs text-pink-600 font-medium flex items-center gap-1 mb-1">
+              <User className="w-3 h-3" />
+              {partnerName}
+            </div>
+            <div className="font-semibold text-gray-900">
+              {partnerContribution.toLocaleString()}{" "}
+              <span className="text-xs text-gray-500 font-normal">
+                {t("dashboard.currency")}
+              </span>
+            </div>
           </div>
-          <div className="font-semibold text-gray-900">
-            {partnerContribution.toLocaleString()}{" "}
-            <span className="text-xs text-gray-500 font-normal">
-              {t("dashboard.currency")}
-            </span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

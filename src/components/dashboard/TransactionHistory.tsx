@@ -19,15 +19,19 @@ type Transaction = {
 
 type FilterType = "all" | "me" | "partner";
 
+interface TransactionHistoryProps {
+  transactions: Transaction[];
+  myName: string;
+  partnerName: string;
+  isSingle?: boolean;
+}
+
 export function TransactionHistory({
   transactions,
   myName,
   partnerName,
-}: {
-  transactions: Transaction[];
-  myName: string;
-  partnerName: string;
-}) {
+  isSingle,
+}: TransactionHistoryProps) {
   const { t, language } = useLanguage();
   const [isPending, startTransition] = useTransition();
   const [filter, setFilter] = useState<FilterType>("all");
@@ -59,41 +63,43 @@ export function TransactionHistory({
         <h3 className="text-sm font-semibold text-gray-500 px-1">最近の履歴</h3>
 
         {/* Filter Toggle */}
-        <div className="flex bg-gray-100 rounded-lg p-1 text-sm">
-          <button
-            onClick={() => setFilter("all")}
-            className={cn(
-              "px-4 py-1.5 rounded-md font-medium transition-colors",
-              filter === "all"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700",
-            )}
-          >
-            全体
-          </button>
-          <button
-            onClick={() => setFilter("me")}
-            className={cn(
-              "px-4 py-1.5 rounded-md font-medium transition-colors",
-              filter === "me"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700",
-            )}
-          >
-            {myName}
-          </button>
-          <button
-            onClick={() => setFilter("partner")}
-            className={cn(
-              "px-4 py-1.5 rounded-md font-medium transition-colors",
-              filter === "partner"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700",
-            )}
-          >
-            {partnerName}
-          </button>
-        </div>
+        {!isSingle && (
+          <div className="flex bg-gray-100 rounded-lg p-1 text-sm">
+            <button
+              onClick={() => setFilter("all")}
+              className={cn(
+                "px-4 py-1.5 rounded-md font-medium transition-colors",
+                filter === "all"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700",
+              )}
+            >
+              全体
+            </button>
+            <button
+              onClick={() => setFilter("me")}
+              className={cn(
+                "px-4 py-1.5 rounded-md font-medium transition-colors",
+                filter === "me"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700",
+              )}
+            >
+              {myName}
+            </button>
+            <button
+              onClick={() => setFilter("partner")}
+              className={cn(
+                "px-4 py-1.5 rounded-md font-medium transition-colors",
+                filter === "partner"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700",
+              )}
+            >
+              {partnerName}
+            </button>
+          </div>
+        )}
       </div>
 
       <ul className="space-y-3">
@@ -124,13 +130,17 @@ export function TransactionHistory({
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-gray-500">
-                <span
-                  className={`flex items-center gap-1 font-medium ${trx.payer === "me" ? "text-blue-500" : "text-pink-500"}`}
-                >
-                  <User className="w-3 h-3" />
-                  {trx.payer === "me" ? myName : partnerName}
-                </span>
-                <span>•</span>
+                {!isSingle && (
+                  <>
+                    <span
+                      className={`flex items-center gap-1 font-medium ${trx.payer === "me" ? "text-blue-500" : "text-pink-500"}`}
+                    >
+                      <User className="w-3 h-3" />
+                      {trx.payer === "me" ? myName : partnerName}
+                    </span>
+                    <span>•</span>
+                  </>
+                )}
                 <span>
                   {format(
                     new Date(trx.transaction_date),

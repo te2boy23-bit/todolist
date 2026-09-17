@@ -24,12 +24,14 @@ interface TransactionFormProps {
   myName: string;
   partnerName: string;
   initialDate?: string;
+  isSingle?: boolean;
 }
 
 export function TransactionForm({
   myName,
   partnerName,
   initialDate,
+  isSingle,
 }: TransactionFormProps) {
   const { t, language } = useLanguage();
   const router = useRouter();
