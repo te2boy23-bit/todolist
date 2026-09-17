@@ -28,11 +28,14 @@ export default async function CalendarPage() {
       .order("transaction_date", { ascending: false });
 
     if (!txError && txData) {
-      transactions = txData;
-      const totalDeposit = txData
+      const validTxData = txData.filter(
+        (t) => !t.memo || !t.memo.includes('"isMessage":true')
+      );
+      transactions = validTxData;
+      const totalDeposit = validTxData
         .filter((t) => t.type === "deposit")
         .reduce((sum, t) => sum + t.amount, 0);
-      const totalExpense = txData
+      const totalExpense = validTxData
         .filter((t) => t.type === "expense")
         .reduce((sum, t) => sum + t.amount, 0);
       currentBalance = totalDeposit - totalExpense;

@@ -32,9 +32,14 @@ export default async function DashboardPage() {
     if (error) throw error;
 
     if (transactions) {
-      recentTransactions = transactions.slice(0, 10);
+      // メッセージ用ダミートランザクションを除外
+      const validTransactions = transactions.filter(
+        (t) => !t.memo || !t.memo.includes('"isMessage":true')
+      );
 
-      myContribution = transactions
+      recentTransactions = validTransactions.slice(0, 10);
+
+      myContribution = validTransactions
         .filter((t) => t.type === "deposit" && t.payer === "me")
         .reduce((sum, t) => sum + t.amount, 0);
 

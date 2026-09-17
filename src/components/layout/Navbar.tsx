@@ -17,6 +17,7 @@ import { selectProject } from "@/app/actions/project";
 import { useTransition } from "react";
 
 import { ShareProjectModal } from "@/components/projects/ShareProjectModal";
+import { ChatDrawer } from "@/components/chat/ChatDrawer";
 
 export function Navbar({
   profile,
@@ -134,6 +135,16 @@ export function Navbar({
           </div>
         </div>
       </div>
+      
+      {/* チャットドロワー */}
+      {currentProject && profile && (
+        <ChatDrawer
+          projectId={currentProject.id}
+          currentUserId={profile.id}
+          myProfile={currentProject.ownerProfile?.id === profile.id ? currentProject.ownerProfile : currentProject.partnerProfile}
+          partnerProfile={currentProject.ownerProfile?.id === profile.id ? currentProject.partnerProfile : currentProject.ownerProfile}
+        />
+      )}
     </nav>
   );
 }
