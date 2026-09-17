@@ -15,11 +15,28 @@ export async function addTransaction(data: {
   if (!projectId) throw new Error("No project selected");
 
   const supabase = await createClient();
+  const profile = await getProfile();
+  
+  if (!profile) throw new Error("Unauthorized");
+
+  // プロジェクトのオーナーを確認
+  const { data: project } = await supabase
+    .from("projects")
+    .select("owner_id")
+    .eq("id", projectId)
+    .single();
+
+  // 自分がパートナー(オーナーではない)の場合、"me" と "partner" を反転してDBに保存する
+  // これによりDB内では常に me=オーナー, partner=パートナー に統一される
+  let dbPayer = data.payer;
+  if (project && project.owner_id !== profile.id) {
+    dbPayer = data.payer === "me" ? "partner" : "me";
+  }
 
   const { error } = await supabase.from("transactions").insert([
     {
       type: data.type,
-      payer: data.payer,
+      payer: dbPayer,
       amount: data.amount,
       memo: data.memo,
       transaction_date:

@@ -17,7 +17,7 @@ export async function addMessage(text: string) {
     isMessage: true,
     text,
     userId: profile.id,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   const { error } = await supabase.from("transactions").insert([
@@ -66,7 +66,7 @@ export async function getMessages() {
             text: pd.text,
             userId: pd.userId,
             timestamp: pd.timestamp,
-            created_at: tx.created_at
+            created_at: tx.created_at,
           };
         }
       } catch (e) {

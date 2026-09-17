@@ -12,6 +12,20 @@ export default async function CalendarPage() {
     redirect("/projects");
   }
 
+  // 自分のプロフィール
+  const profile = await getProfile();
+  // オーナーかどうかの判定
+  const isOwner = project.owner_id === profile?.id;
+
+  // 表示名（自分）
+  const myName = profile?.name || "自分";
+
+  // 表示名（相手）
+  const partnerProfile = isOwner
+    ? project.partnerProfile
+    : project.ownerProfile;
+  const partnerName = partnerProfile ? partnerProfile.name : "パートナー";
+
   let transactions: any[] = [];
   let todos: any[] = [];
   let currentBalance = 0;
@@ -28,8 +42,16 @@ export default async function CalendarPage() {
       .order("transaction_date", { ascending: false });
 
     if (!txError && txData) {
-      const validTxData = txData.filter(
-        (t) => !t.memo || !t.memo.includes('"isMessage":true')
+      // 自分がパートナー(オーナーではない)の場合、DBの "me"/"partner" を反転させる
+      const mappedTxData = txData.map((t) => {
+        if (!isOwner) {
+          return { ...t, payer: t.payer === "me" ? "partner" : "me" };
+        }
+        return t;
+      });
+
+      const validTxData = mappedTxData.filter(
+        (t) => !t.memo || !t.memo.includes('"isMessage":true'),
       );
       transactions = validTxData;
       const totalDeposit = validTxData
@@ -54,20 +76,6 @@ export default async function CalendarPage() {
   } catch (error) {
     console.error("Supabase fetch error, using empty data", error);
   }
-
-  // 自分のプロフィール
-  const profile = await getProfile();
-  // オーナーかどうかの判定
-  const isOwner = project.owner_id === profile?.id;
-
-  // 表示名（自分）
-  const myName = profile?.name || "自分";
-
-  // 表示名（相手）
-  const partnerProfile = isOwner
-    ? project.partnerProfile
-    : project.ownerProfile;
-  const partnerName = partnerProfile ? partnerProfile.name : "パートナー";
 
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">

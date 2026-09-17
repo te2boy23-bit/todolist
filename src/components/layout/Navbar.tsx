@@ -135,14 +135,22 @@ export function Navbar({
           </div>
         </div>
       </div>
-      
+
       {/* チャットドロワー */}
       {currentProject && profile && (
         <ChatDrawer
           projectId={currentProject.id}
           currentUserId={profile.id}
-          myProfile={currentProject.ownerProfile?.id === profile.id ? currentProject.ownerProfile : currentProject.partnerProfile}
-          partnerProfile={currentProject.ownerProfile?.id === profile.id ? currentProject.partnerProfile : currentProject.ownerProfile}
+          myProfile={
+            currentProject.ownerProfile?.id === profile.id
+              ? currentProject.ownerProfile
+              : currentProject.partnerProfile
+          }
+          partnerProfile={
+            currentProject.ownerProfile?.id === profile.id
+              ? currentProject.partnerProfile
+              : currentProject.ownerProfile
+          }
         />
       )}
     </nav>

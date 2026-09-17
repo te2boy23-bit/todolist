@@ -12,7 +12,12 @@ interface ChatDrawerProps {
   partnerProfile?: { name: string; avatar_url: string | null };
 }
 
-export function ChatDrawer({ projectId, currentUserId, myProfile, partnerProfile }: ChatDrawerProps) {
+export function ChatDrawer({
+  projectId,
+  currentUserId,
+  myProfile,
+  partnerProfile,
+}: ChatDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -62,9 +67,9 @@ export function ChatDrawer({ projectId, currentUserId, myProfile, partnerProfile
       id: tempId,
       text: textToSend,
       userId: currentUserId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    setMessages(prev => [...prev, tempMsg]);
+    setMessages((prev) => [...prev, tempMsg]);
 
     setIsLoading(true);
     try {
@@ -98,8 +103,11 @@ export function ChatDrawer({ projectId, currentUserId, myProfile, partnerProfile
       {/* ドロワー */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex justify-end">
-          <div className="absolute inset-0 bg-black/20" onClick={() => setIsOpen(false)} />
-          
+          <div
+            className="absolute inset-0 bg-black/20"
+            onClick={() => setIsOpen(false)}
+          />
+
           <div className="relative w-full sm:w-96 bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* ヘッダー */}
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 bg-white">
@@ -119,7 +127,9 @@ export function ChatDrawer({ projectId, currentUserId, myProfile, partnerProfile
             <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
               {messages.length === 0 && (
                 <div className="text-center text-gray-500 text-sm mt-10">
-                  まだメッセージがありません。<br/>最初のメッセージを送りましょう！
+                  まだメッセージがありません。
+                  <br />
+                  最初のメッセージを送りましょう！
                 </div>
               )}
               {messages.map((msg) => {
@@ -127,12 +137,21 @@ export function ChatDrawer({ projectId, currentUserId, myProfile, partnerProfile
                 const profile = getProfile(msg.userId);
 
                 return (
-                  <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`flex gap-2 max-w-[80%] ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                  <div
+                    key={msg.id}
+                    className={`flex ${isMe ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`flex gap-2 max-w-[80%] ${isMe ? "flex-row-reverse" : "flex-row"}`}
+                    >
                       {/* アバター */}
                       <div className="flex-shrink-0">
                         {profile.avatar_url ? (
-                          <img src={profile.avatar_url} alt={profile.name} className="w-8 h-8 rounded-full object-cover border border-gray-200" />
+                          <img
+                            src={profile.avatar_url}
+                            alt={profile.name}
+                            className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                          />
                         ) : (
                           <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
                             {profile.name?.charAt(0) || "U"}
@@ -141,19 +160,30 @@ export function ChatDrawer({ projectId, currentUserId, myProfile, partnerProfile
                       </div>
 
                       {/* 吹き出し */}
-                      <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                        <span className="text-[10px] text-gray-400 mb-1 px-1">{profile.name}</span>
+                      <div
+                        className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
+                      >
+                        <span className="text-[10px] text-gray-400 mb-1 px-1">
+                          {profile.name}
+                        </span>
                         <div
                           className={`px-4 py-2 rounded-2xl ${
                             isMe
-                              ? 'bg-blue-600 text-white rounded-tr-sm'
-                              : 'bg-white text-gray-800 border border-gray-100 rounded-tl-sm shadow-sm'
+                              ? "bg-blue-600 text-white rounded-tr-sm"
+                              : "bg-white text-gray-800 border border-gray-100 rounded-tl-sm shadow-sm"
                           }`}
                         >
-                          <p className="text-sm whitespace-pre-wrap break-words">{msg.text}</p>
+                          <p className="text-sm whitespace-pre-wrap break-words">
+                            {msg.text}
+                          </p>
                         </div>
                         <span className="text-[10px] text-gray-400 mt-1 px-1">
-                          {new Date(msg.timestamp || msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(
+                            msg.timestamp || msg.created_at,
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </span>
                       </div>
                     </div>
@@ -164,7 +194,10 @@ export function ChatDrawer({ projectId, currentUserId, myProfile, partnerProfile
             </div>
 
             {/* 送信フォーム */}
-            <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-100 flex gap-2">
+            <form
+              onSubmit={handleSend}
+              className="p-4 bg-white border-t border-gray-100 flex gap-2"
+            >
               <input
                 type="text"
                 value={newMessage}

@@ -14,6 +14,20 @@ export default async function DashboardPage() {
     redirect("/projects");
   }
 
+  // 自分のプロフィール
+  const profile = await getProfile();
+  // オーナーかどうかの判定
+  const isOwner = project.owner_id === profile?.id;
+
+  // 表示名（自分）
+  const myName = profile?.name || "自分";
+
+  // 表示名（相手）
+  const partnerProfile = isOwner
+    ? project.partnerProfile
+    : project.ownerProfile;
+  const partnerName = partnerProfile ? partnerProfile.name : "パートナー";
+
   let myContribution = 0;
   let partnerContribution = 0;
   let recentTransactions: any[] = [];
@@ -32,9 +46,17 @@ export default async function DashboardPage() {
     if (error) throw error;
 
     if (transactions) {
+      // 自分がパートナー(オーナーではない)の場合、DBの "me"/"partner" を反転させる
+      const mappedTransactions = transactions.map((t) => {
+        if (!isOwner) {
+          return { ...t, payer: t.payer === "me" ? "partner" : "me" };
+        }
+        return t;
+      });
+
       // メッセージ用ダミートランザクションを除外
-      const validTransactions = transactions.filter(
-        (t) => !t.memo || !t.memo.includes('"isMessage":true')
+      const validTransactions = mappedTransactions.filter(
+        (t) => !t.memo || !t.memo.includes('"isMessage":true'),
       );
 
       recentTransactions = validTransactions.slice(0, 10);
@@ -43,7 +65,7 @@ export default async function DashboardPage() {
         .filter((t) => t.type === "deposit" && t.payer === "me")
         .reduce((sum, t) => sum + t.amount, 0);
 
-      partnerContribution = transactions
+      partnerContribution = validTransactions
         .filter((t) => t.type === "deposit" && t.payer === "partner")
         .reduce((sum, t) => sum + t.amount, 0);
     }
@@ -52,20 +74,6 @@ export default async function DashboardPage() {
   }
 
   const totalAmount = myContribution + partnerContribution;
-
-  // 自分のプロフィール
-  const profile = await getProfile();
-  // オーナーかどうかの判定
-  const isOwner = project.owner_id === profile?.id;
-
-  // 表示名（自分）
-  const myName = profile?.name || "自分";
-
-  // 表示名（相手）
-  const partnerProfile = isOwner
-    ? project.partnerProfile
-    : project.ownerProfile;
-  const partnerName = partnerProfile ? partnerProfile.name : "パートナー";
 
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
