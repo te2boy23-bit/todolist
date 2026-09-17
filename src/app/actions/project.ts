@@ -159,7 +159,8 @@ export async function joinProject(inviteCode: string) {
     .eq("id", project.id);
 
   if (updateError) {
-    return { success: false, error: "プロジェクトの参加に失敗しました。" };
+    console.error("Error joining project:", updateError);
+    return { success: false, error: `プロジェクトの参加に失敗しました。詳細: ${updateError.message}` };
   }
 
   // 参加したプロジェクトを選択状態にする
