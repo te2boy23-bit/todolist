@@ -46,7 +46,7 @@ export function LoginButton({
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.refresh();
+    window.location.href = "/";
   };
 
   if (session) {

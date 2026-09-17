@@ -1,6 +1,13 @@
 "use client";
 
-import { Wallet, Calendar, Trash2, LogOut, MoreVertical } from "lucide-react";
+import {
+  Wallet,
+  Calendar,
+  Trash2,
+  LogOut,
+  MoreVertical,
+  Pencil,
+} from "lucide-react";
 import { format } from "date-fns";
 import { useTransition, useState, useRef, useEffect } from "react";
 import {
@@ -11,6 +18,7 @@ import {
 import { useRouter } from "next/navigation";
 
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { EditProjectModal } from "./EditProjectModal";
 
 export function ProjectCard({
   project,
@@ -22,6 +30,7 @@ export function ProjectCard({
   const router = useRouter();
   const { t } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -137,6 +146,20 @@ export function ProjectCard({
 
           {menuOpen && (
             <div className="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-20 animate-in fade-in zoom-in-95 duration-100">
+              {isOwner && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setMenuOpen(false);
+                    setIsEditing(true);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
+                >
+                  <Pencil className="w-4 h-4" />
+                  編集する
+                </button>
+              )}
               {isOwner ? (
                 <button
                   onClick={(e) => handleAction(e, "delete")}
@@ -159,6 +182,13 @@ export function ProjectCard({
             </div>
           )}
         </div>
+      )}
+
+      {isEditing && (
+        <EditProjectModal
+          project={project}
+          onClose={() => setIsEditing(false)}
+        />
       )}
     </div>
   );

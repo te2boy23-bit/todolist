@@ -98,11 +98,11 @@ export function Navbar({
       {/* メインナビゲーション (PCでは上部、スマホでは下部フローティング) */}
       <nav
         className={cn(
-          "fixed bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-2xl sm:rounded-none sm:top-0 sm:bottom-auto sm:left-0 sm:right-0 sm:w-full sm:border-b sm:border-t-0 sm:border-x-0 z-50 shadow-lg sm:shadow-sm overflow-x-auto",
+          "fixed bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-2xl sm:rounded-none sm:top-0 sm:bottom-auto sm:left-0 sm:right-0 sm:w-full sm:border-b sm:border-t-0 sm:border-x-0 z-50 shadow-lg sm:shadow-sm",
           pathname === "/projects" && "hidden sm:block",
         )}
       >
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 min-h-[4rem] py-2 flex items-center justify-between min-w-max sm:min-w-0">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 min-h-[4rem] py-2 flex items-center justify-between">
           {/* 左側: リンク群 (PCの場合はロゴも含む) */}
           <div className="flex items-center w-full sm:w-auto justify-around sm:justify-start sm:space-x-8">
             {/* Logo (Desktop Only) */}
@@ -215,28 +215,28 @@ export function Navbar({
             </div>
           </div>
         </div>
-
-        {/* チャットドロワー */}
-        {currentProject &&
-          !currentProject.invite_code?.startsWith("PRIVATE_") &&
-          profile &&
-          pathname !== "/projects" && (
-            <ChatDrawer
-              projectId={currentProject.id}
-              currentUserId={profile.id}
-              myProfile={
-                currentProject.ownerProfile?.id === profile.id
-                  ? currentProject.ownerProfile
-                  : currentProject.partnerProfile
-              }
-              partnerProfile={
-                currentProject.ownerProfile?.id === profile.id
-                  ? currentProject.partnerProfile
-                  : currentProject.ownerProfile
-              }
-            />
-          )}
       </nav>
+
+      {/* チャットドロワー */}
+      {currentProject &&
+        !currentProject.invite_code?.startsWith("PRIVATE_") &&
+        profile &&
+        pathname !== "/projects" && (
+          <ChatDrawer
+            projectId={currentProject.id}
+            currentUserId={profile.id}
+            myProfile={
+              currentProject.ownerProfile?.id === profile.id
+                ? currentProject.ownerProfile
+                : currentProject.partnerProfile
+            }
+            partnerProfile={
+              currentProject.ownerProfile?.id === profile.id
+                ? currentProject.partnerProfile
+                : currentProject.ownerProfile
+            }
+          />
+        )}
     </>
   );
 }

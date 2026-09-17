@@ -158,6 +158,58 @@ export async function createProject(formData: FormData) {
   return { success: true };
 }
 
+// プロジェクトの更新
+export async function updateProject(projectId: string, formData: FormData) {
+  const supabase = await createClient();
+  const profile = await getProfile();
+
+  if (!profile) return { error: "Unauthorized" };
+
+  const name = formData.get("name") as string;
+  const targetAmount = parseInt(formData.get("target_amount") as string, 10);
+  const startDate = formData.get("start_date") as string;
+  const endDate = formData.get("end_date") as string;
+
+  if (!name || !targetAmount || !startDate || !endDate) {
+    return { error: "Missing fields" };
+  }
+
+  // オーナーかパートナーか確認
+  const { data: project } = await supabase
+    .from("projects")
+    .select("owner_id, partner_id")
+    .eq("id", projectId)
+    .single();
+
+  if (
+    !project ||
+    (project.owner_id !== profile.id && project.partner_id !== profile.id)
+  ) {
+    return { error: "権限がありません" };
+  }
+
+  const { error } = await supabase
+    .from("projects")
+    .update({
+      name,
+      target_amount: targetAmount,
+      start_date: startDate,
+      end_date: endDate,
+    })
+    .eq("id", projectId);
+
+  if (error) {
+    console.error("Error updating project:", error);
+    return {
+      error: `Failed to update project: ${error.message}`,
+    };
+  }
+
+  revalidatePath("/projects");
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
 // 招待コードでプロジェクトに参加する
 export async function joinProject(inviteCode: string) {
   const supabase = await createClient();
