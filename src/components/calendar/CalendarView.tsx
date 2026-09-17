@@ -33,6 +33,7 @@ interface CalendarViewProps {
   myName: string;
   partnerName: string;
   isSingle?: boolean;
+  isPassbook?: boolean;
 }
 
 export function CalendarView({
@@ -42,6 +43,7 @@ export function CalendarView({
   myName,
   partnerName,
   isSingle,
+  isPassbook,
 }: CalendarViewProps) {
   const { t, language } = useLanguage();
   const [selected, setSelected] = useState<Date | undefined>(new Date());
@@ -197,6 +199,7 @@ export function CalendarView({
               partnerName={partnerName}
               initialDate={selectedDateStr || undefined}
               isSingle={isSingle}
+              isPassbook={isPassbook}
             />
           </div>
 

@@ -103,6 +103,7 @@ export default async function CalendarPage() {
           myName={myName}
           partnerName={partnerName}
           isSingle={isSingle || isPassbook}
+          isPassbook={isPassbook}
         />
       </div>
     </div>

@@ -114,6 +114,7 @@ export default async function DashboardPage() {
             myName={myName}
             partnerName={partnerName}
             isSingle={isSingle || isPassbook}
+            isPassbook={isPassbook}
           />
           <TransactionHistory
             transactions={recentTransactions}

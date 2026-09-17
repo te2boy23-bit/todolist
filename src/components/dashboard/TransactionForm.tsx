@@ -25,6 +25,7 @@ interface TransactionFormProps {
   partnerName: string;
   initialDate?: string;
   isSingle?: boolean;
+  isPassbook?: boolean;
 }
 
 export function TransactionForm({
@@ -32,10 +33,13 @@ export function TransactionForm({
   partnerName,
   initialDate,
   isSingle,
+  isPassbook,
 }: TransactionFormProps) {
   const { t, language } = useLanguage();
   const router = useRouter();
-  const [type, setType] = useState<TransactionType>("deposit");
+  const [type, setType] = useState<TransactionType>(
+    isPassbook ? "income" : "deposit",
+  );
   const [payer, setPayer] = useState<PayerType>("me");
   const [amount, setAmount] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
@@ -149,44 +153,43 @@ export function TransactionForm({
       </div>
 
       {/* Type Toggle */}
-      <div className="flex bg-gray-100 rounded-lg p-1 mb-4 w-full sm:w-fit">
-        <button
-          type="button"
-          onClick={() => setType("income")}
-          className={cn(
-            "flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
-            type === "income"
-              ? "bg-white text-emerald-700 shadow-sm"
-              : "text-gray-500 hover:text-gray-700",
-          )}
-        >
-          {t("transaction.income")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setType("deposit")}
-          className={cn(
-            "flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
-            type === "deposit"
-              ? "bg-white text-blue-700 shadow-sm"
-              : "text-gray-500 hover:text-gray-700",
-          )}
-        >
-          {t("transaction.deposit")}
-        </button>
-        <button
-          type="button"
-          onClick={() => setType("expense")}
-          className={cn(
-            "flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
-            type === "expense"
-              ? "bg-white text-red-700 shadow-sm"
-              : "text-gray-500 hover:text-gray-700",
-          )}
-        >
-          {t("transaction.expense")}
-        </button>
-      </div>
+      {!isPassbook ? (
+        <div className="flex bg-gray-100 rounded-lg p-1 mb-4 w-full sm:w-fit">
+          <button
+            type="button"
+            onClick={() => setType("deposit")}
+            className={cn(
+              "flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
+              type === "deposit"
+                ? "bg-white text-blue-700 shadow-sm"
+                : "text-gray-500 hover:text-gray-700",
+            )}
+          >
+            {t("transaction.deposit")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setType("expense")}
+            className={cn(
+              "flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
+              type === "expense"
+                ? "bg-white text-red-700 shadow-sm"
+                : "text-gray-500 hover:text-gray-700",
+            )}
+          >
+            {t("transaction.expense")}
+          </button>
+        </div>
+      ) : (
+        <div className="flex bg-gray-100 rounded-lg p-1 mb-4 w-full sm:w-fit">
+          <button
+            type="button"
+            className="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors bg-white text-emerald-700 shadow-sm"
+          >
+            収入を記録
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="flex flex-col sm:flex-row gap-3">
