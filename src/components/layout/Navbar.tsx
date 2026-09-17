@@ -83,13 +83,13 @@ export function Navbar({
         <div className="ml-2 sm:ml-4 flex items-center gap-1.5 sm:gap-3">
           {/* Project Selector */}
           {profile && projects.length > 0 && (
-            <div className="hidden sm:flex items-center gap-2">
-              <FolderKanban className="w-4 h-4 text-gray-400" />
+            <div className="flex items-center gap-1 sm:gap-2">
+              <FolderKanban className="w-4 h-4 text-gray-400 hidden sm:block" />
               <select
                 disabled={isPending}
                 value={currentProject?.id || ""}
                 onChange={handleProjectChange}
-                className="bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-md focus:ring-blue-500 focus:border-blue-500 block px-2 py-1.5 max-w-[120px] truncate"
+                className="bg-gray-50 border border-gray-200 text-gray-700 text-[10px] sm:text-xs rounded-md focus:ring-blue-500 focus:border-blue-500 block px-1 py-1 sm:px-2 sm:py-1.5 w-[70px] sm:w-auto sm:max-w-[120px] truncate"
               >
                 <option value="" disabled>
                   プロジェクト選択
