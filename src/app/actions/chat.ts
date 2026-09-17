@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProject } from "./project";
 import { getProfile } from "./profile";
+import { unstable_noStore as noStore } from "next/cache";
 
 export async function addMessage(text: string) {
   const supabase = await createClient();
@@ -24,7 +25,7 @@ export async function addMessage(text: string) {
     {
       project_id: project.id,
       type: "expense",
-      amount: 0,
+      amount: 1,
       payer: project.owner_id === profile.id ? "me" : "partner",
       memo: JSON.stringify(memoObj),
       transaction_date: new Date().toISOString().split("T")[0],
@@ -39,6 +40,7 @@ export async function addMessage(text: string) {
 }
 
 export async function getMessages() {
+  noStore();
   const supabase = await createClient();
   const project = await getCurrentProject();
 
@@ -48,7 +50,6 @@ export async function getMessages() {
     .from("transactions")
     .select("*")
     .eq("project_id", project.id)
-    .eq("amount", 0)
     .order("created_at", { ascending: true });
 
   if (error || !data) {

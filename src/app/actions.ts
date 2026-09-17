@@ -16,7 +16,7 @@ export async function addTransaction(data: {
 
   const supabase = await createClient();
   const profile = await getProfile();
-  
+
   if (!profile) throw new Error("Unauthorized");
 
   // プロジェクトのオーナーを確認

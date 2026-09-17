@@ -77,8 +77,9 @@ export function ChatDrawer({
       // 再取得
       const updatedMessages = await getMessages();
       setMessages(updatedMessages);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to send message", error);
+      alert(`メッセージの送信に失敗しました: ${error.message}`);
       // エラー時は追加したメッセージを戻すなどの処理も可能だが今回は簡易的に
     } finally {
       setIsLoading(false);
