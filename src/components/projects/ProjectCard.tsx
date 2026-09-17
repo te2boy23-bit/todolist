@@ -26,7 +26,7 @@ export function ProjectCard({
   const [isPending, startTransition] = useTransition();
 
   const isOwner = project.owner_id === currentUserId;
-  const isPrivatePassbook = project.invite_code === "PRIVATE_PASSBOOK";
+  const isPrivatePassbook = project.invite_code?.startsWith("PRIVATE_");
 
   // メニュー外クリックで閉じる
   useEffect(() => {

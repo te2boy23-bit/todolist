@@ -36,6 +36,22 @@ export async function addMessage(text: string) {
     throw new Error(`Failed to send message: ${error.message}`);
   }
 
+  // 相手に通知を送る
+  const targetUserId = project.owner_id === profile.id ? project.partner_id : project.owner_id;
+  
+  if (targetUserId) {
+    // 相手の名前を取得する（簡易的に "パートナー" として送るか、現在の名前を使う）
+    const senderName = profile.display_name || "パートナー";
+    await supabase.from("notifications").insert([
+      {
+        user_id: targetUserId,
+        project_id: project.id,
+        title: "新しいメッセージ",
+        content: `${senderName}さんから「${project.name}」に新しいメッセージが届きました。`,
+      }
+    ]);
+  }
+
   return { success: true };
 }
 

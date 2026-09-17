@@ -18,6 +18,9 @@ import { useTransition } from "react";
 
 import { ShareProjectModal } from "@/components/projects/ShareProjectModal";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
+import { NotificationBell } from "@/components/layout/NotificationBell";
+
+import Image from "next/image";
 
 export function Navbar({
   profile,
@@ -50,8 +53,18 @@ export function Navbar({
   return (
     <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 pb-safe sm:top-0 sm:bottom-auto sm:border-b sm:border-t-0 z-50 shadow-sm">
       <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Navigation Links */}
+        {/* Navigation Links with Logo */}
         <div className="flex items-center space-x-1 flex-1 justify-around sm:justify-start sm:space-x-8">
+          {/* Logo (Desktop Only) */}
+          <Link href="/" className="hidden sm:flex items-center gap-2 mr-4">
+            <div className="w-8 h-8 rounded-lg overflow-hidden shadow-sm relative border border-gray-100">
+              <Image src="/logo.jpg" alt="Logo" fill className="object-cover" />
+            </div>
+            <span className="font-bold text-gray-800 text-sm tracking-tight hidden md:block">
+              Todo & Money
+            </span>
+          </Link>
+
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname.startsWith(item.path);
@@ -105,7 +118,7 @@ export function Navbar({
 
           {/* Share Button (Current Project) */}
           {currentProject &&
-            currentProject.invite_code !== "PRIVATE_PASSBOOK" && (
+            !currentProject.invite_code?.startsWith("PRIVATE_") && (
               <ShareProjectModal project={currentProject} />
             )}
 
@@ -120,6 +133,11 @@ export function Navbar({
           </button>
 
           <div className="border-l border-gray-200 h-6 mx-0.5 sm:mx-1 hidden sm:block"></div>
+
+          {/* Notification Bell */}
+          <div className="mr-1">
+            <NotificationBell />
+          </div>
 
           {/* Login / Profile */}
           <div className="flex items-center ml-1 sm:ml-0">
@@ -141,7 +159,7 @@ export function Navbar({
 
       {/* チャットドロワー */}
       {currentProject &&
-        currentProject.invite_code !== "PRIVATE_PASSBOOK" &&
+        !currentProject.invite_code?.startsWith("PRIVATE_") &&
         profile &&
         pathname !== "/projects" && (
           <ChatDrawer

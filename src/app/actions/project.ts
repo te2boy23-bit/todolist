@@ -35,9 +35,11 @@ export async function getProjects() {
     return [];
   }
 
+  const privateInviteCode = `PRIVATE_${profile.id.substring(0, 8)}`;
+
   // 「マイ通帳」が存在するかチェック
   const hasPassbook = data.some(
-    (p) => p.invite_code === "PRIVATE_PASSBOOK" && p.owner_id === profile.id,
+    (p) => p.invite_code === privateInviteCode && p.owner_id === profile.id,
   );
 
   if (!hasPassbook) {
@@ -53,7 +55,7 @@ export async function getProjects() {
             .toISOString()
             .split("T")[0],
           owner_id: profile.id,
-          invite_code: "PRIVATE_PASSBOOK",
+          invite_code: privateInviteCode,
         },
       ])
       .select()
@@ -61,13 +63,15 @@ export async function getProjects() {
 
     if (!insertError && passbook) {
       data.push(passbook);
+    } else {
+      console.error("Failed to create passbook", insertError);
     }
   }
 
   // ソート: マイ通帳を一番上に、残りは作成日時降順
   return data.sort((a, b) => {
-    if (a.invite_code === "PRIVATE_PASSBOOK") return -1;
-    if (b.invite_code === "PRIVATE_PASSBOOK") return 1;
+    if (a.invite_code?.startsWith("PRIVATE_")) return -1;
+    if (b.invite_code?.startsWith("PRIVATE_")) return 1;
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
   });
 }
