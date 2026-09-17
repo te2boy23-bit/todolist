@@ -111,39 +111,41 @@ export function TransactionForm({
         </h3>
 
         {/* Payer Toggle */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500 font-medium">
-            {t("transaction.whoPaid")}
-          </span>
-          <div className="flex bg-gray-100 rounded-lg p-1">
-            <button
-              type="button"
-              onClick={() => setPayer("me")}
-              className={cn(
-                "px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1",
-                payer === "me"
-                  ? "bg-white text-blue-600 shadow-sm"
-                  : "text-gray-500 hover:text-blue-500",
-              )}
-            >
-              <User className="w-4 h-4" />
-              {myName}
-            </button>
-            <button
-              type="button"
-              onClick={() => setPayer("partner")}
-              className={cn(
-                "px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1",
-                payer === "partner"
-                  ? "bg-white text-pink-600 shadow-sm"
-                  : "text-gray-500 hover:text-pink-500",
-              )}
-            >
-              <User className="w-4 h-4" />
-              {partnerName}
-            </button>
+        {!isSingle && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500 font-medium">
+              {t("transaction.whoPaid")}
+            </span>
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <button
+                type="button"
+                onClick={() => setPayer("me")}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1",
+                  payer === "me"
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-gray-500 hover:text-blue-500",
+                )}
+              >
+                <User className="w-4 h-4" />
+                {myName}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPayer("partner")}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1",
+                  payer === "partner"
+                    ? "bg-white text-pink-600 shadow-sm"
+                    : "text-gray-500 hover:text-pink-500",
+                )}
+              >
+                <User className="w-4 h-4" />
+                {partnerName}
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Type Toggle */}
