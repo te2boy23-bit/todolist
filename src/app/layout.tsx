@@ -41,21 +41,44 @@ export const metadata: Metadata = {
   },
 };
 
+// Next.jsで用意されている <Script> というコンポーネント（部品）を読み込みます
+// これを使うと、外部のJavaScript（今回のような広告など）を安全かつ効率的に読み込めます
+import Script from "next/script";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // ① 変数（変数名: profile）
+  // ログインしているユーザーの情報をデータベースから取得して「profile」という箱（変数）に入れます
   const profile = await getProfile();
+
+  // ② 配列（変数名: projects）
+  // ユーザーが持っている複数のプロジェクトをリスト（配列）として取得します。ない場合は空の配列 `[]` を入れます。
   const projects = profile ? await getProjects() : [];
+
+  // ③ 変数（変数名: currentProject）
+  // 現在選択中の１つのプロジェクト情報を取得して箱（変数）に入れます
   const currentProject = profile ? await getCurrentProject() : null;
 
   return (
     <html lang="ja">
+      <head>
+        {/* Google Adsenseのスクリプト追加 */}
+        {/* async属性は、ウェブページの表示を邪魔しないように「裏側で並行して」スクリプトを読み込むための設定です */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6902143388253005"
+          crossOrigin="anonymous"
+          strategy="afterInteractive" // ページがインタラクティブ（操作可能）になってから読み込む設定
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased pt-14 pb-24 sm:pb-0 sm:pt-16 min-h-screen flex flex-col bg-slate-50`}
       >
         <LanguageProvider>
+          {/* Navbarというコンポーネント（部品）に、さっき取得した変数や配列を「プロパティ(props)」として渡しています */}
           <Navbar
             profile={profile}
             projects={projects}

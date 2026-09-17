@@ -78,12 +78,14 @@ export function Navbar({
               </option>
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name === "マイ通帳 (個人用)" ? t("project.passbookName") : p.name}
+                  {p.name === "マイ通帳 (個人用)"
+                    ? t("project.passbookName")
+                    : p.name}
                 </option>
               ))}
             </select>
           )}
-          
+
           <button
             onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
             className="flex items-center gap-1 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-lg transition-colors text-[10px] font-medium"
@@ -97,11 +99,16 @@ export function Navbar({
             <NotificationBell />
             {profile && <PushNotificationManager userId={profile.id} />}
           </div>
-          {profile && (
-            <div className="scale-90">
-              <PairingModal profile={profile} />
-            </div>
-          )}
+          <div className="scale-90 flex items-center gap-2">
+            {profile ? (
+              <>
+                <PairingModal profile={profile} />
+                <LoginButton />
+              </>
+            ) : (
+              <LoginButton />
+            )}
+          </div>
         </div>
       </div>
 
@@ -181,7 +188,9 @@ export function Navbar({
                   </option>
                   {projects.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name === "マイ通帳 (個人用)" ? t("project.passbookName") : p.name}
+                      {p.name === "マイ通帳 (個人用)"
+                        ? t("project.passbookName")
+                        : p.name}
                     </option>
                   ))}
                 </select>
