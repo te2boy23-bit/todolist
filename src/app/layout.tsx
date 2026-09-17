@@ -33,6 +33,10 @@ export const metadata: Metadata = {
     description:
       "旅行や同棲の資金をみんなで楽しく管理！お金の記録とTodoリストを共有できる専用アプリです。",
   },
+  icons: {
+    icon: "/logo.jpg",
+    apple: "/logo.jpg",
+  },
 };
 
 export default async function RootLayout({
