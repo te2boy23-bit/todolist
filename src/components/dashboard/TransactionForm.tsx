@@ -120,8 +120,8 @@ export function TransactionForm({
               className={cn(
                 "px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1",
                 payer === "me"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700",
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-gray-500 hover:text-blue-500",
               )}
             >
               <User className="w-4 h-4" />
@@ -133,8 +133,8 @@ export function TransactionForm({
               className={cn(
                 "px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1",
                 payer === "partner"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700",
+                  ? "bg-white text-pink-600 shadow-sm"
+                  : "text-gray-500 hover:text-pink-500",
               )}
             >
               <User className="w-4 h-4" />

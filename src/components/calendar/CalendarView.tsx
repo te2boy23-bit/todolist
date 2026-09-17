@@ -238,7 +238,7 @@ export function CalendarView({
                         <button
                           onClick={(e) => handleTodoDelete(e, todo.id)}
                           disabled={isPending}
-                          className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-2 disabled:opacity-50"
+                          className="text-gray-400 hover:text-red-500 transition-colors p-2 sm:p-0 disabled:opacity-50"
                           title="削除"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -303,7 +303,7 @@ export function CalendarView({
                               {trx.memo}
                             </span>
                           </div>
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <div className={`flex items-center gap-1 text-xs font-medium ${trx.payer === "me" ? "text-blue-500" : "text-pink-500"}`}>
                             <User className="w-3 h-3" />
                             {trx.payer === "me" ? myName : partnerName}
                           </div>
@@ -325,7 +325,7 @@ export function CalendarView({
                           <button
                             onClick={() => handleDelete(trx.id)}
                             disabled={isPending}
-                            className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                            className="text-gray-400 hover:text-red-500 transition-colors disabled:opacity-50 p-2 sm:p-0"
                             title="削除"
                           >
                             <Trash2 className="w-4 h-4" />

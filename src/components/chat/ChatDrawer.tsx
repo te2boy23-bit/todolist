@@ -94,9 +94,9 @@ export function ChatDrawer({
   const availableDates = Array.from(
     new Set(
       messages.map((msg) =>
-        new Date(msg.timestamp || msg.created_at).toLocaleDateString()
-      )
-    )
+        new Date(msg.timestamp || msg.created_at).toLocaleDateString(),
+      ),
+    ),
   );
 
   return (
@@ -132,15 +132,17 @@ export function ChatDrawer({
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              
+
               {/* 日付ナビゲーションバー */}
               {availableDates.length > 0 && (
                 <div className="flex overflow-x-auto gap-2 px-4 pb-3 scrollbar-hide">
-                  {availableDates.map(dateStr => (
+                  {availableDates.map((dateStr) => (
                     <button
                       key={dateStr}
                       onClick={() => {
-                        document.getElementById(`date-${dateStr}`)?.scrollIntoView({ behavior: 'smooth' });
+                        document
+                          .getElementById(`date-${dateStr}`)
+                          ?.scrollIntoView({ behavior: "smooth" });
                       }}
                       className="whitespace-nowrap px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] sm:text-xs rounded-full transition-colors border border-gray-200"
                     >
@@ -163,17 +165,26 @@ export function ChatDrawer({
               {messages.map((msg, index) => {
                 const isMe = msg.userId === currentUserId;
                 const profile = getProfile(msg.userId);
-                
-                const msgDate = new Date(msg.timestamp || msg.created_at).toLocaleDateString();
-                const prevMsgDate = index > 0 
-                  ? new Date(messages[index - 1].timestamp || messages[index - 1].created_at).toLocaleDateString() 
-                  : null;
+
+                const msgDate = new Date(
+                  msg.timestamp || msg.created_at,
+                ).toLocaleDateString();
+                const prevMsgDate =
+                  index > 0
+                    ? new Date(
+                        messages[index - 1].timestamp ||
+                          messages[index - 1].created_at,
+                      ).toLocaleDateString()
+                    : null;
                 const showDateHeader = msgDate !== prevMsgDate;
 
                 return (
                   <div key={msg.id} className="flex flex-col">
                     {showDateHeader && (
-                      <div id={`date-${msgDate}`} className="flex justify-center my-4">
+                      <div
+                        id={`date-${msgDate}`}
+                        className="flex justify-center my-4"
+                      >
                         <span className="bg-gray-200/50 text-gray-500 text-[10px] px-3 py-1 rounded-full font-medium">
                           {msgDate}
                         </span>
@@ -182,53 +193,53 @@ export function ChatDrawer({
                     <div
                       className={`flex ${isMe ? "justify-end" : "justify-start"} mb-2`}
                     >
-                    <div
-                      className={`flex gap-2 max-w-[80%] ${isMe ? "flex-row-reverse" : "flex-row"}`}
-                    >
-                      {/* アバター */}
-                      <div className="flex-shrink-0">
-                        {profile.avatar_url ? (
-                          <img
-                            src={profile.avatar_url}
-                            alt={profile.name}
-                            className="w-8 h-8 rounded-full object-cover border border-gray-200"
-                          />
-                        ) : (
-                          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
-                            {profile.name?.charAt(0) || "U"}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* 吹き出し */}
                       <div
-                        className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
+                        className={`flex gap-2 max-w-[80%] ${isMe ? "flex-row-reverse" : "flex-row"}`}
                       >
-                        <span className="text-[10px] text-gray-400 mb-1 px-1">
-                          {profile.name}
-                        </span>
-                        <div
-                          className={`px-4 py-2 rounded-2xl ${
-                            isMe
-                              ? "bg-blue-600 text-white rounded-tr-sm"
-                              : "bg-white text-gray-800 border border-gray-100 rounded-tl-sm shadow-sm"
-                          }`}
-                        >
-                          <p className="text-sm whitespace-pre-wrap break-words">
-                            {msg.text}
-                          </p>
+                        {/* アバター */}
+                        <div className="flex-shrink-0">
+                          {profile.avatar_url ? (
+                            <img
+                              src={profile.avatar_url}
+                              alt={profile.name}
+                              className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
+                              {profile.name?.charAt(0) || "U"}
+                            </div>
+                          )}
                         </div>
-                        <span className="text-[10px] text-gray-400 mt-1 px-1">
-                          {new Date(
-                            msg.timestamp || msg.created_at,
-                          ).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
+
+                        {/* 吹き出し */}
+                        <div
+                          className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}
+                        >
+                          <span className="text-[10px] text-gray-400 mb-1 px-1">
+                            {profile.name}
+                          </span>
+                          <div
+                            className={`px-4 py-2 rounded-2xl ${
+                              isMe
+                                ? "bg-blue-600 text-white rounded-tr-sm"
+                                : "bg-white text-gray-800 border border-gray-100 rounded-tl-sm shadow-sm"
+                            }`}
+                          >
+                            <p className="text-sm whitespace-pre-wrap break-words">
+                              {msg.text}
+                            </p>
+                          </div>
+                          <span className="text-[10px] text-gray-400 mt-1 px-1">
+                            {new Date(
+                              msg.timestamp || msg.created_at,
+                            ).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                   </div>
                   </div>
                 );
               })}
