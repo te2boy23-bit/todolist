@@ -14,26 +14,17 @@ export async function addNote(title: string, text: string) {
     throw new Error("Unauthorized");
   }
 
-  const memoObj = {
-    isNote: true,
-    title,
-    text,
-    userId: profile.id,
-    timestamp: new Date().toISOString(),
-  };
-
-  const { error } = await supabase.from("transactions").insert([
+  const { error } = await supabase.from("notes").insert([
     {
       project_id: project.id,
-      type: "expense",
-      amount: 0,
-      payer: project.owner_id === profile.id ? "me" : "partner",
-      memo: JSON.stringify(memoObj),
-      transaction_date: new Date().toISOString().split("T")[0],
+      user_id: profile.id,
+      title,
+      text,
     },
   ]);
 
   if (error) {
+    console.error("Supabase insert error:", error);
     throw new Error(`Failed to add note: ${error.message}`);
   }
 
@@ -47,7 +38,7 @@ export async function deleteNote(id: string) {
 
   if (!profile) return { success: false };
 
-  const { error } = await supabase.from("transactions").delete().eq("id", id);
+  const { error } = await supabase.from("notes").delete().eq("id", id);
 
   if (error) throw new Error("Failed to delete note");
 

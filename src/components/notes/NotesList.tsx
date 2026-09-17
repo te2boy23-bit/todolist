@@ -116,13 +116,11 @@ export function NotesList({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {notes.length === 0 && !isAdding && (
         {initialNotes.length === 0 && !isAdding && (
           <div className="col-span-full py-12 text-center text-gray-500 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
             メモがありません
           </div>
         )}
-        {notes.map((note) => (
         {initialNotes.map((note) => (
           <div
             key={note.id}

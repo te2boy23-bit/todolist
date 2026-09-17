@@ -41,10 +41,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Next.jsで用意されている <Script> というコンポーネント（部品）を読み込みます
-// これを使うと、外部のJavaScript（今回のような広告など）を安全かつ効率的に読み込めます
-import Script from "next/script";
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -66,13 +62,12 @@ export default async function RootLayout({
     <html lang="ja">
       <head>
         {/* Google Adsenseのスクリプト追加 */}
-        {/* async属性は、ウェブページの表示を邪魔しないように「裏側で並行して」スクリプトを読み込むための設定です */}
-        <Script
+        {/* Next.jsのScriptコンポーネントだと審査ロボットが認識しないことがあるため、通常のscriptタグを使用します */}
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6902143388253005"
           crossOrigin="anonymous"
-          strategy="afterInteractive" // ページがインタラクティブ（操作可能）になってから読み込む設定
-        />
+        ></script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased pt-14 pb-24 sm:pb-0 sm:pt-16 min-h-screen flex flex-col bg-slate-50`}

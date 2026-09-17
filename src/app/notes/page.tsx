@@ -20,34 +20,23 @@ export default async function NotesPage() {
   try {
     const supabase = await createClient();
 
-    const { data: txData } = await supabase
-      .from("transactions")
+    const { data: notesData, error } = await supabase
+      .from("notes")
       .select("*")
       .eq("project_id", project.id)
-      .eq("amount", 0)
       .order("created_at", { ascending: false });
 
-    if (txData) {
-      notes = txData
-        .map((tx: any) => {
-          try {
-            const memo = JSON.parse(tx.memo);
-            if (memo && memo.isNote) {
-              return {
-                id: tx.id,
-                title: memo.title || "",
-                text: memo.text || "",
-                userId: memo.userId,
-                timestamp: memo.timestamp,
-                created_at: tx.created_at,
-              };
-            }
-          } catch (e) {
-            return null;
-          }
-          return null;
-        })
-        .filter(Boolean);
+    if (error) {
+      console.error("Failed to fetch notes:", error);
+    } else if (notesData) {
+      notes = notesData.map((note: any) => ({
+        id: note.id,
+        title: note.title || "",
+        text: note.text || "",
+        userId: note.user_id,
+        timestamp: note.created_at,
+        created_at: note.created_at,
+      }));
     }
   } catch (error) {
     console.error("Supabase fetch error:", error);
