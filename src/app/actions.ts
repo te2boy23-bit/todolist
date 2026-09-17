@@ -20,10 +20,10 @@ export async function addTransaction(data: {
 
   if (!profile) throw new Error("Unauthorized");
 
-  // プロジェクトのオーナーを確認
+  // プロジェクトの情報を取得
   const { data: project } = await supabase
     .from("projects")
-    .select("owner_id")
+    .select("owner_id, partner_id, name")
     .eq("id", projectId)
     .single();
 
@@ -51,6 +51,40 @@ export async function addTransaction(data: {
     throw new Error(
       `Failed to add transaction: ${error.message || JSON.stringify(error)}`,
     );
+  }
+
+  // 相手に通知を送る
+  if (project) {
+    const targetUserId =
+      project.owner_id === profile.id ? project.partner_id : project.owner_id;
+
+    if (targetUserId) {
+      const senderName = profile.display_name || "パートナー";
+      const typeLabel =
+        data.type === "deposit"
+          ? "貯金"
+          : data.type === "expense"
+            ? "出費"
+            : "収入";
+      const title = `新しい${typeLabel}の記録`;
+      const content = `${senderName}さんが「${project.name}」に ${data.amount.toLocaleString()}円 の${typeLabel}を記録しました。`;
+
+      await supabase.from("notifications").insert([
+        {
+          user_id: targetUserId,
+          project_id: projectId,
+          title,
+          content,
+        },
+      ]);
+
+      try {
+        const { sendNotification } = await import("./actions/webpush");
+        await sendNotification(targetUserId, title, content, "/");
+      } catch (err) {
+        console.error("Failed to send web push for transaction:", err);
+      }
+    }
   }
 
   // データ更新後に画面をリフレッシュ
