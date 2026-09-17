@@ -44,7 +44,7 @@ export async function getProjects() {
   // 重複排除 (同じ id のものは排除。また、マイ通帳が複数ある場合は1つだけ残す)
   const uniqueProjects = [];
   let foundPassbook = false;
-  
+
   for (const p of data) {
     if (p.invite_code === privateInviteCode && p.owner_id === profile.id) {
       if (!foundPassbook) {
@@ -56,7 +56,6 @@ export async function getProjects() {
     }
   }
 
-  if (!hasPassbook) {
   if (!foundPassbook) {
     // なければ作成
     const { data: passbook, error: insertError } = await supabase
@@ -77,7 +76,6 @@ export async function getProjects() {
       .single();
 
     if (!insertError && passbook) {
-      data.push(passbook);
       uniqueProjects.push(passbook);
     } else {
       console.error("Failed to create passbook", insertError);
@@ -85,7 +83,6 @@ export async function getProjects() {
   }
 
   // ソート: マイ通帳を一番上に、残りは作成日時降順
-  return data.sort((a, b) => {
   return uniqueProjects.sort((a, b) => {
     if (a.invite_code?.startsWith("PRIVATE_")) return -1;
     if (b.invite_code?.startsWith("PRIVATE_")) return 1;

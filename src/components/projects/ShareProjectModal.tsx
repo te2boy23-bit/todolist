@@ -12,7 +12,7 @@ export function ShareProjectModal({ project }: { project: any }) {
   if (!project) return null;
 
   const handleCopy = () => {
-    const textToCopy = `プロジェクトに招待されました！✨\n\n招待コード: ${project.invite_code}\n\n▼ここからアプリを開いてログインし、招待コードを入力して参加してね！\nhttps://todolist-tepe3.vercel.app/`;
+    const textToCopy = `プロジェクトに招待されました！✨\n\n招待コード: ${project.invite_code}\n\n▼ここからアプリを開いてログインし、招待コードを入力して参加してね！\nhttps://plan-wallet.com/`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
