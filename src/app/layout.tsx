@@ -17,21 +17,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "みんなの目標を形にする - 共有貯金＆Todoアプリ",
+  title: "Plan Wallet | 夢を叶える共有貯金＆Todoアプリ",
   description:
-    "旅行、同棲、趣味の資金。友人や恋人と一緒にお金を管理し、共通のTodoをこなして、夢を叶えるための共有アプリです。",
+    "旅行や同棲、趣味の資金。恋人や友人と一緒にお金を貯めながら、目標までのTodoを楽しく管理できる共有アプリです。",
   openGraph: {
-    title: "みんなの目標を形にする - 共有貯金＆Todoアプリ",
+    title: "Plan Wallet | 夢を叶える共有貯金＆Todoアプリ",
     description:
-      "旅行や同棲の資金をみんなで楽しく管理！お金の記録とTodoリストを共有できる専用アプリです。",
+      "旅行や同棲、趣味の資金。恋人や友人と一緒にお金を貯めながら、目標までのTodoを楽しく管理できる共有アプリです。",
     type: "website",
     locale: "ja_JP",
+    url: "https://plan-wallet.com",
+    siteName: "Plan Wallet",
   },
   twitter: {
     card: "summary_large_image",
-    title: "みんなの目標を形にする - 共有貯金＆Todoアプリ",
+    title: "Plan Wallet | 夢を叶える共有貯金＆Todoアプリ",
     description:
-      "旅行や同棲の資金をみんなで楽しく管理！お金の記録とTodoリストを共有できる専用アプリです。",
+      "旅行や同棲、趣味の資金。恋人や友人と一緒にお金を貯めながら、目標までのTodoを楽しく管理できる共有アプリです。",
   },
   icons: {
     icon: "/logo.jpg",
