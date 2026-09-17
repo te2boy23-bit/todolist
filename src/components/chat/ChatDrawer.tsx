@@ -91,6 +91,14 @@ export function ChatDrawer({
     return partnerProfile || { name: "パートナー", avatar_url: null };
   };
 
+  const availableDates = Array.from(
+    new Set(
+      messages.map((msg) =>
+        new Date(msg.timestamp || msg.created_at).toLocaleDateString()
+      )
+    )
+  );
+
   return (
     <>
       {/* フローティングボタン */}
@@ -111,17 +119,36 @@ export function ChatDrawer({
 
           <div className="relative w-full sm:w-96 bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* ヘッダー */}
-            <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 bg-white">
-              <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 text-blue-500" />
-                プロジェクトチャット
-              </h2>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+            <div className="flex flex-col border-b border-gray-100 bg-white shadow-sm z-10">
+              <div className="flex items-center justify-between px-4 py-4">
+                <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                  <MessageCircle className="w-5 h-5 text-blue-500" />
+                  プロジェクトチャット
+                </h2>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* 日付ナビゲーションバー */}
+              {availableDates.length > 0 && (
+                <div className="flex overflow-x-auto gap-2 px-4 pb-3 scrollbar-hide">
+                  {availableDates.map(dateStr => (
+                    <button
+                      key={dateStr}
+                      onClick={() => {
+                        document.getElementById(`date-${dateStr}`)?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="whitespace-nowrap px-3 py-1 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] sm:text-xs rounded-full transition-colors border border-gray-200"
+                    >
+                      {dateStr}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* メッセージ一覧 */}
@@ -133,15 +160,28 @@ export function ChatDrawer({
                   最初のメッセージを送りましょう！
                 </div>
               )}
-              {messages.map((msg) => {
+              {messages.map((msg, index) => {
                 const isMe = msg.userId === currentUserId;
                 const profile = getProfile(msg.userId);
+                
+                const msgDate = new Date(msg.timestamp || msg.created_at).toLocaleDateString();
+                const prevMsgDate = index > 0 
+                  ? new Date(messages[index - 1].timestamp || messages[index - 1].created_at).toLocaleDateString() 
+                  : null;
+                const showDateHeader = msgDate !== prevMsgDate;
 
                 return (
-                  <div
-                    key={msg.id}
-                    className={`flex ${isMe ? "justify-end" : "justify-start"}`}
-                  >
+                  <div key={msg.id} className="flex flex-col">
+                    {showDateHeader && (
+                      <div id={`date-${msgDate}`} className="flex justify-center my-4">
+                        <span className="bg-gray-200/50 text-gray-500 text-[10px] px-3 py-1 rounded-full font-medium">
+                          {msgDate}
+                        </span>
+                      </div>
+                    )}
+                    <div
+                      className={`flex ${isMe ? "justify-end" : "justify-start"} mb-2`}
+                    >
                     <div
                       className={`flex gap-2 max-w-[80%] ${isMe ? "flex-row-reverse" : "flex-row"}`}
                     >
