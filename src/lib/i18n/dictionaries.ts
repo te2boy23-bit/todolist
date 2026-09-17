@@ -108,6 +108,11 @@ export const dictionaries = {
       markAllRead: "すべて既読",
       noNotifications: "通知はありません",
     },
+    passbook: {
+      title: "収入管理",
+      description: "給料などの収入を記録します。誰とも共有されません。",
+      income: "収入",
+    },
   },
   en: {
     common: {
@@ -218,6 +223,11 @@ export const dictionaries = {
       title: "Notifications",
       markAllRead: "Mark all as read",
       noNotifications: "No notifications",
+    },
+    passbook: {
+      title: "Income Management",
+      description: "Record your salary and other incomes. This is private and not shared.",
+      income: "Income",
     },
   },
 };
