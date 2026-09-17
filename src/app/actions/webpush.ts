@@ -3,14 +3,21 @@
 import webpush from "web-push";
 import { createClient } from "@/lib/supabase/server";
 
-// VAPIDキーの設定
-webpush.setVapidDetails(
-  "mailto:example@yourdomain.org",
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY as string,
-  process.env.VAPID_PRIVATE_KEY as string,
-);
+function initWebPush() {
+  if (
+    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY &&
+    process.env.VAPID_PRIVATE_KEY
+  ) {
+    webpush.setVapidDetails(
+      "mailto:example@yourdomain.org",
+      process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY as string,
+      process.env.VAPID_PRIVATE_KEY as string,
+    );
+  }
+}
 
 export async function subscribeUser(sub: PushSubscription, userId: string) {
+  initWebPush();
   const supabase = await createClient();
 
   // サブスクリプションをDBに保存
@@ -34,6 +41,7 @@ export async function sendNotification(
   body: string,
   url: string = "/",
 ) {
+  initWebPush();
   const supabase = await createClient();
 
   // ユーザーのサブスクリプションを取得
