@@ -228,6 +228,7 @@ export function ChatDrawer({
                         </span>
                       </div>
                     </div>
+                   </div>
                   </div>
                 );
               })}
