@@ -112,12 +112,14 @@ export function ChatDrawer({
       {/* ドロワー */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex justify-end">
+        <div className="fixed inset-0 z-50 flex justify-end h-[100dvh]">
           <div
             className="absolute inset-0 bg-black/20"
             onClick={() => setIsOpen(false)}
           />
 
           <div className="relative w-full sm:w-96 bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="relative w-full sm:w-96 bg-white h-[100dvh] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* ヘッダー */}
             <div className="flex flex-col border-b border-gray-100 bg-white shadow-sm z-10">
               <div className="flex items-center justify-between px-4 py-4">
@@ -250,18 +252,31 @@ export function ChatDrawer({
             <form
               onSubmit={handleSend}
               className="p-4 bg-white border-t border-gray-100 flex gap-2"
+              className="p-4 bg-white border-t border-gray-100 flex gap-2 items-end"
             >
               <input
                 type="text"
+              <textarea
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    // textarea の場合は form event を模倣して送信
+                    handleSend(e as unknown as React.FormEvent);
+                  }
+                }}
                 placeholder="メッセージを入力..."
                 className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
+                className="flex-1 bg-gray-100 rounded-2xl px-4 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow resize-none overflow-y-auto max-h-32 min-h-[44px]"
+                rows={1}
+                style={{ fontSize: "16px" }}
               />
               <button
                 type="submit"
                 disabled={!newMessage.trim() || isLoading}
                 className="bg-blue-600 text-white p-2.5 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:hover:bg-blue-600 flex items-center justify-center flex-shrink-0"
+                className="bg-blue-600 text-white p-2.5 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:hover:bg-blue-600 flex items-center justify-center flex-shrink-0 h-[44px] w-[44px]"
               >
                 <Send className="w-5 h-5 -ml-0.5" />
               </button>
