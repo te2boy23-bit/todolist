@@ -85,7 +85,7 @@ async function generateDateReminders(supabase: any, userId: string) {
     if (!projects) return;
 
     const today = new Date();
-    
+
     for (const project of projects) {
       // マイ通帳は除外
       if (project.invite_code === "PRIVATE_PASSBOOK") continue;
@@ -97,7 +97,10 @@ async function generateDateReminders(supabase: any, userId: string) {
 
       // 3日前、または当日の場合に通知
       if (diffDays === 3 || diffDays === 0) {
-        const title = diffDays === 0 ? "🎉 本日が目標日です！" : `📅 目標日まであと${diffDays}日！`;
+        const title =
+          diffDays === 0
+            ? "🎉 本日が目標日です！"
+            : `📅 目標日まであと${diffDays}日！`;
         const content = `プロジェクト「${project.name}」の目標日が${diffDays === 0 ? "本日" : `あと${diffDays}日`}に迫っています。`;
 
         // 既に同じ内容の通知があるかチェック（重複防止）
@@ -111,12 +114,18 @@ async function generateDateReminders(supabase: any, userId: string) {
 
         if (!existing) {
           // 通知を作成
-          await supabase.from("notifications").insert([{
-            user_id: userId,
-            project_id: project.id,
-            title,
-            content
-          }]);
+          await supabase.from("notifications").insert([
+            {
+              user_id: userId,
+              project_id: project.id,
+              title,
+              content,
+            },
+          ]);
+
+          // Web Push 送信
+          const { sendNotification } = await import("./webpush");
+          await sendNotification(userId, title, content, "/");
         }
       }
     }

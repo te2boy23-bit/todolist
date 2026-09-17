@@ -85,9 +85,9 @@ export default async function DashboardPage() {
         {isPassbook && (
           <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl shadow-lg p-8 text-white relative overflow-hidden">
             <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-            <h1 className="text-2xl font-bold mb-2 relative z-10">個人通帳</h1>
+            <h1 className="text-2xl font-bold mb-2 relative z-10">収入管理</h1>
             <p className="text-slate-400 text-sm mb-6 relative z-10">
-              記録した収入と出費、貯金のみを管理します。
+              給与などの収入を記録します。
             </p>
             <div className="flex items-baseline gap-2 relative z-10">
               <span className="text-4xl font-bold">

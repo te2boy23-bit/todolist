@@ -37,19 +37,27 @@ export async function addMessage(text: string) {
   }
 
   // 相手に通知を送る
-  const targetUserId = project.owner_id === profile.id ? project.partner_id : project.owner_id;
-  
+  const targetUserId =
+    project.owner_id === profile.id ? project.partner_id : project.owner_id;
+
   if (targetUserId) {
-    // 相手の名前を取得する（簡易的に "パートナー" として送るか、現在の名前を使う）
+    // 相手の名前を取得する
     const senderName = profile.display_name || "パートナー";
+    const title = "新しいメッセージ";
+    const content = `${senderName}さんから「${project.name}」に新しいメッセージが届きました。`;
+
     await supabase.from("notifications").insert([
       {
         user_id: targetUserId,
         project_id: project.id,
-        title: "新しいメッセージ",
-        content: `${senderName}さんから「${project.name}」に新しいメッセージが届きました。`,
-      }
+        title,
+        content,
+      },
     ]);
+
+    // Web Push 送信
+    const { sendNotification } = await import("./webpush");
+    await sendNotification(targetUserId, title, content, "/");
   }
 
   return { success: true };

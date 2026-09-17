@@ -20,6 +20,7 @@ import { useTransition } from "react";
 import { ShareProjectModal } from "@/components/projects/ShareProjectModal";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { PushNotificationManager } from "@/components/notifications/PushNotificationManager";
 
 import Image from "next/image";
 
@@ -82,8 +83,9 @@ export function Navbar({
               ))}
             </select>
           )}
-          <div className="scale-90">
+          <div className="scale-90 flex items-center gap-2">
             <NotificationBell />
+            {profile && <PushNotificationManager userId={profile.id} />}
           </div>
           {profile && (
             <div className="scale-90">
@@ -94,133 +96,138 @@ export function Navbar({
       </div>
 
       {/* メインナビゲーション (PCでは上部、スマホでは下部フローティング) */}
-      <nav className="fixed bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-2xl sm:rounded-none sm:top-0 sm:bottom-auto sm:left-0 sm:right-0 sm:w-full sm:border-b sm:border-t-0 sm:border-x-0 z-50 shadow-lg sm:shadow-sm">
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 min-h-[4rem] py-2 flex items-center justify-between">
-          {/* 左側: リンク群 (PCの場合はロゴも含む) */}
-          <div className="flex items-center w-full sm:w-auto justify-around sm:justify-start sm:space-x-8">
-            {/* Logo (Desktop Only) */}
-            <Link href="/" className="hidden sm:flex items-center gap-2 mr-4">
-              <div className="w-8 h-8 rounded-lg overflow-hidden shadow-sm relative border border-gray-100">
-                <Image
-                  src="/logo.jpg"
-                  alt="Logo"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <span className="font-bold text-gray-800 text-sm tracking-tight">
-                Todo & Money
-              </span>
-            </Link>
-
-            {/* ナビゲーションタブ */}
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname.startsWith(item.path);
-
-              return (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  className={cn(
-                    "flex flex-col sm:flex-row items-center gap-1 sm:gap-2 p-2 sm:px-3 rounded-xl transition-all font-medium",
-                    isActive
-                      ? "text-blue-600 bg-blue-50/80 shadow-sm sm:shadow-none"
-                      : "text-gray-500 hover:text-gray-900 hover:bg-gray-50",
-                  )}
-                >
-                  <Icon
-                    className={cn(
-                      "w-6 h-6 sm:w-5 sm:h-5",
-                      isActive ? "text-blue-600" : "text-gray-400",
-                    )}
+      {pathname !== "/projects" && (
+        <nav className="fixed bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-2xl sm:rounded-none sm:top-0 sm:bottom-auto sm:left-0 sm:right-0 sm:w-full sm:border-b sm:border-t-0 sm:border-x-0 z-50 shadow-lg sm:shadow-sm">
+          <div className="max-w-6xl mx-auto px-2 sm:px-4 min-h-[4rem] py-2 flex items-center justify-between">
+            {/* 左側: リンク群 (PCの場合はロゴも含む) */}
+            <div className="flex items-center w-full sm:w-auto justify-around sm:justify-start sm:space-x-8">
+              {/* Logo (Desktop Only) */}
+              <Link href="/" className="hidden sm:flex items-center gap-2 mr-4">
+                <div className="w-8 h-8 rounded-lg overflow-hidden shadow-sm relative border border-gray-100">
+                  <Image
+                    src="/logo.jpg"
+                    alt="Logo"
+                    fill
+                    className="object-cover"
                   />
-                  <span className="text-[10px] sm:text-sm">{item.name}</span>
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* 右側: コントロール群 (PC用、スマホでは非表示または一部のみ) */}
-          <div className="hidden sm:flex items-center gap-3">
-            {/* Project Selector */}
-            {profile && projects.length > 0 && (
-              <div className="flex items-center gap-2">
-                <FolderKanban className="w-4 h-4 text-gray-400" />
-                <select
-                  disabled={isPending}
-                  value={currentProject?.id || ""}
-                  onChange={handleProjectChange}
-                  className="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block px-2 py-1.5 w-auto max-w-[150px] truncate"
-                >
-                  <option value="" disabled>
-                    プロジェクト選択
-                  </option>
-                  {projects.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-
-            {/* Share Button (Current Project) */}
-            {currentProject &&
-              !currentProject.invite_code?.startsWith("PRIVATE_") && (
-                <ShareProjectModal project={currentProject} />
-              )}
-
-            {/* Language Toggle */}
-            <button
-              onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
-              className="flex items-center gap-1 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors text-xs font-medium"
-              title="Toggle Language"
-            >
-              <Globe className="w-4 h-4" />
-              <span className="uppercase">{language}</span>
-            </button>
-
-            <div className="border-l border-gray-200 h-6 mx-1"></div>
-
-            {/* Notification Bell */}
-            <NotificationBell />
-
-            {/* Login / Profile */}
-            <div className="flex items-center">
-              {profile ? (
-                <div className="flex items-center gap-2">
-                  <PairingModal profile={profile} />
-                  <LoginButton />
                 </div>
-              ) : (
-                <LoginButton />
+                <span className="font-bold text-gray-800 text-sm tracking-tight">
+                  Todo & Money
+                </span>
+              </Link>
+
+              {/* ナビゲーションタブ */}
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname.startsWith(item.path);
+
+                return (
+                  <Link
+                    key={item.path}
+                    href={item.path}
+                    className={cn(
+                      "flex flex-col sm:flex-row items-center gap-1 sm:gap-2 p-2 sm:px-3 rounded-xl transition-all font-medium",
+                      isActive
+                        ? "text-blue-600 bg-blue-50/80 shadow-sm sm:shadow-none"
+                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-50",
+                    )}
+                  >
+                    <Icon
+                      className={cn(
+                        "w-6 h-6 sm:w-5 sm:h-5",
+                        isActive ? "text-blue-600" : "text-gray-400",
+                      )}
+                    />
+                    <span className="text-[10px] sm:text-sm">{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* 右側: コントロール群 (PC用、スマホでは非表示または一部のみ) */}
+            <div className="hidden sm:flex items-center gap-3">
+              {/* Project Selector */}
+              {profile && projects.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <FolderKanban className="w-4 h-4 text-gray-400" />
+                  <select
+                    disabled={isPending}
+                    value={currentProject?.id || ""}
+                    onChange={handleProjectChange}
+                    className="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block px-2 py-1.5 w-auto max-w-[150px] truncate"
+                  >
+                    <option value="" disabled>
+                      プロジェクト選択
+                    </option>
+                    {projects.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               )}
+
+              {/* Share Button (Current Project) */}
+              {currentProject &&
+                !currentProject.invite_code?.startsWith("PRIVATE_") && (
+                  <ShareProjectModal project={currentProject} />
+                )}
+
+              {/* Language Toggle */}
+              <button
+                onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
+                className="flex items-center gap-1 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors text-xs font-medium"
+                title="Toggle Language"
+              >
+                <Globe className="w-4 h-4" />
+                <span className="uppercase">{language}</span>
+              </button>
+
+              <div className="border-l border-gray-200 h-6 mx-1"></div>
+
+              {/* Notification Bell */}
+              <div className="flex items-center gap-2">
+                <NotificationBell />
+                {profile && <PushNotificationManager userId={profile.id} />}
+              </div>
+
+              {/* Login / Profile */}
+              <div className="flex items-center">
+                {profile ? (
+                  <div className="flex items-center gap-2">
+                    <PairingModal profile={profile} />
+                    <LoginButton />
+                  </div>
+                ) : (
+                  <LoginButton />
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* チャットドロワー */}
-        {currentProject &&
-          !currentProject.invite_code?.startsWith("PRIVATE_") &&
-          profile &&
-          pathname !== "/projects" && (
-            <ChatDrawer
-              projectId={currentProject.id}
-              currentUserId={profile.id}
-              myProfile={
-                currentProject.ownerProfile?.id === profile.id
-                  ? currentProject.ownerProfile
-                  : currentProject.partnerProfile
-              }
-              partnerProfile={
-                currentProject.ownerProfile?.id === profile.id
-                  ? currentProject.partnerProfile
-                  : currentProject.ownerProfile
-              }
-            />
-          )}
-      </nav>
+          {/* チャットドロワー */}
+          {currentProject &&
+            !currentProject.invite_code?.startsWith("PRIVATE_") &&
+            profile &&
+            pathname !== "/projects" && (
+              <ChatDrawer
+                projectId={currentProject.id}
+                currentUserId={profile.id}
+                myProfile={
+                  currentProject.ownerProfile?.id === profile.id
+                    ? currentProject.ownerProfile
+                    : currentProject.partnerProfile
+                }
+                partnerProfile={
+                  currentProject.ownerProfile?.id === profile.id
+                    ? currentProject.partnerProfile
+                    : currentProject.ownerProfile
+                }
+              />
+            )}
+        </nav>
+      )}
     </>
   );
 }

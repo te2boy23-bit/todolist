@@ -43,7 +43,43 @@ export async function getMyTotalAssets(profileId: string, projects: any[]) {
     }
   }
 
-  const balance = totalDeposit + totalIncome - totalExpense;
+  // プロジェクトへの貯金（deposit）は手持ちから引かれる
+  const balance = totalIncome - totalDeposit - totalExpense;
 
   return { totalDeposit, totalExpense, totalIncome, balance };
+}
+
+export async function getAllTransactions(profileId: string, projects: any[]) {
+  if (!projects || projects.length === 0) return [];
+
+  const supabase = await createClient();
+  const projectIds = projects.map((p) => p.id);
+
+  const { data: transactions, error } = await supabase
+    .from("transactions")
+    .select("*, projects(name)")
+    .in("project_id", projectIds)
+    .order("transaction_date", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (error || !transactions) {
+    return [];
+  }
+
+  const validTransactions = transactions.filter((trx) => {
+    if (trx.memo && trx.memo.includes('"isMessage":true')) return false;
+    if (trx.memo && trx.memo.includes('"isNote":true')) return false;
+    if (trx.memo && trx.memo.includes('"isProfile":true')) return false;
+    if (trx.transaction_date === "2099-12-31") return false;
+
+    const project = projects.find((p) => p.id === trx.project_id);
+    if (!project) return false;
+
+    const amIOwner = project.owner_id === profileId;
+    return (
+      (amIOwner && trx.payer === "me") || (!amIOwner && trx.payer === "partner")
+    );
+  });
+
+  return validTransactions;
 }

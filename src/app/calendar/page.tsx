@@ -88,7 +88,7 @@ export default async function CalendarPage() {
         {isPassbook && (
           <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl shadow-lg p-6 text-white relative overflow-hidden flex items-center justify-between">
             <h1 className="text-xl font-bold relative z-10">
-              個人通帳 - カレンダー
+              収入管理 - カレンダー
             </h1>
             <div className="text-sm text-slate-400 relative z-10">
               月別の記録
