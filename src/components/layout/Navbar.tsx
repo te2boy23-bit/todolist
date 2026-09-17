@@ -137,7 +137,7 @@ export function Navbar({
       </div>
 
       {/* チャットドロワー */}
-      {currentProject && profile && (
+      {currentProject && profile && pathname !== "/projects" && (
         <ChatDrawer
           projectId={currentProject.id}
           currentUserId={profile.id}

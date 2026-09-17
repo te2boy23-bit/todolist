@@ -124,7 +124,9 @@ export function TransactionHistory({
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-gray-500">
-                <span className={`flex items-center gap-1 font-medium ${trx.payer === "me" ? "text-blue-500" : "text-pink-500"}`}>
+                <span
+                  className={`flex items-center gap-1 font-medium ${trx.payer === "me" ? "text-blue-500" : "text-pink-500"}`}
+                >
                   <User className="w-3 h-3" />
                   {trx.payer === "me" ? myName : partnerName}
                 </span>

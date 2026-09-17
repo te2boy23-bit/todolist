@@ -303,7 +303,9 @@ export function CalendarView({
                               {trx.memo}
                             </span>
                           </div>
-                          <div className={`flex items-center gap-1 text-xs font-medium ${trx.payer === "me" ? "text-blue-500" : "text-pink-500"}`}>
+                          <div
+                            className={`flex items-center gap-1 text-xs font-medium ${trx.payer === "me" ? "text-blue-500" : "text-pink-500"}`}
+                          >
                             <User className="w-3 h-3" />
                             {trx.payer === "me" ? myName : partnerName}
                           </div>
