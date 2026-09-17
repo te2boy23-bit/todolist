@@ -60,7 +60,7 @@ export function NotificationBell() {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           ></div>
-          <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-sm sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="fixed sm:absolute top-14 sm:top-auto sm:mt-2 left-1/2 sm:left-auto sm:right-0 -translate-x-1/2 sm:translate-x-0 w-[calc(100vw-2rem)] max-w-sm sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-4 border-b border-gray-50 bg-gray-50/50">
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-gray-900 text-sm">お知らせ</h3>
