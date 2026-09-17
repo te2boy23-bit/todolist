@@ -55,10 +55,10 @@ export function LoginButton({
         onClick={handleLogout}
         className={
           className ||
-          "flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+          "flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors whitespace-nowrap shrink-0"
         }
       >
-        <LogOut className={`w-${iconSize} h-${iconSize}`} />
+        <LogOut className={`w-${iconSize} h-${iconSize} shrink-0`} />
         ログアウト
       </button>
     );
@@ -69,10 +69,10 @@ export function LoginButton({
       onClick={handleLogin}
       className={
         className ||
-        "flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md transition-colors"
+        "flex items-center gap-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-3 py-2 rounded-md transition-colors whitespace-nowrap shrink-0"
       }
     >
-      <LogIn className={`w-${iconSize} h-${iconSize}`} />
+      <LogIn className={`w-${iconSize} h-${iconSize} shrink-0`} />
       {text || "Googleでログイン"}
     </button>
   );

@@ -98,15 +98,18 @@ export function Navbar({
       {/* メインナビゲーション (PCでは上部、スマホでは下部フローティング) */}
       <nav
         className={cn(
-          "fixed bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-2xl sm:rounded-none sm:top-0 sm:bottom-auto sm:left-0 sm:right-0 sm:w-full sm:border-b sm:border-t-0 sm:border-x-0 z-50 shadow-lg sm:shadow-sm",
+          "fixed bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-2xl sm:rounded-none sm:top-0 sm:bottom-auto sm:left-0 sm:right-0 sm:w-full sm:border-b sm:border-t-0 sm:border-x-0 z-50 shadow-lg sm:shadow-sm overflow-x-auto",
           pathname === "/projects" && "hidden sm:block",
         )}
       >
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 min-h-[4rem] py-2 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-2 sm:px-4 min-h-[4rem] py-2 flex items-center justify-between min-w-max sm:min-w-0">
           {/* 左側: リンク群 (PCの場合はロゴも含む) */}
           <div className="flex items-center w-full sm:w-auto justify-around sm:justify-start sm:space-x-8">
             {/* Logo (Desktop Only) */}
-            <Link href="/" className="hidden sm:flex items-center gap-2 mr-4">
+            <Link
+              href="/"
+              className="hidden sm:flex items-center gap-2 mr-4 shrink-0"
+            >
               <div className="w-8 h-8 rounded-lg overflow-hidden shadow-sm relative border border-gray-100">
                 <Image
                   src="/logo.jpg"
@@ -115,7 +118,7 @@ export function Navbar({
                   className="object-cover"
                 />
               </div>
-              <span className="font-bold text-gray-800 text-sm tracking-tight">
+              <span className="font-bold text-gray-800 text-sm tracking-tight whitespace-nowrap">
                 Todo & Money
               </span>
             </Link>
@@ -131,7 +134,7 @@ export function Navbar({
                     key={item.path}
                     href={item.path}
                     className={cn(
-                      "flex flex-col sm:flex-row items-center gap-1 sm:gap-2 p-2 sm:px-3 rounded-xl transition-all font-medium",
+                      "flex flex-col sm:flex-row items-center gap-1 sm:gap-2 p-2 sm:px-3 rounded-xl transition-all font-medium shrink-0",
                       isActive
                         ? "text-blue-600 bg-blue-50/80 shadow-sm sm:shadow-none"
                         : "text-gray-500 hover:text-gray-900 hover:bg-gray-50",
@@ -139,11 +142,13 @@ export function Navbar({
                   >
                     <Icon
                       className={cn(
-                        "w-6 h-6 sm:w-5 sm:h-5",
+                        "w-6 h-6 sm:w-5 sm:h-5 shrink-0",
                         isActive ? "text-blue-600" : "text-gray-400",
                       )}
                     />
-                    <span className="text-[10px] sm:text-sm">{item.name}</span>
+                    <span className="text-[10px] sm:text-sm whitespace-nowrap">
+                      {item.name}
+                    </span>
                   </Link>
                 );
               })}
