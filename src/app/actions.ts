@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { getCurrentProjectId } from "@/app/actions/project";
+import { getProfile } from "@/app/actions/profile";
 
 export async function addTransaction(data: {
   type: "income" | "deposit" | "expense";
