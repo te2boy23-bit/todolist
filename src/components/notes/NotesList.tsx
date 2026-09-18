@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Plus, Trash2, Calendar, FileText } from "lucide-react";
-import { addNote, deleteNote } from "@/app/actions/note";
 import { Plus, Trash2, Calendar, FileText, Pencil } from "lucide-react";
 import { addNote, deleteNote, updateNote } from "@/app/actions/note";
 import { format } from "date-fns";
@@ -143,25 +141,6 @@ export function NotesList({
             key={note.id}
             className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 group"
           >
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-bold text-gray-900">{note.title}</h3>
-              {currentUserId === note.userId && (
-                <button
-                  onClick={() => handleDelete(note.id)}
-                  disabled={isPending}
-                  className="text-gray-400 hover:text-red-500 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-            <p className="text-gray-600 text-sm whitespace-pre-wrap mb-4">
-              {note.text}
-            </p>
-            <div className="flex items-center gap-1 text-xs text-gray-400">
-              <Calendar className="w-3 h-3" />
-              {format(new Date(note.timestamp), "yyyy/MM/dd HH:mm")}
-            </div>
             {editingNoteId === note.id ? (
               // 編集モード
               <div>
@@ -188,7 +167,9 @@ export function NotesList({
                   </button>
                   <button
                     onClick={handleUpdateNote}
-                    disabled={isPending || !editTitle.trim() || !editText.trim()}
+                    disabled={
+                      isPending || !editTitle.trim() || !editText.trim()
+                    }
                     className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50"
                   >
                     保存する
