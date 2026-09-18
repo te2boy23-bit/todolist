@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { Plus, Trash2, Calendar, FileText } from "lucide-react";
 import { addNote, deleteNote } from "@/app/actions/note";
+import { Plus, Trash2, Calendar, FileText, Pencil } from "lucide-react";
+import { addNote, deleteNote, updateNote } from "@/app/actions/note";
 import { format } from "date-fns";
 
 interface Note {
@@ -24,6 +26,11 @@ export function NotesList({
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
+
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editText, setEditText] = useState("");
+
   const [isPending, startTransition] = useTransition();
 
   const handleAddNote = () => {
@@ -38,6 +45,26 @@ export function NotesList({
       } catch (error) {
         console.error("Failed to add note:", error);
         alert("メモの追加に失敗しました。");
+      }
+    });
+  };
+
+  const handleEditNote = (note: Note) => {
+    setEditingNoteId(note.id);
+    setEditTitle(note.title);
+    setEditText(note.text);
+  };
+
+  const handleUpdateNote = () => {
+    if (!editingNoteId || !editTitle.trim() || !editText.trim()) return;
+
+    startTransition(async () => {
+      try {
+        await updateNote(editingNoteId, editTitle, editText);
+        setEditingNoteId(null);
+      } catch (error) {
+        console.error("Failed to update note:", error);
+        alert("メモの更新に失敗しました。");
       }
     });
   };
@@ -135,6 +162,72 @@ export function NotesList({
               <Calendar className="w-3 h-3" />
               {format(new Date(note.timestamp), "yyyy/MM/dd HH:mm")}
             </div>
+            {editingNoteId === note.id ? (
+              // 編集モード
+              <div>
+                <input
+                  type="text"
+                  placeholder="タイトル"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full mb-2 px-3 py-1.5 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-bold"
+                />
+                <textarea
+                  placeholder="メモの内容"
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  rows={4}
+                  className="w-full mb-3 px-3 py-1.5 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-y text-sm"
+                />
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => setEditingNoteId(null)}
+                    className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 font-medium"
+                  >
+                    キャンセル
+                  </button>
+                  <button
+                    onClick={handleUpdateNote}
+                    disabled={isPending || !editTitle.trim() || !editText.trim()}
+                    className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    保存する
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // 表示モード
+              <>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-bold text-gray-900">{note.title}</h3>
+                  {currentUserId === note.userId && (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEditNote(note)}
+                        disabled={isPending}
+                        className="text-gray-400 hover:text-blue-500 transition-colors"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(note.id)}
+                        disabled={isPending}
+                        className="text-gray-400 hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <p className="text-gray-600 text-sm whitespace-pre-wrap mb-4">
+                  {note.text}
+                </p>
+                <div className="flex items-center gap-1 text-xs text-gray-400">
+                  <Calendar className="w-3 h-3" />
+                  {format(new Date(note.timestamp), "yyyy/MM/dd HH:mm")}
+                </div>
+              </>
+            )}
           </div>
         ))}
       </div>
