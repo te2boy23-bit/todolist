@@ -66,10 +66,16 @@ export async function sendNotification(
   url: string = "/",
 ) {
   initWebPush();
-  const supabase = await createClient();
+  // RLSをバイパスして相手のサブスクリプションを取得するために、Service Role Keyを使用する
+  const { createClient: createSupabaseClient } =
+    await import("@supabase/supabase-js");
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
 
   // ユーザーのサブスクリプションを取得
-  const { data: subs, error } = await supabase
+  const { data: subs, error } = await supabaseAdmin
     .from("push_subscriptions")
     .select("subscription")
     .eq("user_id", userId);
@@ -95,7 +101,7 @@ export async function sendNotification(
       console.error("Error sending push notification:", error);
       // GONE (410) の場合はサブスクリプションが無効なので削除するなどの処理が可能
       if (error.statusCode === 410) {
-        await supabase
+        await supabaseAdmin
           .from("push_subscriptions")
           .delete()
           .eq("subscription", sub.subscription);
