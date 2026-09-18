@@ -9,6 +9,7 @@ import {
   Globe,
   FolderKanban,
   FileText,
+  Coffee,
 } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
@@ -85,6 +86,16 @@ export function Navbar({
               ))}
             </select>
           )}
+
+          <a
+            href="https://buymeacoffee.com/tepeee"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-yellow-500 hover:text-yellow-600 bg-yellow-50 hover:bg-yellow-100 p-1.5 rounded-lg transition-colors"
+            title="Buy Me a Coffee"
+          >
+            <Coffee className="w-4 h-4" />
+          </a>
 
           <button
             onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
@@ -202,6 +213,18 @@ export function Navbar({
               !currentProject.invite_code?.startsWith("PRIVATE_") && (
                 <ShareProjectModal project={currentProject} />
               )}
+
+            {/* Buy Me a Coffee */}
+            <a
+              href="https://buymeacoffee.com/tepeee"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-yellow-600 hover:text-yellow-700 bg-yellow-50 hover:bg-yellow-100 px-3 py-1.5 rounded-lg transition-colors text-xs font-bold shadow-sm border border-yellow-200"
+              title="Buy Me a Coffee"
+            >
+              <Coffee className="w-4 h-4" />
+              <span>支援</span>
+            </a>
 
             {/* Language Toggle */}
             <button

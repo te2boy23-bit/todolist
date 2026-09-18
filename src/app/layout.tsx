@@ -83,19 +83,6 @@ export default async function RootLayout({
             currentProject={currentProject}
           />
           <main className="flex-1 w-full">{children}</main>
-
-          {/* 全ページの下部に表示されるフッター */}
-          <footer className="w-full py-8 pb-32 sm:pb-8 flex justify-center items-center">
-            <a
-              href="https://buymeacoffee.com/tepeee"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 hover:scale-105 transition-transform bg-[#FFDD00] text-black px-4 py-2 rounded-full font-bold shadow-sm"
-            >
-              <span className="text-xl">☕</span>
-              開発者を支援する (Buy Me a Coffee)
-            </a>
-          </footer>
         </LanguageProvider>
       </body>
     </html>
