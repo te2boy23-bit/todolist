@@ -82,13 +82,28 @@ export function PushNotificationManager({
     setLoading(true);
     try {
       if (subscription) {
-        await subscription.unsubscribe();
-        setSubscription(null);
-        setMessage("プッシュ通知をオフにしました");
-        setTimeout(() => setMessage(""), 3000);
+        // ブラウザ側での購読解除 (PWAでない場合などでエラーになっても無視する)
+        try {
+          await subscription.unsubscribe();
+        } catch (e) {
+          console.warn(
+            "Browser unsubscription failed, but proceeding to remove from DB",
+            e,
+          );
+        }
       }
+
+      // サーバー側のサブスクリプションを削除
+      const { unsubscribeUser } = await import("@/app/actions/webpush");
+      await unsubscribeUser(userId);
+
+      setSubscription(null);
+      setMessage("プッシュ通知をオフにしました");
+      setTimeout(() => setMessage(""), 3000);
     } catch (error) {
       console.error("Push unsubscription error:", error);
+      // エラーが起きてもUI上はオフ状態にする
+      setSubscription(null);
     }
     setLoading(false);
   }

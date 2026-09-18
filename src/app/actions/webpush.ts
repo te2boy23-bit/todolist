@@ -35,6 +35,23 @@ export async function subscribeUser(sub: PushSubscription, userId: string) {
   return { success: true };
 }
 
+export async function unsubscribeUser(userId: string) {
+  const supabase = await createClient();
+
+  // サブスクリプションをDBから削除
+  const { error } = await supabase
+    .from("push_subscriptions")
+    .delete()
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error("Error deleting subscription:", error);
+    return { success: false, error: error.message };
+  }
+
+  return { success: true };
+}
+
 export async function sendNotification(
   userId: string,
   title: string,
