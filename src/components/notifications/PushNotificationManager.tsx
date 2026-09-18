@@ -93,9 +93,9 @@ export function PushNotificationManager({
         }
       }
 
-      // サーバー側のサブスクリプションを削除
+      // サーバー側のサブスクリプションを削除 (この端末のみ)
       const { unsubscribeUser } = await import("@/app/actions/webpush");
-      await unsubscribeUser(userId);
+      await unsubscribeUser(userId, subscription as PushSubscription);
 
       setSubscription(null);
       setMessage("プッシュ通知をオフにしました");

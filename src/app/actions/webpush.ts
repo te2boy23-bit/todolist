@@ -35,14 +35,21 @@ export async function subscribeUser(sub: PushSubscription, userId: string) {
   return { success: true };
 }
 
-export async function unsubscribeUser(userId: string) {
+export async function unsubscribeUser(userId: string, sub?: PushSubscription) {
   const supabase = await createClient();
 
   // サブスクリプションをDBから削除
-  const { error } = await supabase
+  let query = supabase
     .from("push_subscriptions")
     .delete()
     .eq("user_id", userId);
+
+  // もし特定の端末のサブスクリプション情報があれば、それだけを削除
+  if (sub) {
+    query = query.eq("subscription->>endpoint", sub.endpoint);
+  }
+
+  const { error } = await query;
 
   if (error) {
     console.error("Error deleting subscription:", error);
