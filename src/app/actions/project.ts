@@ -41,34 +41,47 @@ export async function getProjects() {
   const hasPassbook = data.some(
     (p) => p.invite_code === privateInviteCode && p.owner_id === profile.id,
   );
-  // 重複排除 (同じ id のものは排除。また、マイ通帳が複数ある場合は1つだけ残す)
+  // 「マイ通帳 (個人用)」という名前のプロジェクトを全て抽出
+  const allPassbooks = data.filter(
+    (p) => p.name === "マイ通帳 (個人用)" && p.owner_id === profile.id,
+  );
+
+  // 作成日時が一番古いもの（ユーザーが最初から使っていたもの）を「本物のマイ通帳」とする
+  let realPassbook = null;
+  if (allPassbooks.length > 0) {
+    // data は降順なので、一番最後が一番古い
+    realPassbook = allPassbooks[allPassbooks.length - 1];
+  }
+
+  // 重複排除とリスト作成
   const uniqueProjects = [];
-  let foundPassbook = false;
 
   for (const p of data) {
-    // invite_code が一致する本物のマイ通帳、または名前が「マイ通帳 (個人用)」の古いデータ
-    if (
-      (p.invite_code === privateInviteCode && p.owner_id === profile.id) ||
-      p.name === "マイ通帳 (個人用)"
-    ) {
-      if (!foundPassbook) {
-        // 名前が一致していて invite_code が PRIVATE_ ではない場合でも、
-        // 最初の1つだけを「本物のマイ通帳」として扱うようにフラグを立てるが、
-        // 厳密には privateInviteCode を持っているものだけを本物としたい。
-        // ここでは、もし privateInviteCode を持っているならそれを採用する。
-        // もし持ってなくて名前だけ一致しているものは、バグでできたゴミデータなので除外する。
-        if (p.invite_code === privateInviteCode) {
-          uniqueProjects.push(p);
-          foundPassbook = true;
-        } else {
-          // 古い・またはバグでできたダミーのマイ通帳は完全に無視する（リストに入れない）
-          continue;
-        }
+    if (p.name === "マイ通帳 (個人用)") {
+      // 本物のマイ通帳だけをリストに加える
+      if (realPassbook && p.id === realPassbook.id) {
+        uniqueProjects.push(p);
+      } else {
+        // それ以外のダミーのマイ通帳は完全に無視する
+        continue;
       }
     } else {
       uniqueProjects.push(p);
     }
   }
+
+  // もし本物のマイ通帳の invite_code が privateInviteCode ではない場合、
+  // 他の判定でエラーにならないように、バックグラウンドで invite_code を修正しておく
+  if (realPassbook && realPassbook.invite_code !== privateInviteCode) {
+    realPassbook.invite_code = privateInviteCode;
+    supabase
+      .from("projects")
+      .update({ invite_code: privateInviteCode })
+      .eq("id", realPassbook.id)
+      .then(() => console.log("Fixed invite_code for passbook"));
+  }
+
+  let foundPassbook = !!realPassbook;
 
   if (!foundPassbook) {
     // なければ作成
