@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useTransition, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { updateProfile } from "@/app/actions/profile";
 import { User, Check, X } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import Cropper from "react-easy-crop";
 import { getCroppedImg } from "@/lib/cropImage";
+import { LoginButton } from "@/components/auth/LoginButton";
 
 type Profile = {
   id: string;
@@ -142,103 +144,111 @@ export function PairingModal({ profile }: PairingModalProps) {
   return (
     <>
       {/* メインのプロフィール設定モーダル */}
-      {isOpen && !imageSrc && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-              <h2 className="text-lg font-bold text-gray-800">
-                {t("profile.settings")}
-              </h2>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-gray-600 p-1"
-              >
-                ✕
-              </button>
-            </div>
+      {isOpen &&
+        !imageSrc &&
+        createPortal(
+          <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+              <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h2 className="text-lg font-bold text-gray-800">
+                  {t("profile.settings")}
+                </h2>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 p-1"
+                >
+                  ✕
+                </button>
+              </div>
 
-            <div className="p-6">
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                  <div className="relative group flex-shrink-0">
-                    <div className="w-20 h-20 sm:w-16 sm:h-16 rounded-full bg-gray-100 border-2 border-gray-200 flex items-center justify-center overflow-hidden">
-                      {avatarUrl ? (
-                        <img
-                          src={avatarUrl}
-                          alt="Avatar"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <User className="w-8 h-8 text-gray-400" />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex-1 space-y-4 w-full">
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1">
-                        {t("profile.displayName")}
-                      </label>
-                      <input
-                        type="text"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder={t("profile.namePlaceholder")}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs text-gray-500 mb-1">
-                        {t("profile.avatar")}
-                      </label>
-
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          ref={fileInputRef}
-                          className="hidden"
-                          onChange={handleFileChange}
-                        />
-                        <button
-                          type="button"
-                          disabled={isPending}
-                          onClick={() => fileInputRef.current?.click()}
-                          className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md text-xs font-medium transition-colors disabled:opacity-50"
-                        >
-                          {t("profile.chooseFile")}
-                        </button>
-                        <span className="text-xs text-gray-500 truncate max-w-[120px]">
-                          {fileName || t("profile.noFileChosen")}
-                        </span>
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                    <div className="relative group flex-shrink-0">
+                      <div className="w-20 h-20 sm:w-16 sm:h-16 rounded-full bg-gray-100 border-2 border-gray-200 flex items-center justify-center overflow-hidden">
+                        {avatarUrl ? (
+                          <img
+                            src={avatarUrl}
+                            alt="Avatar"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-8 h-8 text-gray-400" />
+                        )}
                       </div>
                     </div>
-                    <button
-                      onClick={handleSaveProfile}
-                      disabled={isPending}
-                      className="w-full sm:w-auto text-sm bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 mt-2 block"
-                    >
-                      {t("profile.save")}
-                    </button>
+
+                    <div className="flex-1 space-y-4 w-full">
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">
+                          {t("profile.displayName")}
+                        </label>
+                        <input
+                          type="text"
+                          value={displayName}
+                          onChange={(e) => setDisplayName(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder={t("profile.namePlaceholder")}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-500 mb-1">
+                          {t("profile.avatar")}
+                        </label>
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            ref={fileInputRef}
+                            className="hidden"
+                            onChange={handleFileChange}
+                          />
+                          <button
+                            type="button"
+                            disabled={isPending}
+                            onClick={() => fileInputRef.current?.click()}
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md text-xs font-medium transition-colors disabled:opacity-50"
+                          >
+                            {t("profile.chooseFile")}
+                          </button>
+                          <span className="text-xs text-gray-500 truncate max-w-[120px]">
+                            {fileName || t("profile.noFileChosen")}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={handleSaveProfile}
+                        disabled={isPending}
+                        className="w-full sm:w-auto text-sm bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 mt-2 block"
+                      >
+                        {t("profile.save")}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Messages */}
-              <div className="mt-4">
-                {error && (
-                  <p className="text-sm text-red-500 text-center">{error}</p>
-                )}
-                {success && (
-                  <p className="text-sm text-emerald-500 text-center">
-                    {success}
-                  </p>
-                )}
+                {/* Messages */}
+                <div className="mt-4">
+                  {error && (
+                    <p className="text-sm text-red-500 text-center">{error}</p>
+                  )}
+                  {success && (
+                    <p className="text-sm text-emerald-500 text-center">
+                      {success}
+                    </p>
+                  )}
+                </div>
+
+                {/* ログアウトボタン */}
+                <div className="mt-6 pt-6 border-t border-gray-100 flex justify-end">
+                  <LoginButton />
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )}
 
       {/* クロップ用モーダル */}
       {imageSrc && (

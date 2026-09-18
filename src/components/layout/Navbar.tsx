@@ -111,14 +111,7 @@ export function Navbar({
             {profile && <PushNotificationManager userId={profile.id} />}
           </div>
           <div className="scale-90 flex items-center gap-2">
-            {profile ? (
-              <>
-                <PairingModal profile={profile} />
-                <LoginButton />
-              </>
-            ) : (
-              <LoginButton />
-            )}
+            {profile ? <PairingModal profile={profile} /> : <LoginButton />}
           </div>
         </div>
       </div>
@@ -246,14 +239,7 @@ export function Navbar({
 
             {/* Login / Profile */}
             <div className="flex items-center">
-              {profile ? (
-                <div className="flex items-center gap-2">
-                  <PairingModal profile={profile} />
-                  <LoginButton />
-                </div>
-              ) : (
-                <LoginButton />
-              )}
+              {profile ? <PairingModal profile={profile} /> : <LoginButton />}
             </div>
           </div>
         </div>
