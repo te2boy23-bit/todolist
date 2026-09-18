@@ -34,6 +34,7 @@ export const dictionaries = {
       leave: "退出する",
       select: "プロジェクト選択",
       share: "共有",
+      passbookName: "マイ通帳 (個人用)",
     },
     dashboard: {
       title: "目標 貯金トラッカー",
@@ -58,6 +59,7 @@ export const dictionaries = {
       amountPlaceholder: "金額 (例: 50000)",
       memoPlaceholder: "メモ (任意)",
       submit: "記録する",
+      recordIncome: "収入を記録",
     },
     calendar: {
       title: "入出金カレンダー",
@@ -226,7 +228,8 @@ export const dictionaries = {
     },
     passbook: {
       title: "Income Management",
-      description: "Record your salary and other incomes. This is private and not shared.",
+      description:
+        "Record your salary and other incomes. This is private and not shared.",
       income: "Income",
     },
   },
