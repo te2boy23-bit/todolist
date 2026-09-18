@@ -21,7 +21,6 @@ export function NotesList({
   initialNotes: Note[];
   currentUserId: string | undefined;
 }) {
-  const [notes, setNotes] = useState<Note[]>(initialNotes);
   const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
@@ -31,13 +30,6 @@ export function NotesList({
     if (!title.trim() || !text.trim()) return;
 
     startTransition(async () => {
-      await addNote(title, text);
-      setIsAdding(false);
-      setTitle("");
-      setText("");
-      // 注: サーバーアクション内でrevalidatePathしているため、画面が更新されますが、
-      // クライアント側でもオプティミスティックに更新できればなお良し。今回はリロードに任せます。
-      window.location.reload();
       try {
         await addNote(title, text);
         setIsAdding(false);
@@ -54,8 +46,6 @@ export function NotesList({
     if (!confirm("本当に削除しますか？")) return;
 
     startTransition(async () => {
-      await deleteNote(id);
-      window.location.reload();
       try {
         await deleteNote(id);
       } catch (error) {
