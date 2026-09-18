@@ -16,6 +16,8 @@ interface ChatDrawerProps {
   partnerProfile?: { name: string; avatar_url: string | null };
 }
 
+import { useSearchParams } from "next/navigation";
+
 export function ChatDrawer({
   projectId,
   currentUserId,
@@ -23,6 +25,14 @@ export function ChatDrawer({
   partnerProfile,
 }: ChatDrawerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("chat") === "open") {
+      setIsOpen(true);
+      // 自動で開いたらURLからパラメータを消してリロードをきれいにする方法もあるが、今回は開くだけ
+    }
+  }, [searchParams]);
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);

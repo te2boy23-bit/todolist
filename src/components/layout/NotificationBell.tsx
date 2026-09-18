@@ -159,10 +159,10 @@ export function NotificationBell() {
                               stopPropagation: () => {},
                             } as any);
                           }
-                          
+
                           // 遷移処理を追加
                           if (n.title.includes("メッセージ")) {
-                            router.push("/");
+                            router.push("/dashboard?chat=open");
                           } else if (n.title.includes("メモ")) {
                             router.push("/notes");
                           } else if (n.title.includes("Todo")) {
