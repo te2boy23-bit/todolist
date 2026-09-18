@@ -74,6 +74,13 @@ export default async function DashboardPage() {
         (t) => t.transaction_date && t.transaction_date <= todayStr,
       );
 
+      const scheduledTransactions = validTransactions.filter(
+        (t) =>
+          t.transaction_date &&
+          t.transaction_date > todayStr &&
+          t.transaction_date !== "2099-12-31",
+      );
+
       myContribution = currentTransactions
         .filter((t) => t.type === "deposit" && t.payer === "me")
         .reduce((sum, t) => sum + t.amount, 0);
@@ -81,6 +88,21 @@ export default async function DashboardPage() {
       partnerContribution = currentTransactions
         .filter((t) => t.type === "deposit" && t.payer === "partner")
         .reduce((sum, t) => sum + t.amount, 0);
+
+      const scheduledExpenseAmount = scheduledTransactions
+        .filter((t) => t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const scheduledDepositAmount = scheduledTransactions
+        .filter((t) => t.type === "deposit")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      // 一時的にグローバルオブジェクトなどに渡すか、コンポーネントのPropsに渡す
+      // ここでは変数として持っておく
+      Object.assign(project, {
+        scheduledExpense: scheduledExpenseAmount,
+        scheduledDeposit: scheduledDepositAmount,
+      });
     }
   } catch (error) {
     console.error("Supabase fetch error:", error);
@@ -108,6 +130,30 @@ export default async function DashboardPage() {
               </span>
               <span className="text-slate-400">円</span>
             </div>
+            {(project.scheduledExpense > 0 || project.scheduledDeposit > 0) && (
+              <div className="mt-4 pt-4 border-t border-white/20 relative z-10 grid grid-cols-2 gap-4">
+                {project.scheduledDeposit > 0 && (
+                  <div>
+                    <div className="text-xs text-slate-400 mb-1">
+                      今後の収入予定
+                    </div>
+                    <div className="text-emerald-400 font-semibold">
+                      +{project.scheduledDeposit.toLocaleString()}円
+                    </div>
+                  </div>
+                )}
+                {project.scheduledExpense > 0 && (
+                  <div>
+                    <div className="text-xs text-slate-400 mb-1">
+                      今後の支出予定
+                    </div>
+                    <div className="text-amber-400 font-semibold">
+                      -{project.scheduledExpense.toLocaleString()}円
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

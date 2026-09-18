@@ -19,6 +19,7 @@ export async function addMessage(text: string) {
     text,
     userId: profile.id,
     timestamp: new Date().toISOString(),
+    isRead: false,
   };
 
   const { error } = await supabase.from("transactions").insert([
@@ -92,6 +93,7 @@ export async function getMessages() {
             userId: pd.userId,
             timestamp: pd.timestamp,
             created_at: tx.created_at,
+            isRead: pd.isRead || false,
           };
         }
       } catch (e) {
@@ -102,4 +104,55 @@ export async function getMessages() {
     .filter(Boolean);
 
   return messages;
+}
+
+export async function markMessagesAsRead() {
+  const supabase = await createClient();
+  const profile = await getProfile();
+  const project = await getCurrentProject();
+
+  if (!profile || !project) return { success: false };
+
+  // 相手からの未読メッセージを検索して更新する
+  // 相手の payer は、自分が owner なら "partner"、自分が partner なら "me"
+  const partnerPayer = project.owner_id === profile.id ? "partner" : "me";
+
+  const { data: unreadTx } = await supabase
+    .from("transactions")
+    .select("*")
+    .eq("project_id", project.id)
+    .eq("payer", partnerPayer);
+
+  if (unreadTx && unreadTx.length > 0) {
+    const toUpdate = [];
+    for (const tx of unreadTx) {
+      try {
+        if (
+          tx.memo &&
+          tx.memo.includes('"isMessage":true') &&
+          !tx.memo.includes('"isRead":true')
+        ) {
+          const pd = JSON.parse(tx.memo);
+          pd.isRead = true;
+          toUpdate.push({
+            id: tx.id,
+            memo: JSON.stringify(pd),
+          });
+        }
+      } catch (e) {}
+    }
+
+    if (toUpdate.length > 0) {
+      // バルクアップデートはループか Promise.all で行う
+      await Promise.all(
+        toUpdate.map((tx) =>
+          supabase
+            .from("transactions")
+            .update({ memo: tx.memo })
+            .eq("id", tx.id),
+        ),
+      );
+    }
+  }
+  return { success: true };
 }

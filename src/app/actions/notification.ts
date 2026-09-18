@@ -129,6 +129,65 @@ async function generateDateReminders(supabase: any, userId: string) {
         }
       }
     }
+
+    // --- Todoの期日通知を追加 ---
+    const projectIds = projects.map((p: any) => p.id);
+    if (projectIds.length > 0) {
+      const { data: todos } = await supabase
+        .from("todos")
+        .select("*, project:projects(name)")
+        .in("project_id", projectIds)
+        .eq("is_completed", false)
+        .not("due_date", "is", null);
+
+      if (todos) {
+        for (const todo of todos) {
+          const dueDate = new Date(todo.due_date);
+          const diffTime = dueDate.getTime() - today.getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          if (diffDays === 1 || diffDays === 0) {
+            const title =
+              diffDays === 0
+                ? "⚠️ Todoの期日が本日です！"
+                : `📝 Todoの期日が明日です！`;
+            const content = `「${todo.project.name}」のTodo「${todo.title}」の期日が迫っています。`;
+
+            // 重複防止（todoのIDをタイトル等に含めなくても同日なら1回だけ通知）
+            // より確実に重複を防ぐため、titleとcontentの完全一致でチェック
+            const { data: existing } = await supabase
+              .from("notifications")
+              .select("id")
+              .eq("user_id", userId)
+              .eq("project_id", todo.project_id)
+              .eq("title", title)
+              .eq("content", content)
+              .single();
+
+            if (!existing) {
+              await supabase.from("notifications").insert([
+                {
+                  user_id: userId,
+                  project_id: todo.project_id,
+                  title,
+                  content,
+                },
+              ]);
+
+              try {
+                const { sendNotification } = await import("./webpush");
+                await sendNotification(userId, title, content, "/todos");
+              } catch (err) {
+                console.error(
+                  "Failed to send web push for todo reminder:",
+                  err,
+                );
+              }
+            }
+          }
+        }
+      }
+    }
   } catch (err) {
     console.error("Error generating reminders:", err);
   }

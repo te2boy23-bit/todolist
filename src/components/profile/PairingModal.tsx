@@ -252,15 +252,20 @@ export function PairingModal({ profile }: PairingModalProps) {
 
       {/* クロップ用モーダル */}
       {imageSrc && (
-        <div className="fixed inset-0 bg-black/90 z-[60] flex flex-col">
-          <div className="flex justify-between items-center p-4 bg-black/50 text-white z-10">
+        <div className="fixed inset-0 bg-black/90 z-[60] flex flex-col h-[100dvh] w-screen overflow-hidden touch-none">
+          <div
+            className="flex justify-between items-center p-4 bg-black/80 text-white z-10"
+            style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
+          >
             <button
               onClick={() => setImageSrc(null)}
               className="p-2 rounded-full hover:bg-white/10 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
-            <span className="font-medium">画像の切り抜き</span>
+            <span className="font-medium text-sm sm:text-base">
+              画像の切り抜き
+            </span>
             <button
               onClick={handleCropSave}
               disabled={isPending}
@@ -274,7 +279,7 @@ export function PairingModal({ profile }: PairingModalProps) {
             </button>
           </div>
 
-          <div className="relative flex-1">
+          <div className="relative flex-1 w-full min-h-0">
             <Cropper
               image={imageSrc}
               crop={crop}
@@ -288,8 +293,13 @@ export function PairingModal({ profile }: PairingModalProps) {
             />
           </div>
 
-          <div className="p-6 bg-black/50 flex flex-col items-center gap-4 z-10">
-            <span className="text-white text-sm">ズーム調整</span>
+          <div
+            className="p-6 bg-black/80 flex flex-col items-center gap-4 z-10"
+            style={{
+              paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
+            }}
+          >
+            <span className="text-white text-sm font-medium">ズーム調整</span>
             <input
               type="range"
               value={zoom}
@@ -297,10 +307,10 @@ export function PairingModal({ profile }: PairingModalProps) {
               max={3}
               step={0.1}
               aria-labelledby="Zoom"
+              className="w-full max-w-xs accent-blue-500"
               onChange={(e) => {
                 setZoom(Number(e.target.value));
               }}
-              className="w-full max-w-sm accent-blue-500"
             />
           </div>
         </div>

@@ -28,6 +28,37 @@ export async function addNote(title: string, text: string) {
     throw new Error(`Failed to add note: ${error.message}`);
   }
 
+  // 相手に通知を送る
+  const targetUserId =
+    project.owner_id === profile.id ? project.partner_id : project.owner_id;
+
+  if (targetUserId && targetUserId !== profile.id) {
+    const senderName = profile.display_name || "パートナー";
+    const notificationTitle = `新しいメモが追加されました`;
+    const content = `${senderName}さんが「${project.name}」にメモ「${title}」を追加しました。`;
+
+    await supabase.from("notifications").insert([
+      {
+        user_id: targetUserId,
+        project_id: project.id,
+        title: notificationTitle,
+        content,
+      },
+    ]);
+
+    try {
+      const { sendNotification } = await import("./webpush");
+      await sendNotification(
+        targetUserId,
+        notificationTitle,
+        content,
+        "/notes",
+      );
+    } catch (err) {
+      console.error("Failed to send web push for note:", err);
+    }
+  }
+
   revalidatePath("/notes");
   return { success: true };
 }

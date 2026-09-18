@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
-import { addMessage, getMessages } from "@/app/actions/chat";
+import {
+  addMessage,
+  getMessages,
+  markMessagesAsRead,
+} from "@/app/actions/chat";
 import { createClient } from "@/lib/supabase/client";
 
 interface ChatDrawerProps {
@@ -23,6 +27,26 @@ export function ChatDrawer({
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+
+  // iOS Safari のキーボード高さを正しく取得するための対応
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleResize = () => {
+      if (window.visualViewport && drawerRef.current) {
+        drawerRef.current.style.height = `${window.visualViewport.height}px`;
+      }
+    };
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", handleResize);
+      handleResize();
+    }
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", handleResize);
+      }
+    };
+  }, [isOpen]);
 
   // 初期ロードとリアルタイム購読
   useEffect(() => {
@@ -32,12 +56,13 @@ export function ChatDrawer({
     const fetchMessages = async () => {
       const data = await getMessages();
       if (isMounted) setMessages(data);
+      // 開いたときに既読にする
+      await markMessagesAsRead();
     };
 
     fetchMessages();
 
     // 簡易的なポーリング（リアルタイム更新の代わり）
-    // SupabaseのrealtimeがRLSでブロックされる可能性があるため
     const interval = setInterval(() => {
       fetchMessages();
     }, 5000);
@@ -48,9 +73,16 @@ export function ChatDrawer({
     };
   }, [isOpen]);
 
+  // メッセージが追加されたら一番下までスクロールする
   useEffect(() => {
     if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      };
+      // 即時と、キーボードが開くなどレイアウトが変わったあとの保険
+      scrollToBottom();
+      setTimeout(scrollToBottom, 100);
+      setTimeout(scrollToBottom, 500);
     }
   }, [messages, isOpen]);
 
@@ -117,7 +149,10 @@ export function ChatDrawer({
             onClick={() => setIsOpen(false)}
           />
 
-          <div className="relative w-full sm:w-96 bg-white h-[100dvh] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+          <div
+            ref={drawerRef}
+            className="relative w-full sm:w-96 bg-white h-[100dvh] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
+          >
             {/* ヘッダー */}
             <div className="flex flex-col border-b border-gray-100 bg-white shadow-sm z-10">
               <div className="flex items-center justify-between px-4 py-4">
@@ -229,14 +264,24 @@ export function ChatDrawer({
                               {msg.text}
                             </p>
                           </div>
-                          <span className="text-[10px] text-gray-400 mt-1 px-1">
-                            {new Date(
-                              msg.timestamp || msg.created_at,
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
+
+                          <div
+                            className={`flex flex-col ${isMe ? "items-end" : "items-start"} mt-1 px-1`}
+                          >
+                            {isMe && msg.isRead && (
+                              <span className="text-[10px] text-blue-500 font-bold mb-0.5">
+                                既読
+                              </span>
+                            )}
+                            <span className="text-[10px] text-gray-400">
+                              {new Date(
+                                msg.timestamp || msg.created_at,
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

@@ -159,6 +159,7 @@ export async function addTodo(data: {
   if (!projectId) throw new Error("No project selected");
 
   const supabase = await createClient();
+  const profile = await getProfile();
 
   const { error } = await supabase.from("todos").insert([
     {
@@ -171,6 +172,42 @@ export async function addTodo(data: {
   if (error) {
     console.error("Error adding todo:", error);
     throw new Error("Failed to add todo");
+  }
+
+  // 通知を送信
+  if (profile) {
+    const { data: project } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("id", projectId)
+      .single();
+
+    if (project) {
+      const targetUserId =
+        project.owner_id === profile.id ? project.partner_id : project.owner_id;
+
+      if (targetUserId && targetUserId !== profile.id) {
+        const senderName = profile.display_name || "パートナー";
+        const title = `新しいTodoが追加されました`;
+        const content = `${senderName}さんが「${project.name}」にTodo「${data.title}」を追加しました。`;
+
+        await supabase.from("notifications").insert([
+          {
+            user_id: targetUserId,
+            project_id: projectId,
+            title,
+            content,
+          },
+        ]);
+
+        try {
+          const { sendNotification } = await import("./actions/webpush");
+          await sendNotification(targetUserId, title, content, "/todos");
+        } catch (err) {
+          console.error("Failed to send web push for todo:", err);
+        }
+      }
+    }
   }
 
   revalidatePath("/todos");

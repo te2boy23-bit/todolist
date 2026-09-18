@@ -12,6 +12,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ja } from "date-fns/locale";
 
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useRouter } from "next/navigation";
 
 export function NotificationBell() {
   const { t } = useLanguage();
@@ -21,6 +22,7 @@ export function NotificationBell() {
 
   const [projectFilter, setProjectFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const router = useRouter();
 
   const fetchNotifications = async () => {
     const data = await getNotifications();
@@ -152,10 +154,23 @@ export function NotificationBell() {
                       <div
                         key={n.id}
                         onClick={() => {
-                          if (!n.is_read)
+                          if (!n.is_read) {
                             handleMarkAsRead(n.id, {
                               stopPropagation: () => {},
                             } as any);
+                          }
+                          
+                          // 遷移処理を追加
+                          if (n.title.includes("メッセージ")) {
+                            router.push("/");
+                          } else if (n.title.includes("メモ")) {
+                            router.push("/notes");
+                          } else if (n.title.includes("Todo")) {
+                            router.push("/todos");
+                          } else {
+                            router.push("/assets/history");
+                          }
+                          setIsOpen(false);
                         }}
                         className={`p-4 hover:bg-gray-50 transition-colors cursor-pointer ${
                           !n.is_read ? "bg-blue-50/50" : ""
