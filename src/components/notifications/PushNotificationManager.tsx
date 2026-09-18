@@ -20,7 +20,13 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
-export function PushNotificationManager({ userId }: { userId: string }) {
+export function PushNotificationManager({
+  userId,
+  fullWidth = false,
+}: {
+  userId: string;
+  fullWidth?: boolean;
+}) {
   const [isSupported, setIsSupported] = useState(false);
   const [subscription, setSubscription] = useState<PushSubscription | null>(
     null,
@@ -96,32 +102,46 @@ export function PushNotificationManager({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="flex items-center">
+    <div className={`flex items-center ${fullWidth ? "w-full" : ""}`}>
       {subscription ? (
         <button
           onClick={unsubscribeFromPush}
           disabled={loading}
           title="プッシュ通知をオフにする"
-          className="flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors shrink-0"
+          className={
+            fullWidth
+              ? "flex items-center justify-between w-full p-3 text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors font-medium"
+              : "flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors shrink-0"
+          }
         >
-          {loading ? (
-            <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-          ) : (
-            <BellOff className="w-4 h-4 shrink-0" />
-          )}
+          <div className="flex items-center gap-3">
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+            ) : (
+              <BellOff className="w-5 h-5 text-gray-400" />
+            )}
+            {fullWidth && <span className="text-sm">通知をオフにする</span>}
+          </div>
         </button>
       ) : (
         <button
           onClick={subscribeToPush}
           disabled={loading}
           title="プッシュ通知をオンにする"
-          className="flex items-center justify-center w-8 h-8 text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors shrink-0"
+          className={
+            fullWidth
+              ? "flex items-center justify-between w-full p-3 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors font-medium"
+              : "flex items-center justify-center w-8 h-8 text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors shrink-0"
+          }
         >
-          {loading ? (
-            <Loader2 className="w-4 h-4 animate-spin shrink-0" />
-          ) : (
-            <Bell className="w-4 h-4 shrink-0" />
-          )}
+          <div className="flex items-center gap-3">
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Bell className="w-5 h-5" />
+            )}
+            {fullWidth && <span className="text-sm">通知をオンにする</span>}
+          </div>
         </button>
       )}
     </div>

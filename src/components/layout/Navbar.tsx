@@ -73,7 +73,6 @@ export function Navbar({
         <div className="flex items-center gap-2">
           <div className="scale-90 flex items-center gap-1">
             <NotificationBell />
-            {profile && <PushNotificationManager userId={profile.id} />}
           </div>
           <div className="scale-90 flex items-center gap-2">
             {profile ? <PairingModal profile={profile} /> : <LoginButton />}
@@ -171,6 +170,12 @@ export function Navbar({
 
               {/* その他 */}
               <div className="space-y-2">
+                {profile && (
+                  <PushNotificationManager
+                    userId={profile.id}
+                    fullWidth={true}
+                  />
+                )}
                 <button
                   onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
                   className="w-full flex items-center justify-between p-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors font-medium"
