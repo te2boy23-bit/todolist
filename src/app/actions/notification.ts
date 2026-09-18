@@ -16,7 +16,7 @@ export async function getNotifications() {
 
   const { data, error } = await supabase
     .from("notifications")
-    .select("*")
+    .select("*, project:projects(id, name)")
     .eq("user_id", profile.id)
     .order("created_at", { ascending: false })
     .limit(30);

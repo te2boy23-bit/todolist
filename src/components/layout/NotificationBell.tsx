@@ -19,6 +19,9 @@ export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
+  const [projectFilter, setProjectFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState("all");
+
   const fetchNotifications = async () => {
     const data = await getNotifications();
     setNotifications(data || []);
@@ -45,6 +48,23 @@ export function NotificationBell() {
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
     await markAllAsRead();
   };
+
+  const uniqueProjects = Array.from(
+    new Map(
+      notifications
+        .filter((n) => n.project)
+        .map((n) => [n.project.id, n.project]),
+    ).values(),
+  );
+
+  const filteredNotifications = notifications.filter((n) => {
+    if (projectFilter !== "all" && n.project_id !== projectFilter) return false;
+    if (typeFilter === "added" && n.title.includes("削除されました"))
+      return false;
+    if (typeFilter === "deleted" && !n.title.includes("削除されました"))
+      return false;
+    return true;
+  });
 
   return (
     <div className="relative">
@@ -97,14 +117,38 @@ export function NotificationBell() {
                 </div>
               </div>
 
+              <div className="flex items-center gap-2 px-4 py-2 bg-white border-b border-gray-50">
+                <select
+                  value={projectFilter}
+                  onChange={(e) => setProjectFilter(e.target.value)}
+                  className="text-xs border-gray-200 rounded-md bg-gray-50 text-gray-700 flex-1 py-1 px-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="all">すべてのプロジェクト</option>
+                  {uniqueProjects.map((p: any) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  className="text-xs border-gray-200 rounded-md bg-gray-50 text-gray-700 flex-1 py-1 px-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="all">すべてのお知らせ</option>
+                  <option value="added">追加・その他</option>
+                  <option value="deleted">削除された記録</option>
+                </select>
+              </div>
+
               <div className="max-h-[60vh] overflow-y-auto">
-                {notifications.length === 0 ? (
+                {filteredNotifications.length === 0 ? (
                   <div className="p-8 text-center text-gray-500 text-sm">
                     {t("notification.noNotifications")}
                   </div>
                 ) : (
                   <div className="divide-y divide-gray-50">
-                    {notifications.map((n) => (
+                    {filteredNotifications.map((n) => (
                       <div
                         key={n.id}
                         onClick={() => {

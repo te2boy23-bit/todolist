@@ -94,12 +94,57 @@ export async function addTransaction(data: {
 
 export async function deleteTransaction(id: string) {
   const supabase = await createClient();
+  const profile = await getProfile();
+
+  if (!profile) throw new Error("Unauthorized");
+
+  // 削除前にトランザクションの情報を取得しておく
+  const { data: tx } = await supabase
+    .from("transactions")
+    .select("*, projects(*)")
+    .eq("id", id)
+    .single();
 
   const { error } = await supabase.from("transactions").delete().eq("id", id);
 
   if (error) {
     console.error("Error deleting transaction:", error);
     throw new Error("Failed to delete transaction");
+  }
+
+  // 相手に削除通知を送る
+  if (tx && tx.projects) {
+    const project = tx.projects;
+    const targetUserId =
+      project.owner_id === profile.id ? project.partner_id : project.owner_id;
+
+    if (targetUserId && targetUserId !== profile.id) {
+      const senderName = profile.display_name || "パートナー";
+      const typeLabel =
+        tx.type === "deposit"
+          ? "貯金"
+          : tx.type === "expense"
+            ? "出費"
+            : "収入";
+      const title = `記録が削除されました`;
+      const content = `${senderName}さんが「${project.name}」の ${tx.amount.toLocaleString()}円 の${typeLabel}を削除しました。`;
+
+      await supabase.from("notifications").insert([
+        {
+          user_id: targetUserId,
+          project_id: project.id,
+          title,
+          content,
+        },
+      ]);
+
+      try {
+        const { sendNotification } = await import("./actions/webpush");
+        await sendNotification(targetUserId, title, content, "/");
+      } catch (err) {
+        console.error("Failed to send web push for delete:", err);
+      }
+    }
   }
 
   revalidatePath("/dashboard");
