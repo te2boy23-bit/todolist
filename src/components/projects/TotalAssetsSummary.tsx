@@ -21,12 +21,20 @@ export function TotalAssetsSummary({ assets }: { assets: any }) {
             手持ち残高（未割り当て）
           </h2>
         </div>
-        <div className="flex items-baseline gap-2 mb-6 relative z-10">
+        <div className="flex items-baseline gap-2 mb-2 relative z-10">
           <span className="text-4xl font-bold">
             {assets.balance.toLocaleString()}
           </span>
           <span className="text-blue-200">円</span>
         </div>
+
+        {assets.scheduledExpense > 0 && (
+          <div className="mb-6 inline-flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full text-xs font-medium text-amber-200">
+            <span>今後の支払い予定:</span>
+            <span>-{assets.scheduledExpense.toLocaleString()} 円</span>
+          </div>
+        )}
+        {assets.scheduledExpense === 0 && <div className="mb-6" />}
 
         <div className="grid grid-cols-3 gap-4 border-t border-white/20 pt-4 relative z-10 pr-6">
           <div>

@@ -128,6 +128,23 @@ export function TransactionHistory({
                 <span className="text-gray-700 text-sm sm:text-base font-medium">
                   {trx.memo}
                 </span>
+                {(() => {
+                  const todayDate = new Date();
+                  todayDate.setHours(todayDate.getHours() + 9);
+                  const todayStr = todayDate.toISOString().split("T")[0];
+                  if (
+                    trx.transaction_date &&
+                    trx.transaction_date > todayStr &&
+                    trx.transaction_date !== "2099-12-31"
+                  ) {
+                    return (
+                      <span className="ml-2 px-2 py-0.5 rounded text-[10px] bg-amber-100 text-amber-700 font-bold">
+                        予定
+                      </span>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 {!isSingle && (

@@ -54,18 +54,31 @@ export default async function DashboardPage() {
         return t;
       });
 
-      // メッセージ用ダミートランザクションを除外
+      // メッセージ用ダミーやメモなどを除外
       const validTransactions = mappedTransactions.filter(
-        (t) => !t.memo || !t.memo.includes('"isMessage":true'),
+        (t) =>
+          !t.memo ||
+          (!t.memo.includes('"isMessage":true') &&
+            !t.memo.includes('"isNote":true') &&
+            !t.memo.includes('"isProfile":true')),
       );
 
       recentTransactions = validTransactions.slice(0, 10);
 
-      myContribution = validTransactions
+      const todayDate = new Date();
+      todayDate.setHours(todayDate.getHours() + 9);
+      const todayStr = todayDate.toISOString().split("T")[0];
+
+      // 確定済みの（今日以前の）トランザクションだけを集計する
+      const currentTransactions = validTransactions.filter(
+        (t) => t.transaction_date && t.transaction_date <= todayStr,
+      );
+
+      myContribution = currentTransactions
         .filter((t) => t.type === "deposit" && t.payer === "me")
         .reduce((sum, t) => sum + t.amount, 0);
 
-      partnerContribution = validTransactions
+      partnerContribution = currentTransactions
         .filter((t) => t.type === "deposit" && t.payer === "partner")
         .reduce((sum, t) => sum + t.amount, 0);
     }

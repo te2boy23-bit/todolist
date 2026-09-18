@@ -10,13 +10,15 @@ import {
   FolderKanban,
   FileText,
   Coffee,
+  Menu,
+  X,
 } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
 import { LoginButton } from "@/components/auth/LoginButton";
 import { PairingModal } from "@/components/profile/PairingModal";
 import { selectProject } from "@/app/actions/project";
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 
 import { ShareProjectModal } from "@/components/projects/ShareProjectModal";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
@@ -54,6 +56,8 @@ export function Navbar({
     }
   };
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <>
       {/* スマホ用 上部ヘッダー (sm以上では非表示) */}
@@ -66,46 +70,7 @@ export function Navbar({
             Todo & Money
           </span>
         </Link>
-        <div className="flex items-center gap-1.5 xs:gap-2">
-          {profile && projects.length > 0 && (
-            <select
-              disabled={isPending}
-              value={currentProject?.id || ""}
-              onChange={handleProjectChange}
-              className="bg-gray-100 border-none text-gray-700 text-xs rounded-full focus:ring-2 focus:ring-blue-500 block px-2 py-1 max-w-[80px] xs:max-w-[100px] truncate"
-            >
-              <option value="" disabled>
-                {t("project.select")}
-              </option>
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name === "マイ通帳 (個人用)"
-                    ? t("project.passbookName")
-                    : p.name}
-                </option>
-              ))}
-            </select>
-          )}
-
-          <a
-            href="https://buymeacoffee.com/tepeee"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center text-yellow-500 hover:text-yellow-600 bg-yellow-50 hover:bg-yellow-100 p-1.5 rounded-lg transition-colors"
-            title="Buy Me a Coffee"
-          >
-            <Coffee className="w-4 h-4" />
-          </a>
-
-          <button
-            onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
-            className="flex items-center gap-1 text-gray-500 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-lg transition-colors text-[10px] font-medium"
-            title="Toggle Language"
-          >
-            <Globe className="w-3 h-3" />
-            <span className="uppercase">{language}</span>
-          </button>
-
+        <div className="flex items-center gap-2">
           <div className="scale-90 flex items-center gap-1">
             <NotificationBell />
             {profile && <PushNotificationManager userId={profile.id} />}
@@ -113,24 +78,137 @@ export function Navbar({
           <div className="scale-90 flex items-center gap-2">
             {profile ? <PairingModal profile={profile} /> : <LoginButton />}
           </div>
+          <button
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
         </div>
       </div>
 
-      {/* メインナビゲーション (PCでは上部、スマホでは下部フローティング) */}
+      {/* スマホ用 ドロワーメニュー */}
+      {isMobileMenuOpen && (
+        <div className="sm:hidden fixed inset-0 z-50 flex">
+          {/* バックドロップ */}
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          {/* メニュー本体 */}
+          <div className="relative w-64 max-w-sm bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-200 ml-auto">
+            <div className="p-4 flex items-center justify-between border-b border-gray-100">
+              <span className="font-bold text-gray-800">Menu</span>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 text-gray-500 hover:bg-gray-100 rounded-full"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+              {/* プロジェクト選択 */}
+              {profile && projects.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-xs text-gray-500 font-medium">
+                    プロジェクト
+                  </label>
+                  <select
+                    disabled={isPending}
+                    value={currentProject?.id || ""}
+                    onChange={handleProjectChange}
+                    className="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block px-3 py-2"
+                  >
+                    <option value="" disabled>
+                      {t("project.select")}
+                    </option>
+                    {projects.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name === "マイ通帳 (個人用)"
+                          ? t("project.passbookName")
+                          : p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* メインナビゲーション */}
+              {pathname !== "/projects" && (
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-500 font-medium mb-2 block">
+                    メニュー
+                  </label>
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname.startsWith(item.path);
+                    return (
+                      <Link
+                        key={item.path}
+                        href={item.path}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 p-3 rounded-xl transition-all font-medium",
+                          isActive
+                            ? "text-blue-600 bg-blue-50/80"
+                            : "text-gray-600 hover:bg-gray-50",
+                        )}
+                      >
+                        <Icon
+                          className={cn(
+                            "w-5 h-5",
+                            isActive ? "text-blue-600" : "text-gray-400",
+                          )}
+                        />
+                        <span className="text-sm">{item.name}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+
+              <hr className="border-gray-100" />
+
+              {/* その他 */}
+              <div className="space-y-2">
+                <button
+                  onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
+                  className="w-full flex items-center justify-between p-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors font-medium"
+                >
+                  <div className="flex items-center gap-3">
+                    <Globe className="w-5 h-5 text-gray-400" />
+                    <span className="text-sm">
+                      言語切替 ({language.toUpperCase()})
+                    </span>
+                  </div>
+                </button>
+                <a
+                  href="https://buymeacoffee.com/tepeee"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center gap-3 p-3 text-yellow-600 bg-yellow-50 hover:bg-yellow-100 rounded-xl transition-colors font-medium"
+                >
+                  <Coffee className="w-5 h-5" />
+                  <span className="text-sm">開発者を支援する</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* メインナビゲーション (PC専用: sm以上で表示) */}
       <nav
         className={cn(
-          "fixed bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-2xl sm:rounded-none sm:top-0 sm:bottom-auto sm:left-0 sm:right-0 sm:w-full sm:border-b sm:border-t-0 sm:border-x-0 z-50 shadow-lg sm:shadow-sm",
-          pathname === "/projects" && "hidden sm:block",
+          "hidden sm:flex fixed top-0 left-0 right-0 w-full bg-white/95 backdrop-blur-md border-b border-gray-200/50 z-50 shadow-sm",
+          pathname === "/projects" && "hidden",
         )}
       >
-        <div className="max-w-6xl mx-auto px-2 sm:px-4 min-h-[4rem] py-2 flex items-center justify-between">
-          {/* 左側: リンク群 (PCの場合はロゴも含む) */}
-          <div className="flex items-center w-full sm:w-auto justify-around sm:justify-start sm:space-x-8">
-            {/* Logo (Desktop Only) */}
-            <Link
-              href="/"
-              className="hidden sm:flex items-center gap-2 mr-4 shrink-0"
-            >
+        <div className="max-w-6xl mx-auto px-4 min-h-[4rem] w-full flex items-center justify-between">
+          {/* 左側: リンク群 */}
+          <div className="flex items-center space-x-8">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 mr-4 shrink-0">
               <div className="w-8 h-8 rounded-lg overflow-hidden shadow-sm relative border border-gray-100">
                 <Image
                   src="/logo.jpg"
@@ -155,19 +233,19 @@ export function Navbar({
                     key={item.path}
                     href={item.path}
                     className={cn(
-                      "flex flex-col sm:flex-row items-center gap-1 sm:gap-2 p-2 sm:px-3 rounded-xl transition-all font-medium shrink-0",
+                      "flex items-center gap-2 px-3 py-2 rounded-xl transition-all font-medium shrink-0",
                       isActive
-                        ? "text-blue-600 bg-blue-50/80 shadow-sm sm:shadow-none"
+                        ? "text-blue-600 bg-blue-50/80"
                         : "text-gray-500 hover:text-gray-900 hover:bg-gray-50",
                     )}
                   >
                     <Icon
                       className={cn(
-                        "w-6 h-6 sm:w-5 sm:h-5 shrink-0",
+                        "w-5 h-5 shrink-0",
                         isActive ? "text-blue-600" : "text-gray-400",
                       )}
                     />
-                    <span className="text-[10px] sm:text-sm whitespace-nowrap">
+                    <span className="text-sm whitespace-nowrap">
                       {item.name}
                     </span>
                   </Link>
@@ -175,8 +253,8 @@ export function Navbar({
               })}
           </div>
 
-          {/* 右側: コントロール群 (PC用、スマホでは非表示または一部のみ) */}
-          <div className="hidden sm:flex items-center gap-3">
+          {/* 右側: コントロール群 */}
+          <div className="flex items-center gap-3">
             {/* Project Selector */}
             {profile && projects.length > 0 && (
               <div className="flex items-center gap-2">
@@ -185,7 +263,7 @@ export function Navbar({
                   disabled={isPending}
                   value={currentProject?.id || ""}
                   onChange={handleProjectChange}
-                  className="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block px-2 py-1.5 w-auto max-w-[150px] truncate"
+                  className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block px-2 py-1.5 w-auto max-w-[150px] truncate"
                 >
                   <option value="" disabled>
                     {t("project.select")}
