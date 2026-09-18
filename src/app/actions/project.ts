@@ -46,10 +46,24 @@ export async function getProjects() {
   let foundPassbook = false;
 
   for (const p of data) {
-    if (p.invite_code === privateInviteCode && p.owner_id === profile.id) {
+    // invite_code が一致する本物のマイ通帳、または名前が「マイ通帳 (個人用)」の古いデータ
+    if (
+      (p.invite_code === privateInviteCode && p.owner_id === profile.id) ||
+      p.name === "マイ通帳 (個人用)"
+    ) {
       if (!foundPassbook) {
-        uniqueProjects.push(p);
-        foundPassbook = true;
+        // 名前が一致していて invite_code が PRIVATE_ ではない場合でも、
+        // 最初の1つだけを「本物のマイ通帳」として扱うようにフラグを立てるが、
+        // 厳密には privateInviteCode を持っているものだけを本物としたい。
+        // ここでは、もし privateInviteCode を持っているならそれを採用する。
+        // もし持ってなくて名前だけ一致しているものは、バグでできたゴミデータなので除外する。
+        if (p.invite_code === privateInviteCode) {
+          uniqueProjects.push(p);
+          foundPassbook = true;
+        } else {
+          // 古い・またはバグでできたダミーのマイ通帳は完全に無視する（リストに入れない）
+          continue;
+        }
       }
     } else {
       uniqueProjects.push(p);

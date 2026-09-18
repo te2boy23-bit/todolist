@@ -24,8 +24,9 @@ export function PassbookCard({ project }: { project: any }) {
 
   return (
     <div className="mb-8">
-      <h2 className="text-sm font-bold text-gray-500 mb-3 px-1">収入</h2>
-      <h2 className="text-sm font-bold text-gray-500 mb-3 px-1">{t("passbook.income")}</h2>
+      <h2 className="text-sm font-bold text-gray-500 mb-3 px-1">
+        {t("passbook.income")}
+      </h2>
       <button
         onClick={handleSelect}
         disabled={isPending}
@@ -42,11 +43,9 @@ export function PassbookCard({ project }: { project: any }) {
             </div>
             <div>
               <h2 className="text-xl font-bold text-white tracking-wide mb-1">
-                収入管理
                 {t("passbook.title")}
               </h2>
               <p className="text-slate-400 text-xs">
-                給料などの収入を記録します。誰とも共有されません。
                 {t("passbook.description")}
               </p>
             </div>
