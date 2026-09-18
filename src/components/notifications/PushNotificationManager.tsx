@@ -70,8 +70,11 @@ export function PushNotificationManager({
       await subscribeUser(sub as any, userId);
       setMessage("プッシュ通知をオンにしました！");
       setTimeout(() => setMessage(""), 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Push subscription error:", error);
+      alert(
+        `通知設定エラー: ${error.message || "公開鍵の設定などに問題があります。"}`,
+      );
       setMessage("通知の許可が得られませんでした");
       setTimeout(() => setMessage(""), 3000);
     }

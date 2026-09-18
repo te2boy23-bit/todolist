@@ -58,7 +58,7 @@ export async function addTransaction(data: {
     const targetUserId =
       project.owner_id === profile.id ? project.partner_id : project.owner_id;
 
-    if (targetUserId) {
+    if (targetUserId && targetUserId !== profile.id) {
       const senderName = profile.display_name || "パートナー";
       const typeLabel =
         data.type === "deposit"

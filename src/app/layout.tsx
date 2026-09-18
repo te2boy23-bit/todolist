@@ -5,6 +5,8 @@ import { LanguageProvider } from "@/components/i18n/LanguageProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { getProfile } from "@/app/actions/profile";
 import { getProjects, getCurrentProject } from "@/app/actions/project";
+import { Toaster } from "react-hot-toast";
+import { RealtimeNotifications } from "@/components/notifications/RealtimeNotifications";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -76,6 +78,8 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased pt-14 pb-24 sm:pb-0 sm:pt-16 min-h-screen flex flex-col bg-slate-50`}
       >
         <LanguageProvider>
+          {profile && <RealtimeNotifications userId={profile.id} />}
+          <Toaster />
           {/* Navbarというコンポーネント（部品）に、さっき取得した変数や配列を「プロパティ(props)」として渡しています */}
           <Navbar
             profile={profile}

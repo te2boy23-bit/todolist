@@ -12,7 +12,19 @@ self.addEventListener("push", function (event) {
         url: data.url || "/",
       },
     };
+    
+    // バッジ（赤い数字）を更新する (もし対応していれば)
+    if (navigator.setAppBadge) {
+      navigator.setAppBadge(1).catch((error) => console.error(error));
+    }
+
     event.waitUntil(self.registration.showNotification(data.title, options));
+  }
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data === "clearBadge" && navigator.clearAppBadge) {
+    navigator.clearAppBadge().catch((error) => console.error(error));
   }
 });
 

@@ -40,7 +40,7 @@ export async function addMessage(text: string) {
   const targetUserId =
     project.owner_id === profile.id ? project.partner_id : project.owner_id;
 
-  if (targetUserId) {
+  if (targetUserId && targetUserId !== profile.id) {
     // 相手の名前を取得する
     const senderName = profile.display_name || "パートナー";
     const title = "新しいメッセージ";
