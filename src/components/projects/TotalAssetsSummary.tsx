@@ -28,40 +28,43 @@ export function TotalAssetsSummary({ assets }: { assets: any }) {
           <span className="text-blue-200">円</span>
         </div>
 
-        {assets.scheduledExpense > 0 && (
-          <div className="mb-6 inline-flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full text-xs font-medium text-amber-200">
-            <span>後払い枠（未払い額）:</span>
-            <span>-{assets.scheduledExpense.toLocaleString()} 円</span>
-          </div>
-        )}
-        {assets.scheduledExpense === 0 && <div className="mb-6" />}
+        <div className="mb-6" />
 
-        <div className="grid grid-cols-3 gap-4 border-t border-white/20 pt-4 relative z-10 pr-6">
+        <div className="grid grid-cols-4 gap-4 border-t border-white/20 pt-4 relative z-10 pr-6">
           <div>
-            <div className="flex items-center gap-1 text-blue-100 text-xs mb-1">
+            <div className="flex items-center gap-1 text-blue-100 text-[10px] sm:text-xs mb-1 whitespace-nowrap">
               <TrendingUp className="w-3 h-3" />
               総収入
             </div>
-            <div className="font-semibold text-sm sm:text-base">
+            <div className="font-semibold text-xs sm:text-sm">
               {assets.totalIncome.toLocaleString()}円
             </div>
           </div>
           <div>
-            <div className="flex items-center gap-1 text-blue-100 text-xs mb-1">
+            <div className="flex items-center gap-1 text-blue-100 text-[10px] sm:text-xs mb-1 whitespace-nowrap">
               <ArrowRightLeft className="w-3 h-3" />
               総貯金
             </div>
-            <div className="font-semibold text-sm sm:text-base">
+            <div className="font-semibold text-xs sm:text-sm">
               {assets.totalDeposit.toLocaleString()}円
             </div>
           </div>
           <div>
-            <div className="flex items-center gap-1 text-blue-100 text-xs mb-1">
+            <div className="flex items-center gap-1 text-blue-100 text-[10px] sm:text-xs mb-1 whitespace-nowrap">
               <TrendingDown className="w-3 h-3" />
               総出費
             </div>
-            <div className="font-semibold text-sm sm:text-base">
+            <div className="font-semibold text-xs sm:text-sm">
               {assets.totalExpense.toLocaleString()}円
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-1 text-amber-200 text-[10px] sm:text-xs mb-1 whitespace-nowrap">
+              <TrendingDown className="w-3 h-3" />
+              後払い枠
+            </div>
+            <div className="font-semibold text-xs sm:text-sm text-amber-200">
+              {assets.scheduledExpense.toLocaleString()}円
             </div>
           </div>
         </div>

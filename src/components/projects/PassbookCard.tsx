@@ -52,30 +52,6 @@ export function PassbookCard({ project }: { project: any }) {
           </div>
           <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" />
         </div>
-
-        {/* 予定の表示 */}
-        {(project.scheduledExpense > 0 || project.scheduledDeposit > 0) && (
-          <div className="relative z-10 mt-5 pt-4 border-t border-white/10 grid grid-cols-2 gap-4">
-            {project.scheduledDeposit > 0 && (
-              <div>
-                <div className="text-xs text-slate-400 mb-1">
-                  今後の収入予定
-                </div>
-                <div className="text-emerald-400 font-semibold">
-                  +{project.scheduledDeposit.toLocaleString()}円
-                </div>
-              </div>
-            )}
-            {project.scheduledExpense > 0 && (
-              <div>
-                <div className="text-xs text-slate-400 mb-1">後払い枠</div>
-                <div className="text-amber-400 font-semibold">
-                  -{project.scheduledExpense.toLocaleString()}円
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </button>
     </div>
   );
