@@ -137,3 +137,44 @@ export async function updateProfile(formData: FormData) {
 
   return { success: true };
 }
+
+export async function recordVisit() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false };
+
+  const currentCount = user.user_metadata?.visit_count || 0;
+  const newCount = currentCount + 1;
+  const now = new Date().toISOString();
+
+  // Supabase Auth の user_metadata に保存（これならDB変更不要でダッシュボードで見れる）
+  await supabase.auth.updateUser({
+    data: {
+      visit_count: newCount,
+      last_visited_at: now
+    }
+  });
+
+  // profilesテーブルにも一応保存を試みる（もし自分でカラムを追加していれば）
+  try {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("visit_count")
+      .eq("id", user.id)
+      .single();
+      
+    if (profile !== null) {
+      await supabase
+        .from("profiles")
+        .update({
+          visit_count: (profile.visit_count || 0) + 1,
+          last_visited_at: now
+        } as any)
+        .eq("id", user.id);
+    }
+  } catch (e) {
+    // カラムが存在しない場合などは無視
+  }
+
+  return { success: true, count: newCount };
+}

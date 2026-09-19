@@ -18,7 +18,8 @@ import { cn } from "@/lib/utils";
 import { LoginButton } from "@/components/auth/LoginButton";
 import { PairingModal } from "@/components/profile/PairingModal";
 import { selectProject } from "@/app/actions/project";
-import { useTransition, useState } from "react";
+import { recordVisit } from "@/app/actions/profile";
+import { useTransition, useState, useEffect } from "react";
 
 import { ShareProjectModal } from "@/components/projects/ShareProjectModal";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
@@ -39,6 +40,23 @@ export function Navbar({
   const pathname = usePathname();
   const { language, setLanguage, t } = useLanguage();
   const [isPending, startTransition] = useTransition();
+  const [isPairingOpen, setIsPairingOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // 訪問（リピ数）をカウントする処理（1時間に1回のみ）
+  useEffect(() => {
+    if (profile?.id) {
+      const lastVisitKey = `lastVisit_${profile.id}`;
+      const lastVisit = localStorage.getItem(lastVisitKey);
+      const now = Date.now();
+
+      // 1時間（3600000ms）以上経過していたらカウントアップ
+      if (!lastVisit || now - parseInt(lastVisit) > 3600000) {
+        localStorage.setItem(lastVisitKey, now.toString());
+        recordVisit().catch(console.error);
+      }
+    }
+  }, [profile?.id]);
 
   const navItems = [
     { name: t("common.money"), path: "/dashboard", icon: Wallet },
@@ -55,8 +73,6 @@ export function Navbar({
       });
     }
   };
-
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <>
