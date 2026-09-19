@@ -89,6 +89,10 @@ export default async function DashboardPage() {
         .filter((t) => t.type === "deposit" && t.payer === "partner")
         .reduce((sum, t) => sum + t.amount, 0);
 
+      const myIncome = currentTransactions
+        .filter((t) => t.type === "income" && t.payer === "me")
+        .reduce((sum, t) => sum + t.amount, 0);
+
       const scheduledExpenseAmount = scheduledTransactions
         .filter((t) => t.type === "expense")
         .reduce((sum, t) => sum + t.amount, 0);
@@ -102,6 +106,7 @@ export default async function DashboardPage() {
       Object.assign(project, {
         scheduledExpense: scheduledExpenseAmount,
         scheduledDeposit: scheduledDepositAmount,
+        myIncome: myIncome,
       });
     }
   } catch (error) {
@@ -111,6 +116,7 @@ export default async function DashboardPage() {
   const totalAmount = myContribution + partnerContribution;
   const isSingle = !project.partner_id;
   const isPassbook = project.invite_code?.startsWith("PRIVATE_");
+  const displayIncome = project.myIncome || 0;
 
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
@@ -126,7 +132,7 @@ export default async function DashboardPage() {
             </p>
             <div className="flex items-baseline gap-2 relative z-10">
               <span className="text-4xl font-bold">
-                {myContribution.toLocaleString()}
+                {displayIncome.toLocaleString()}
               </span>
               <span className="text-slate-400">円</span>
             </div>

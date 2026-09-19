@@ -37,9 +37,11 @@ export function TransactionForm({
 }: TransactionFormProps) {
   const { t, language } = useLanguage();
   const router = useRouter();
-  const [type, setType] = useState<TransactionType>(
-    isPassbook ? "income" : "deposit",
-  );
+  const [formMode, setFormMode] = useState<
+    "income" | "deposit" | "expense" | "pay_later"
+  >(isPassbook ? "income" : "deposit");
+  const type: TransactionType =
+    formMode === "pay_later" ? "expense" : (formMode as TransactionType);
   const [payer, setPayer] = useState<PayerType>("me");
   const [amount, setAmount] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
@@ -57,6 +59,25 @@ export function TransactionForm({
       setTransactionDate(initialDate);
     }
   }, [initialDate]);
+
+  // 後払いモードが選ばれたとき、日付が今日以前なら来月の月末をセットする
+  useEffect(() => {
+    if (formMode === "pay_later") {
+      const currentSelected = new Date(transactionDate);
+      const today = new Date();
+      if (currentSelected <= today) {
+        // 来月の月末を計算
+        const nextMonthEnd = new Date(
+          today.getFullYear(),
+          today.getMonth() + 2,
+          0,
+        );
+        // JSTでの文字列化
+        nextMonthEnd.setHours(nextMonthEnd.getHours() + 9);
+        setTransactionDate(nextMonthEnd.toISOString().split("T")[0]);
+      }
+    }
+  }, [formMode, transactionDate]);
 
   // 外側をクリックしたらカレンダーを閉じる
   useEffect(() => {
@@ -78,6 +99,16 @@ export function TransactionForm({
     e.preventDefault();
     if (!amount || isNaN(Number(amount))) return;
 
+    if (formMode === "pay_later") {
+      const todayDate = new Date();
+      todayDate.setHours(todayDate.getHours() + 9);
+      const todayStr = todayDate.toISOString().split("T")[0];
+      if (transactionDate <= todayStr) {
+        alert("後払いの場合は、今日より未来の日付を選択してください。");
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     try {
       await addTransaction({
@@ -91,6 +122,7 @@ export function TransactionForm({
       setAmount("");
       setMemo("");
       setTransactionDate(new Date().toISOString().split("T")[0]);
+      // 後払いの場合は入力後に「出費」に戻すかそのままにするか？ そのままでもOK
       router.refresh();
     } catch (error: any) {
       console.error("Failed to add transaction", error);
@@ -157,10 +189,10 @@ export function TransactionForm({
         <div className="flex bg-gray-100 rounded-lg p-1 mb-4 w-full sm:w-fit">
           <button
             type="button"
-            onClick={() => setType("deposit")}
+            onClick={() => setFormMode("deposit")}
             className={cn(
               "flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
-              type === "deposit"
+              formMode === "deposit"
                 ? "bg-white text-blue-700 shadow-sm"
                 : "text-gray-500 hover:text-gray-700",
             )}
@@ -169,15 +201,27 @@ export function TransactionForm({
           </button>
           <button
             type="button"
-            onClick={() => setType("expense")}
+            onClick={() => setFormMode("expense")}
             className={cn(
               "flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
-              type === "expense"
+              formMode === "expense"
                 ? "bg-white text-red-700 shadow-sm"
                 : "text-gray-500 hover:text-gray-700",
             )}
           >
             {t("transaction.expense")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormMode("pay_later")}
+            className={cn(
+              "flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
+              formMode === "pay_later"
+                ? "bg-white text-amber-600 shadow-sm"
+                : "text-gray-500 hover:text-gray-700",
+            )}
+          >
+            後払い
           </button>
         </div>
       ) : (
