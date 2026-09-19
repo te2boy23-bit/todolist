@@ -93,6 +93,14 @@ export default async function DashboardPage() {
         .filter((t) => t.type === "income" && t.payer === "me")
         .reduce((sum, t) => sum + t.amount, 0);
 
+      const myExpense = currentTransactions
+        .filter((t) => t.type === "expense" && t.payer === "me")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const myPassbookDeposit = currentTransactions
+        .filter((t) => t.type === "deposit" && t.payer === "me")
+        .reduce((sum, t) => sum + t.amount, 0);
+
       const scheduledExpenseAmount = scheduledTransactions
         .filter((t) => t.type === "expense")
         .reduce((sum, t) => sum + t.amount, 0);
@@ -107,6 +115,7 @@ export default async function DashboardPage() {
         scheduledExpense: scheduledExpenseAmount,
         scheduledDeposit: scheduledDepositAmount,
         myIncome: myIncome,
+        myBalance: myIncome - myExpense - myPassbookDeposit,
       });
     }
   } catch (error) {
@@ -116,7 +125,7 @@ export default async function DashboardPage() {
   const totalAmount = myContribution + partnerContribution;
   const isSingle = !project.partner_id;
   const isPassbook = project.invite_code?.startsWith("PRIVATE_");
-  const displayIncome = project.myIncome || 0;
+  const displayBalance = project.myBalance || 0;
 
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
@@ -126,13 +135,15 @@ export default async function DashboardPage() {
         {isPassbook && (
           <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl shadow-lg p-8 text-white relative overflow-hidden">
             <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
-            <h1 className="text-2xl font-bold mb-2 relative z-10">収入管理</h1>
+            <h1 className="text-2xl font-bold mb-2 relative z-10">
+              総額（手持ち残高）
+            </h1>
             <p className="text-slate-400 text-sm mb-6 relative z-10">
-              給与などの収入を記録します。
+              これまでの収入から出費と貯金を引いた現在の残高です。
             </p>
             <div className="flex items-baseline gap-2 relative z-10">
               <span className="text-4xl font-bold">
-                {displayIncome.toLocaleString()}
+                {displayBalance.toLocaleString()}
               </span>
               <span className="text-slate-400">円</span>
             </div>
@@ -151,7 +162,7 @@ export default async function DashboardPage() {
                 {project.scheduledExpense > 0 && (
                   <div>
                     <div className="text-xs text-slate-400 mb-1">
-                      今後の支出予定
+                      後払い枠（未払い額）
                     </div>
                     <div className="text-amber-400 font-semibold">
                       -{project.scheduledExpense.toLocaleString()}円

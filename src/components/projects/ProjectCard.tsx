@@ -139,7 +139,7 @@ export function ProjectCard({
               )}
               {project.scheduledExpense > 0 && (
                 <div className="flex flex-col">
-                  <span className="text-gray-400 text-xs">今後の支出予定</span>
+                  <span className="text-gray-400 text-xs">後払い枠</span>
                   <span className="text-amber-600 font-medium">
                     -{project.scheduledExpense.toLocaleString()}円
                   </span>

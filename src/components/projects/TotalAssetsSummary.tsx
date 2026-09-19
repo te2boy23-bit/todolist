@@ -30,7 +30,7 @@ export function TotalAssetsSummary({ assets }: { assets: any }) {
 
         {assets.scheduledExpense > 0 && (
           <div className="mb-6 inline-flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full text-xs font-medium text-amber-200">
-            <span>今後の支払い予定:</span>
+            <span>後払い枠（未払い額）:</span>
             <span>-{assets.scheduledExpense.toLocaleString()} 円</span>
           </div>
         )}

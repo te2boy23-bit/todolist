@@ -148,7 +148,7 @@ export function SavingsProgress({
           )}
           {project.scheduledExpense > 0 && (
             <div className="inline-flex items-center gap-1.5 bg-amber-50 px-3 py-1.5 rounded-full text-xs font-medium text-amber-700 border border-amber-100">
-              <span>今後の支払い予定:</span>
+              <span>後払い枠（未払い額）:</span>
               <span>
                 -{project.scheduledExpense.toLocaleString()}{" "}
                 {t("dashboard.currency")}

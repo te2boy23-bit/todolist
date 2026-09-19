@@ -68,9 +68,7 @@ export function PassbookCard({ project }: { project: any }) {
             )}
             {project.scheduledExpense > 0 && (
               <div>
-                <div className="text-xs text-slate-400 mb-1">
-                  今後の支出予定
-                </div>
+                <div className="text-xs text-slate-400 mb-1">後払い枠</div>
                 <div className="text-amber-400 font-semibold">
                   -{project.scheduledExpense.toLocaleString()}円
                 </div>
