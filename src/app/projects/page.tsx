@@ -9,6 +9,7 @@ import { TotalAssetsSummary } from "@/components/projects/TotalAssetsSummary";
 import { getDictionary } from "@/lib/i18n/server";
 
 import { PassbookCard } from "@/components/projects/PassbookCard";
+import { getAllTransactions } from "@/app/actions/assets";
 
 export default async function ProjectsPage() {
   const profile = await getProfile();
@@ -21,10 +22,43 @@ export default async function ProjectsPage() {
   const assets = await getMyTotalAssets(profile.id, projects);
   const { t } = await getDictionary();
 
-  const passbook = projects.find((p: any) =>
+  // プロジェクトごとにトランザクションを集計して、今後の支出・収入予定を付与する
+  const transactions = await getAllTransactions(profile.id, projects);
+  const todayDate = new Date();
+  todayDate.setHours(todayDate.getHours() + 9);
+  const todayStr = todayDate.toISOString().split("T")[0];
+
+  const enrichedProjects = projects.map((p: any) => {
+    let scheduledDeposit = 0;
+    let scheduledExpense = 0;
+    let scheduledIncome = 0;
+
+    const projectTxs = transactions.filter((tx) => tx.project_id === p.id);
+    for (const trx of projectTxs) {
+      const isScheduled =
+        trx.transaction_date &&
+        trx.transaction_date > todayStr &&
+        trx.transaction_date !== "2099-12-31";
+
+      if (isScheduled) {
+        if (trx.type === "deposit") scheduledDeposit += trx.amount;
+        if (trx.type === "expense") scheduledExpense += trx.amount;
+        if (trx.type === "income") scheduledIncome += trx.amount;
+      }
+    }
+
+    return {
+      ...p,
+      scheduledDeposit,
+      scheduledExpense,
+      scheduledIncome,
+    };
+  });
+
+  const passbook = enrichedProjects.find((p: any) =>
     p.invite_code?.startsWith("PRIVATE_"),
   );
-  const sharedProjects = projects.filter(
+  const sharedProjects = enrichedProjects.filter(
     (p: any) => !p.invite_code?.startsWith("PRIVATE_"),
   );
 

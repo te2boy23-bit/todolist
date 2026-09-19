@@ -126,6 +126,27 @@ export function ProjectCard({
               {format(new Date(project.end_date), "yyyy/MM/dd")}
             </span>
           </div>
+
+          {(project.scheduledExpense > 0 || project.scheduledDeposit > 0) && (
+            <div className="mt-3 pt-3 border-t border-gray-100 flex gap-4 text-[13px]">
+              {project.scheduledDeposit > 0 && (
+                <div className="flex flex-col">
+                  <span className="text-gray-400 text-xs">今後の貯金予定</span>
+                  <span className="text-emerald-600 font-medium">
+                    +{project.scheduledDeposit.toLocaleString()}円
+                  </span>
+                </div>
+              )}
+              {project.scheduledExpense > 0 && (
+                <div className="flex flex-col">
+                  <span className="text-gray-400 text-xs">今後の支出予定</span>
+                  <span className="text-amber-600 font-medium">
+                    -{project.scheduledExpense.toLocaleString()}円
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </button>
 
