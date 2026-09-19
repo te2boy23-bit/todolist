@@ -11,6 +11,8 @@ import { getDictionary } from "@/lib/i18n/server";
 import { PassbookCard } from "@/components/projects/PassbookCard";
 import { getAllTransactions } from "@/app/actions/assets";
 
+import { createClient } from "@/lib/supabase/server";
+
 export default async function ProjectsPage() {
   const profile = await getProfile();
 
@@ -23,7 +25,15 @@ export default async function ProjectsPage() {
   const { t } = await getDictionary();
 
   // プロジェクトごとにトランザクションを集計して、今後の支出・収入予定を付与する
-  const transactions = await getAllTransactions(profile.id, projects);
+  const supabase = await createClient();
+  const projectIds = projects.map((p: any) => p.id);
+
+  const { data: allTxs } = await supabase
+    .from("transactions")
+    .select("project_id, amount, type, transaction_date, memo")
+    .in("project_id", projectIds)
+    .neq("transaction_date", "2099-12-31");
+
   const todayDate = new Date();
   todayDate.setHours(todayDate.getHours() + 9);
   const todayStr = todayDate.toISOString().split("T")[0];
@@ -33,12 +43,18 @@ export default async function ProjectsPage() {
     let scheduledExpense = 0;
     let scheduledIncome = 0;
 
-    const projectTxs = transactions.filter((tx) => tx.project_id === p.id);
+    const projectTxs = (allTxs || []).filter(
+      (tx: any) =>
+        tx.project_id === p.id &&
+        (!tx.memo ||
+          (!tx.memo.includes('"isMessage":true') &&
+            !tx.memo.includes('"isNote":true') &&
+            !tx.memo.includes('"isProfile":true'))),
+    );
+
     for (const trx of projectTxs) {
       const isScheduled =
-        trx.transaction_date &&
-        trx.transaction_date > todayStr &&
-        trx.transaction_date !== "2099-12-31";
+        trx.transaction_date && trx.transaction_date > todayStr;
 
       if (isScheduled) {
         if (trx.type === "deposit") scheduledDeposit += trx.amount;
