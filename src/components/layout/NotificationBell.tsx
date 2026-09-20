@@ -1,53 +1,30 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
-import { Bell, Check, Trash2, X } from "lucide-react";
-import {
-  getNotifications,
-  markAsRead,
-  markAllAsRead,
-} from "@/app/actions/notification";
+import { Bell, Check, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ja } from "date-fns/locale";
-
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { useRouter } from "next/navigation";
+import { useNotifications } from "./NotificationProvider";
 
 export function NotificationBell() {
   const { t } = useLanguage();
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const { notifications, unreadCount, markAsRead, markAllAsRead } =
+    useNotifications();
   const [isOpen, setIsOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
   const [projectFilter, setProjectFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const router = useRouter();
 
-  const fetchNotifications = async () => {
-    const data = await getNotifications();
-    setNotifications(data || []);
-  };
-
-  useEffect(() => {
-    fetchNotifications();
-    // 簡易的なポーリング（1分ごと）
-    const interval = setInterval(fetchNotifications, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
-
   const handleMarkAsRead = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
-    );
     await markAsRead(id);
   };
 
   const handleMarkAllAsRead = async () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
     await markAllAsRead();
   };
 
@@ -161,12 +138,26 @@ export function NotificationBell() {
                           }
 
                           // 遷移処理を追加
-                          if (n.title.includes("メッセージ")) {
+                          const text = (
+                            n.title +
+                            " " +
+                            n.content
+                          ).toLowerCase();
+                          if (text.includes("メッセージ")) {
                             router.push("/dashboard?chat=open");
-                          } else if (n.title.includes("メモ")) {
+                          } else if (
+                            text.includes("メモ") ||
+                            text.includes("note")
+                          ) {
                             router.push("/notes");
-                          } else if (n.title.includes("Todo")) {
+                          } else if (
+                            text.includes("todo") ||
+                            text.includes("タスク") ||
+                            text.includes("期日")
+                          ) {
                             router.push("/todos");
+                          } else if (text.includes("目標日")) {
+                            router.push("/dashboard");
                           } else {
                             router.push("/assets/history");
                           }

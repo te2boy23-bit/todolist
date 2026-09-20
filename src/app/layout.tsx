@@ -7,6 +7,7 @@ import { getProfile } from "@/app/actions/profile";
 import { getProjects, getCurrentProject } from "@/app/actions/project";
 import { Toaster } from "react-hot-toast";
 import { RealtimeNotifications } from "@/components/notifications/RealtimeNotifications";
+import { NotificationProvider } from "@/components/layout/NotificationProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -59,15 +60,12 @@ export default async function RootLayout({
   // ユーザーが持っている複数のプロジェクトをリスト（配列）として取得します。ない場合は空の配列 `[]` を入れます。
   const projects = profile ? await getProjects() : [];
 
-  // ③ 変数（変数名: currentProject）
-  // 現在選択中の１つのプロジェクト情報を取得して箱（変数）に入れます
-  const currentProject = profile ? await getCurrentProject() : null;
+  const currentProject = await getCurrentProject();
 
   return (
     <html lang="ja">
       <head>
-        {/* Google Adsenseのスクリプト追加 */}
-        {/* Next.jsのScriptコンポーネントだと審査ロボットが認識しないことがあるため、通常のscriptタグを使用します */}
+        <meta name="google-adsense-account" content="ca-pub-6902143388253005" />
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6902143388253005"
@@ -75,18 +73,19 @@ export default async function RootLayout({
         ></script>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased pt-14 pb-24 sm:pb-0 sm:pt-16 min-h-screen flex flex-col bg-slate-50`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 min-h-screen text-gray-900 pb-20 sm:pb-0 font-sans`}
       >
         <LanguageProvider>
-          {profile && <RealtimeNotifications userId={profile.id} />}
-          <Toaster />
-          {/* Navbarというコンポーネント（部品）に、さっき取得した変数や配列を「プロパティ(props)」として渡しています */}
-          <Navbar
-            profile={profile}
-            projects={projects}
-            currentProject={currentProject}
-          />
-          <main className="flex-1 w-full">{children}</main>
+          <NotificationProvider>
+            {profile && <RealtimeNotifications userId={profile.id} />}
+            <Navbar
+              profile={profile}
+              projects={projects}
+              currentProject={currentProject}
+            />
+            <main className="max-w-6xl mx-auto pt-14 sm:pt-20">{children}</main>
+            <Toaster position="bottom-center" />
+          </NotificationProvider>
         </LanguageProvider>
       </body>
     </html>

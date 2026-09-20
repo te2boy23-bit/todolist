@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import { EditProjectModal } from "./EditProjectModal";
+import { useNotifications } from "@/components/layout/NotificationProvider";
 
 export function ProjectCard({
   project,
@@ -29,6 +30,8 @@ export function ProjectCard({
 }) {
   const router = useRouter();
   const { t } = useLanguage();
+  const { getUnreadCountForProject } = useNotifications();
+  const unreadCount = getUnreadCountForProject(project.id);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -101,12 +104,15 @@ export function ProjectCard({
             : "bg-white border-gray-100 hover:border-blue-300 hover:shadow-md"
         }`}
       >
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-start mb-4 relative">
           <h2
             className={`text-xl font-bold transition-colors pr-8 ${isPrivatePassbook ? "text-indigo-800" : "text-gray-800 group-hover:text-blue-600"}`}
           >
             {project.name}
           </h2>
+          {unreadCount > 0 && (
+            <span className="absolute top-1 right-8 w-2.5 h-2.5 bg-red-500 rounded-full shadow-sm animate-pulse"></span>
+          )}
         </div>
 
         <div className="space-y-2 text-sm text-gray-600">

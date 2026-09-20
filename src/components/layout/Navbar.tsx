@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Wallet,
   CheckSquare,
@@ -28,20 +28,29 @@ import { PushNotificationManager } from "@/components/notifications/PushNotifica
 
 import Image from "next/image";
 
+import { useNotifications } from "./NotificationProvider";
+
 export function Navbar({
   profile,
   projects = [],
   currentProject = null,
 }: {
-  profile: any;
+  profile?: any;
   projects?: any[];
   currentProject?: any;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { language, setLanguage, t } = useLanguage();
   const [isPending, startTransition] = useTransition();
   const [isPairingOpen, setIsPairingOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const {
+    notifications,
+    getUnreadCountForTab,
+    getUnreadCountForProject,
+    markAsRead,
+  } = useNotifications();
 
   // 訪問（リピ数）をカウントする処理（1時間に1回のみ）
   useEffect(() => {
@@ -57,6 +66,41 @@ export function Navbar({
       }
     }
   }, [profile?.id]);
+
+  // ページ遷移時に未読通知を既読にする
+  useEffect(() => {
+    if (!currentProject) return;
+    const tabName = pathname.replace("/", "").split("?")[0] || "dashboard";
+
+    // 現在のタブに該当する未読通知を取得
+    const unreadForTab = notifications.filter((n) => {
+      if (n.is_read || n.project_id !== currentProject.id) return false;
+      const text = (n.title + " " + n.content).toLowerCase();
+
+      if (tabName === "dashboard") {
+        return text.includes("メッセージ");
+      }
+      if (tabName === "todos") {
+        return text.includes("todo") || text.includes("タスク");
+      }
+      if (tabName === "notes") {
+        return text.includes("メモ") || text.includes("note");
+      }
+      if (tabName === "assets" || tabName === "assets/history") {
+        return (
+          text.includes("記録") ||
+          text.includes("お金") ||
+          text.includes("収入") ||
+          text.includes("出費")
+        );
+      }
+      return false;
+    });
+
+    if (unreadForTab.length > 0) {
+      unreadForTab.forEach((n) => markAsRead(n.id));
+    }
+  }, [pathname, currentProject, notifications, markAsRead]);
 
   const navItems = [
     { name: t("common.money"), path: "/dashboard", icon: Wallet },
@@ -76,7 +120,6 @@ export function Navbar({
 
   return (
     <>
-      {/* スマホ用 上部ヘッダー (sm以上では非表示) */}
       <div className="sm:hidden fixed top-0 left-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-40 px-4 py-2 flex items-center justify-between shadow-sm">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg overflow-hidden shadow-sm relative border border-gray-100">
@@ -93,12 +136,14 @@ export function Navbar({
           <div className="scale-90 flex items-center gap-2">
             {profile ? <PairingModal profile={profile} /> : <LoginButton />}
           </div>
-          <button
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
+          {pathname === "/projects" && (
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -248,24 +293,33 @@ export function Navbar({
               navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname.startsWith(item.path);
+                const tabName = item.path.replace("/", "").split("?")[0];
+                const unreadCount = currentProject
+                  ? getUnreadCountForTab(currentProject.id, tabName)
+                  : 0;
 
                 return (
                   <Link
                     key={item.path}
                     href={item.path}
                     className={cn(
-                      "flex items-center gap-2 px-3 py-2 rounded-xl transition-all font-medium shrink-0",
+                      "flex items-center gap-2 px-3 py-2 rounded-xl transition-all font-medium shrink-0 relative",
                       isActive
                         ? "text-blue-600 bg-blue-50/80"
                         : "text-gray-500 hover:text-gray-900 hover:bg-gray-50",
                     )}
                   >
-                    <Icon
-                      className={cn(
-                        "w-5 h-5 shrink-0",
-                        isActive ? "text-blue-600" : "text-gray-400",
+                    <div className="relative">
+                      <Icon
+                        className={cn(
+                          "w-5 h-5 shrink-0",
+                          isActive ? "text-blue-600" : "text-gray-400",
+                        )}
+                      />
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 border border-white rounded-full"></span>
                       )}
-                    />
+                    </div>
                     <span className="text-sm whitespace-nowrap">
                       {item.name}
                     </span>
@@ -343,6 +397,45 @@ export function Navbar({
           </div>
         </div>
       </nav>
+
+      {/* スマホ用 ボトムナビゲーション (プロジェクト画面以外で表示) */}
+      {pathname !== "/projects" && (
+        <div className="sm:hidden fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 z-50 flex justify-around pb-safe">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname.startsWith(item.path);
+            const tabName = item.path.replace("/", "").split("?")[0];
+            const unreadCount = currentProject
+              ? getUnreadCountForTab(currentProject.id, tabName)
+              : 0;
+            return (
+              <Link
+                key={item.path}
+                href={item.path}
+                className={cn(
+                  "flex flex-col items-center justify-center p-2 min-w-[4rem] relative",
+                  isActive
+                    ? "text-blue-600"
+                    : "text-gray-400 hover:text-gray-600",
+                )}
+              >
+                <div className="relative">
+                  <Icon
+                    className={cn(
+                      "w-6 h-6 mb-1",
+                      isActive ? "text-blue-600" : "text-gray-400",
+                    )}
+                  />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
+                  )}
+                </div>
+                <span className="text-[10px] font-medium">{item.name}</span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
       {/* チャットドロワー */}
       {currentProject &&

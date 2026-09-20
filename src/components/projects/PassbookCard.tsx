@@ -6,10 +6,13 @@ import { selectProject } from "@/app/actions/project";
 import { useRouter } from "next/navigation";
 
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { useNotifications } from "@/components/layout/NotificationProvider";
 
 export function PassbookCard({ project }: { project: any }) {
   const router = useRouter();
   const { t } = useLanguage();
+  const { getUnreadCountForProject } = useNotifications();
+  const unreadCount = getUnreadCountForProject(project.id);
   const [isPending, startTransition] = useTransition();
 
   if (!project) return null;
@@ -38,8 +41,11 @@ export function PassbookCard({ project }: { project: any }) {
 
         <div className="relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10">
+            <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10 relative">
               <Wallet className="w-6 h-6 text-blue-300" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full shadow-sm animate-pulse"></span>
+              )}
             </div>
             <div>
               <h2 className="text-xl font-bold text-white tracking-wide mb-1">
