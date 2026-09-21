@@ -156,3 +156,44 @@ export async function markMessagesAsRead() {
   }
   return { success: true };
 }
+
+export async function deleteMessage(messageId: string) {
+  const supabase = await createClient();
+  const profile = await getProfile();
+  const project = await getCurrentProject();
+
+  if (!profile || !project) {
+    throw new Error("Unauthorized");
+  }
+
+  // Check if the message exists and belongs to the user
+  const { data: tx, error: fetchError } = await supabase
+    .from("transactions")
+    .select("memo")
+    .eq("id", messageId)
+    .single();
+
+  if (fetchError || !tx) {
+    throw new Error("Message not found");
+  }
+
+  try {
+    const pd = JSON.parse(tx.memo);
+    if (pd.userId !== profile.id) {
+      throw new Error("Cannot delete someone else's message");
+    }
+  } catch (e) {
+    throw new Error("Invalid message format");
+  }
+
+  const { error: deleteError } = await supabase
+    .from("transactions")
+    .delete()
+    .eq("id", messageId);
+
+  if (deleteError) {
+    throw new Error(`Failed to delete message: ${deleteError.message}`);
+  }
+
+  return { success: true };
+}

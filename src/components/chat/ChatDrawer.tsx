@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send } from "lucide-react";
+import { MessageCircle, X, Send, Trash2 } from "lucide-react";
 import {
   addMessage,
   getMessages,
   markMessagesAsRead,
+  deleteMessage,
 } from "@/app/actions/chat";
 import { createClient } from "@/lib/supabase/client";
 
@@ -30,15 +31,19 @@ export function ChatDrawer({
   useEffect(() => {
     if (searchParams.get("chat") === "open") {
       setIsOpen(true);
-      // 自動で開いたらURLからパラメータを消してリロードをきれいにする方法もあるが、今回は開くだけ
     }
   }, [searchParams]);
+
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [partnerTyping, setPartnerTyping] = useState(false);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const supabase = createClient();
 
   // iOS Safari のキーボード高さを正しく取得するための対応
   useEffect(() => {
@@ -81,16 +86,39 @@ export function ChatDrawer({
 
     fetchMessages();
 
-    // 簡易的なポーリング（リアルタイム更新の代わり）
-    const interval = setInterval(() => {
-      fetchMessages();
-    }, 5000);
+    // Supabase Realtime Channel
+    const channel = supabase.channel(`chat:${projectId}`);
+
+    channel
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "transactions",
+          filter: `project_id=eq.${projectId}`,
+        },
+        (payload) => {
+          fetchMessages();
+        },
+      )
+      .on("broadcast", { event: "typing" }, (payload) => {
+        if (payload.payload.userId !== currentUserId) {
+          setPartnerTyping(true);
+          if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = setTimeout(() => {
+            setPartnerTyping(false);
+          }, 3000);
+        }
+      })
+      .subscribe();
 
     return () => {
       isMounted = false;
-      clearInterval(interval);
+      supabase.removeChannel(channel);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
-  }, [isOpen]);
+  }, [isOpen, projectId, currentUserId, supabase]);
 
   // メッセージが追加されたら一番下までスクロールする
   useEffect(() => {
@@ -100,8 +128,12 @@ export function ChatDrawer({
       };
       // 即時と、キーボードが開くなどレイアウトが変わったあとの保険
       scrollToBottom();
-      setTimeout(scrollToBottom, 100);
-      setTimeout(scrollToBottom, 500);
+      const timeoutId = setTimeout(scrollToBottom, 100);
+      const timeoutId2 = setTimeout(scrollToBottom, 500);
+      return () => {
+        clearTimeout(timeoutId);
+        clearTimeout(timeoutId2);
+      };
     }
   }, [messages, isOpen]);
 
@@ -109,31 +141,41 @@ export function ChatDrawer({
     e.preventDefault();
     if (!newMessage.trim() || isLoading) return;
 
-    const textToSend = newMessage;
+    const textToSend = newMessage.trim();
     setNewMessage(""); // 先にクリアしてUIをスッキリさせる
-
-    // オプティミスティックUI（即時反映）
-    const tempId = Date.now().toString();
-    const tempMsg = {
-      id: tempId,
-      text: textToSend,
-      userId: currentUserId,
-      timestamp: new Date().toISOString(),
-    };
-    setMessages((prev) => [...prev, tempMsg]);
 
     setIsLoading(true);
     try {
       await addMessage(textToSend);
-      // 再取得
       const updatedMessages = await getMessages();
       setMessages(updatedMessages);
     } catch (error: any) {
       console.error("Failed to send message", error);
       alert(`メッセージの送信に失敗しました: ${error.message}`);
-      // エラー時は追加したメッセージを戻すなどの処理も可能だが今回は簡易的に
+      setNewMessage(textToSend);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleTyping = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNewMessage(e.target.value);
+    supabase.channel(`chat:${projectId}`).send({
+      type: "broadcast",
+      event: "typing",
+      payload: { userId: currentUserId },
+    });
+  };
+
+  const handleDelete = async (messageId: string) => {
+    if (!confirm("送信を取り消しますか？")) return;
+    try {
+      await deleteMessage(messageId);
+      const updatedMessages = await getMessages();
+      setMessages(updatedMessages);
+    } catch (error) {
+      console.error(error);
+      alert("取り消しに失敗しました");
     }
   };
 
@@ -305,11 +347,59 @@ export function ChatDrawer({
                             </span>
                           </div>
                         </div>
+                        {/* 削除ボタン */}
+                        {isMe && (
+                          <button
+                            onClick={() => handleDelete(msg.id)}
+                            className="text-gray-300 hover:text-red-500 p-1 self-end transition-colors"
+                            title="送信を取り消す"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
                 );
               })}
+
+              {/* 入力中インジケーター */}
+              {partnerTyping && (
+                <div className="flex justify-start mb-2 animate-in fade-in duration-200">
+                  <div className="flex gap-2 max-w-[80%] flex-row">
+                    <div className="flex-shrink-0">
+                      {partnerProfile?.avatar_url ? (
+                        <img
+                          src={partnerProfile.avatar_url}
+                          alt="Typing"
+                          className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
+                          {partnerProfile?.name?.charAt(0) || "P"}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-start">
+                      <div className="px-4 py-3 bg-white text-gray-800 border border-gray-100 rounded-2xl rounded-tl-sm shadow-sm flex gap-1 items-center">
+                        <span
+                          className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0ms" }}
+                        ></span>
+                        <span
+                          className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "150ms" }}
+                        ></span>
+                        <span
+                          className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "300ms" }}
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div ref={messagesEndRef} />
             </div>
 
@@ -320,7 +410,7 @@ export function ChatDrawer({
             >
               <textarea
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={handleTyping}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
@@ -349,7 +439,7 @@ export function ChatDrawer({
                 disabled={!newMessage.trim() || isLoading}
                 className="bg-blue-600 text-white p-2.5 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:hover:bg-blue-600 flex items-center justify-center flex-shrink-0 h-[44px] w-[44px]"
               >
-                <Send className="w-5 h-5 -ml-0.5" />
+                <Send className="w-5 h-5 ml-1" />
               </button>
             </form>
           </div>
