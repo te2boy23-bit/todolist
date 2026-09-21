@@ -129,17 +129,24 @@ export function Navbar({
             Todo & Money
           </span>
         </Link>
-        <div className="flex items-center gap-2">
-          <div className="scale-90 flex items-center gap-1">
+        <div className="flex items-center gap-1 sm:gap-2">
+          {pathname !== "/projects" &&
+            currentProject &&
+            !currentProject.invite_code?.startsWith("PRIVATE_") && (
+              <div className="scale-90 flex items-center">
+                <ShareProjectModal project={currentProject} />
+              </div>
+            )}
+          <div className="scale-90 flex items-center">
             <NotificationBell />
           </div>
-          <div className="scale-90 flex items-center gap-2">
+          <div className="scale-90 flex items-center">
             {profile ? <PairingModal profile={profile} /> : <LoginButton />}
           </div>
           {pathname === "/projects" && (
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+              className="p-1.5 text-gray-600 hover:bg-gray-100 rounded-md transition-colors ml-1"
             >
               <Menu className="w-6 h-6" />
             </button>
