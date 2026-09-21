@@ -53,7 +53,7 @@ export function JoinProjectForm() {
             required
             maxLength={6}
             placeholder={t("project.codePlaceholder")}
-            className="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono tracking-widest uppercase text-center"
+            className="flex-1 px-4 py-3 text-base border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono tracking-widest uppercase text-center"
           />
           <button
             type="submit"

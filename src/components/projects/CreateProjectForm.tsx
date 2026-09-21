@@ -79,7 +79,7 @@ export function CreateProjectForm() {
           name="name"
           required
           placeholder={t("project.namePlaceholder")}
-          className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 text-base border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -94,7 +94,7 @@ export function CreateProjectForm() {
           min="0"
           step="1000"
           placeholder={t("project.targetPlaceholder")}
-          className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+          className="w-full px-4 py-2 text-base border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
         />
       </div>
 
