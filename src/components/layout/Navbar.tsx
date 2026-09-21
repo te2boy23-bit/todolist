@@ -121,29 +121,26 @@ export function Navbar({
   return (
     <>
       <div className="sm:hidden fixed top-0 left-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-40 px-4 py-2 flex items-center justify-between shadow-sm">
-        <Link
-          href="/"
-          className="flex items-center gap-2 shrink-0 min-w-0 truncate mr-2"
-        >
-          <div className="w-7 h-7 rounded-lg overflow-hidden shadow-sm relative border border-gray-100 shrink-0">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg overflow-hidden shadow-sm relative border border-gray-100">
             <Image src="/logo.jpg" alt="Logo" fill className="object-cover" />
           </div>
-          <span className="font-bold text-gray-800 text-sm tracking-tight hidden xs:inline truncate">
+          <span className="font-bold text-gray-800 text-sm tracking-tight hidden sm:inline">
             Todo & Money
           </span>
         </Link>
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2">
           {pathname !== "/projects" &&
             currentProject &&
             !currentProject.invite_code?.startsWith("PRIVATE_") && (
-              <div className="scale-90 flex items-center shrink-0">
+              <div className="scale-90 flex items-center">
                 <ShareProjectModal project={currentProject} variant="icon" />
               </div>
             )}
-          <div className="scale-90 flex items-center shrink-0">
+          <div className="scale-90 flex items-center">
             <NotificationBell />
           </div>
-          <div className="scale-90 flex items-center shrink-0">
+          <div className="scale-90 flex items-center">
             {profile ? <PairingModal profile={profile} /> : <LoginButton />}
           </div>
           {pathname === "/projects" && (
