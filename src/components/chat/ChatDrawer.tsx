@@ -86,22 +86,15 @@ export function ChatDrawer({
 
     fetchMessages();
 
-    // Supabase Realtime Channel
+    // 確実なメッセージ取得のためポーリングを復活（SupabaseのRealtime設定に依存しないため）
+    const interval = setInterval(() => {
+      fetchMessages();
+    }, 5000);
+
+    // Supabase Realtime Channel (タイピングインジケーター専用)
     const channel = supabase.channel(`chat:${projectId}`);
 
     channel
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "transactions",
-          filter: `project_id=eq.${projectId}`,
-        },
-        (payload) => {
-          fetchMessages();
-        },
-      )
       .on("broadcast", { event: "typing" }, (payload) => {
         if (payload.payload.userId !== currentUserId) {
           setPartnerTyping(true);
@@ -115,6 +108,7 @@ export function ChatDrawer({
 
     return () => {
       isMounted = false;
+      clearInterval(interval);
       supabase.removeChannel(channel);
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
