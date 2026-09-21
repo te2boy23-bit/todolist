@@ -4,7 +4,13 @@ import { useState } from "react";
 import { Users, Copy, Check, X, UserPlus } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 
-export function ShareProjectModal({ project }: { project: any }) {
+export function ShareProjectModal({
+  project,
+  variant = "default",
+}: {
+  project: any;
+  variant?: "default" | "icon";
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const { t } = useLanguage();
@@ -24,11 +30,17 @@ export function ShareProjectModal({ project }: { project: any }) {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-1.5 text-gray-500 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 px-3 py-2 rounded-md transition-colors text-xs font-medium"
+        className={
+          variant === "default"
+            ? "flex items-center gap-1.5 text-gray-500 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 px-3 py-2 rounded-md transition-colors text-xs font-medium"
+            : "p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
+        }
         title="共有設定"
       >
-        <UserPlus className="w-4 h-4" />
-        <span className="hidden sm:inline">共有</span>
+        <UserPlus className={variant === "default" ? "w-4 h-4" : "w-5 h-5"} />
+        {variant === "default" && (
+          <span className="hidden sm:inline">共有</span>
+        )}
       </button>
 
       {isOpen && (

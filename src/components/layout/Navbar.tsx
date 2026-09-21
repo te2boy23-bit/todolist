@@ -134,7 +134,7 @@ export function Navbar({
             currentProject &&
             !currentProject.invite_code?.startsWith("PRIVATE_") && (
               <div className="scale-90 flex items-center">
-                <ShareProjectModal project={currentProject} />
+                <ShareProjectModal project={currentProject} variant="icon" />
               </div>
             )}
           <div className="scale-90 flex items-center">
