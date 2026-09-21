@@ -38,22 +38,31 @@ export function ChatDrawer({
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // iOS Safari のキーボード高さを正しく取得するための対応
   useEffect(() => {
     if (!isOpen) return;
     const handleResize = () => {
-      if (window.visualViewport && drawerRef.current) {
+      if (window.visualViewport && drawerRef.current && containerRef.current) {
+        // キーボード表示時に画面が上に押し上げられる分（offsetTop）を相殺する
+        containerRef.current.style.top = `${window.visualViewport.offsetTop}px`;
+        containerRef.current.style.height = `${window.visualViewport.height}px`;
         drawerRef.current.style.height = `${window.visualViewport.height}px`;
+
+        // Android等で scrollToBottom を呼ぶための保険
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }
     };
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", handleResize);
+      window.visualViewport.addEventListener("scroll", handleResize);
       handleResize();
     }
     return () => {
       if (window.visualViewport) {
         window.visualViewport.removeEventListener("resize", handleResize);
+        window.visualViewport.removeEventListener("scroll", handleResize);
       }
     };
   }, [isOpen]);
@@ -153,7 +162,10 @@ export function ChatDrawer({
 
       {/* ドロワー */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end h-[100dvh]">
+        <div
+          ref={containerRef}
+          className="fixed inset-0 z-50 flex justify-end h-[100dvh]"
+        >
           <div
             className="absolute inset-0 bg-black/20"
             onClick={() => setIsOpen(false)}
@@ -315,6 +327,17 @@ export function ChatDrawer({
                     // textarea の場合は form event を模倣して送信
                     handleSend(e as unknown as React.FormEvent);
                   }
+                }}
+                onFocus={() => {
+                  setTimeout(() => {
+                    messagesEndRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                    });
+                  }, 300);
+                }}
+                onBlur={() => {
+                  // iOSでキーボードが閉じたときに画面が上にずれたままになるのを防ぐ
+                  window.scrollTo(0, 0);
                 }}
                 placeholder="メッセージを入力..."
                 className="flex-1 bg-gray-100 rounded-2xl px-4 py-2.5 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow resize-none overflow-y-auto max-h-32 min-h-[44px]"
