@@ -16,6 +16,7 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { format } from "date-fns";
 import { ja, enUS } from "date-fns/locale";
+import { useCelebration } from "@/components/layout/CelebrationProvider";
 
 type TransactionType = "income" | "deposit" | "expense";
 type PayerType = "me" | "partner";
@@ -37,6 +38,7 @@ export function TransactionForm({
 }: TransactionFormProps) {
   const { t, language } = useLanguage();
   const router = useRouter();
+  const { triggerCelebration } = useCelebration();
   const [formMode, setFormMode] = useState<
     "income" | "deposit" | "expense" | "pay_later"
   >(isPassbook ? "income" : "deposit");
@@ -118,6 +120,11 @@ export function TransactionForm({
         memo,
         transaction_date: transactionDate,
       });
+
+      // お金が貯まったとき（deposit/income）に紙吹雪を出す
+      if (type === "deposit" || type === "income") {
+        triggerCelebration();
+      }
 
       setAmount("");
       setMemo("");

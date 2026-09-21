@@ -84,6 +84,18 @@ export function SavingsProgress({
         </div>
       </div>
 
+      <div className="flex justify-between items-end mb-2">
+        <div className="text-3xl animate-bounce">
+          {progress < 30
+            ? "🌱"
+            : progress < 70
+              ? "🌿"
+              : progress < 100
+                ? "🪴"
+                : "🌸"}
+        </div>
+      </div>
+
       <div className="relative h-4 bg-gray-100 rounded-full overflow-hidden mb-2">
         <div
           className="absolute top-0 left-0 h-full bg-blue-500 transition-all duration-500 ease-out rounded-full"

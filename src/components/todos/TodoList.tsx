@@ -5,6 +5,7 @@ import { toggleTodo, deleteTodo, updateTodo } from "@/app/actions";
 import { Trash2, Calendar, Edit2, Check, X } from "lucide-react";
 import { format } from "date-fns";
 import { DatePicker } from "@/components/ui/DatePicker";
+import { useCelebration } from "@/components/layout/CelebrationProvider";
 
 type Todo = {
   id: string;
@@ -18,12 +19,16 @@ export function TodoList({ todos }: { todos: Todo[] }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDueDate, setEditDueDate] = useState("");
+  const { triggerCelebration } = useCelebration();
 
   const handleToggle = (id: string, currentStatus: boolean) => {
     if (editingId === id) return; // 編集中はトグルしない
     startTransition(async () => {
       try {
         await toggleTodo(id, currentStatus);
+        if (!currentStatus) {
+          triggerCelebration(); // 完了時に紙吹雪
+        }
       } catch (error) {
         console.error("Failed to toggle todo", error);
       }

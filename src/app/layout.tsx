@@ -8,6 +8,7 @@ import { getProjects, getCurrentProject } from "@/app/actions/project";
 import { Toaster } from "react-hot-toast";
 import { RealtimeNotifications } from "@/components/notifications/RealtimeNotifications";
 import { NotificationProvider } from "@/components/layout/NotificationProvider";
+import { CelebrationProvider } from "@/components/layout/CelebrationProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -84,14 +85,18 @@ export default async function RootLayout({
       >
         <LanguageProvider>
           <NotificationProvider>
-            {profile && <RealtimeNotifications userId={profile.id} />}
-            <Navbar
-              profile={profile}
-              projects={projects}
-              currentProject={currentProject}
-            />
-            <main className="max-w-6xl mx-auto pt-14 sm:pt-20">{children}</main>
-            <Toaster position="bottom-center" />
+            <CelebrationProvider>
+              {profile && <RealtimeNotifications userId={profile.id} />}
+              <Navbar
+                profile={profile}
+                projects={projects}
+                currentProject={currentProject}
+              />
+              <main className="max-w-6xl mx-auto pt-14 sm:pt-20">
+                {children}
+              </main>
+              <Toaster position="bottom-center" />
+            </CelebrationProvider>
           </NotificationProvider>
         </LanguageProvider>
       </body>
