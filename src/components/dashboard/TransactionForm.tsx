@@ -40,10 +40,14 @@ export function TransactionForm({
   const router = useRouter();
   const { triggerCelebration } = useCelebration();
   const [formMode, setFormMode] = useState<
-    "income" | "deposit" | "expense" | "pay_later"
+    "income" | "deposit" | "expense" | "pay_later" | "extra_income"
   >(isPassbook ? "income" : "deposit");
   const type: TransactionType =
-    formMode === "pay_later" ? "expense" : (formMode as TransactionType);
+    formMode === "pay_later"
+      ? "expense"
+      : formMode === "extra_income"
+        ? "income"
+        : (formMode as TransactionType);
   const [payer, setPayer] = useState<PayerType>("me");
   const [amount, setAmount] = useState<string>("");
   const [memo, setMemo] = useState<string>("");
@@ -113,11 +117,14 @@ export function TransactionForm({
 
     setIsSubmitting(true);
     try {
+      const finalMemo =
+        formMode === "extra_income" ? `[臨時収入] ${memo}` : memo;
+
       await addTransaction({
         type,
         payer,
         amount: Number(amount),
-        memo,
+        memo: finalMemo,
         transaction_date: transactionDate,
       });
 
@@ -235,9 +242,27 @@ export function TransactionForm({
         <div className="flex bg-gray-100 rounded-lg p-1 mb-4 w-full sm:w-fit">
           <button
             type="button"
-            className="flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors bg-white text-emerald-700 shadow-sm"
+            onClick={() => setFormMode("income")}
+            className={cn(
+              "flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
+              formMode === "income"
+                ? "bg-white text-emerald-700 shadow-sm"
+                : "text-gray-500 hover:text-gray-700",
+            )}
           >
             {t("transaction.recordIncome")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setFormMode("extra_income")}
+            className={cn(
+              "flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-medium transition-colors",
+              formMode === "extra_income"
+                ? "bg-white text-orange-600 shadow-sm"
+                : "text-gray-500 hover:text-gray-700",
+            )}
+          >
+            臨時収入
           </button>
         </div>
       )}
