@@ -25,6 +25,7 @@ import { ShareProjectModal } from "@/components/projects/ShareProjectModal";
 import { ChatDrawer } from "@/components/chat/ChatDrawer";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { PushNotificationManager } from "@/components/notifications/PushNotificationManager";
+import { HelpModal } from "@/components/layout/HelpModal";
 
 import Image from "next/image";
 
@@ -138,6 +139,9 @@ export function Navbar({
               </div>
             )}
           <div className="scale-90 flex items-center">
+            <HelpModal variant="icon" />
+          </div>
+          <div className="scale-90 flex items-center">
             <NotificationBell />
           </div>
           <div className="scale-90 flex items-center">
@@ -244,6 +248,7 @@ export function Navbar({
                     fullWidth={true}
                   />
                 )}
+                <HelpModal variant="menuItem" />
                 <button
                   onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
                   className="w-full flex items-center justify-between p-3 text-gray-600 hover:bg-gray-50 rounded-xl transition-colors font-medium"
@@ -391,8 +396,9 @@ export function Navbar({
 
             <div className="border-l border-gray-200 h-6 mx-1"></div>
 
-            {/* Notification Bell */}
+            {/* Notification Bell & Help */}
             <div className="flex items-center gap-2">
+              <HelpModal variant="icon" />
               <NotificationBell />
               {profile && <PushNotificationManager userId={profile.id} />}
             </div>
