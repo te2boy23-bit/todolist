@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { HelpCircle, Shield, FileText } from "lucide-react";
+import { HelpCircle, Shield, FileText, Mail } from "lucide-react";
 
 export function Footer() {
   return (
@@ -30,6 +30,12 @@ export function Footer() {
                 <Link href="/guide" className="text-sm text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-1.5">
                   <HelpCircle className="w-4 h-4" />
                   使い方ガイド
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-sm text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-1.5">
+                  <Mail className="w-4 h-4" />
+                  お問い合わせ
                 </Link>
               </li>
             </ul>

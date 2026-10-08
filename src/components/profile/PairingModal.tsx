@@ -3,11 +3,12 @@
 import { useState, useTransition, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { updateProfile } from "@/app/actions/profile";
-import { User, Check, X } from "lucide-react";
+import { User, Check, X, Mail } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
 import Cropper from "react-easy-crop";
 import { getCroppedImg } from "@/lib/cropImage";
 import { LoginButton } from "@/components/auth/LoginButton";
+import Link from "next/link";
 
 type Profile = {
   id: string;
@@ -240,8 +241,16 @@ export function PairingModal({ profile }: PairingModalProps) {
                   )}
                 </div>
 
-                {/* ログアウトボタン */}
-                <div className="mt-6 pt-6 border-t border-gray-100 flex justify-end">
+                {/* その他のリンクとログアウト */}
+                <div className="mt-6 pt-6 border-t border-gray-100 flex items-center justify-between">
+                  <Link
+                    href="/contact"
+                    onClick={() => setIsOpen(false)}
+                    className="text-sm text-gray-500 hover:text-blue-600 flex items-center gap-1.5 transition-colors"
+                  >
+                    <Mail className="w-4 h-4" />
+                    お問い合わせ
+                  </Link>
                   <LoginButton />
                 </div>
               </div>
