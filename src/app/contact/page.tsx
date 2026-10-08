@@ -31,7 +31,7 @@ export default function ContactPage() {
             以下のボタンからメールソフトを起動してご連絡ください。
           </p>
           <a
-            href="mailto:support@plan-wallet.com?subject=【Plan Wallet】お問い合わせ"
+            href="mailto:contact.tepe07@gmail.com?subject=【Plan Wallet】お問い合わせ"
             className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md"
           >
             <Mail className="w-5 h-5" />
@@ -39,7 +39,7 @@ export default function ContactPage() {
           </a>
           <p className="text-xs text-gray-400 mt-6">
             ※ ご返信には数営業日いただく場合がございます。<br />
-            ※ 宛先（support@plan-wallet.com）をご確認の上ご送信ください。
+            ※ 宛先（contact.tepe07@gmail.com）をご確認の上ご送信ください。
           </p>
         </div>
       </div>
