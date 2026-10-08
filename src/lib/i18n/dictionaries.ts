@@ -98,10 +98,10 @@ export const dictionaries = {
       pairBtn: "参加",
     },
     landing: {
-      titleLine1: "みんなの目標を",
-      titleLine2: "形にする",
+      titleLine1: "ふたりでつくる",
+      titleLine2: "共有家計簿・Todoリスト",
       description:
-        "旅行、同棲、趣味の資金。友人や恋人と一緒にお金を管理し、共通のTodoをこなして、夢を叶えるための共有アプリです。",
+        "カップルや夫婦、友人と使える共有アプリ。旅行や同棲のための貯金・出費を共有し、目標までのタスク（ToDo）を楽しく一元管理できます。",
       loginBtn: "Googleでログイン / 新規登録",
       freeNote: "※ アカウント作成は無料です",
     },

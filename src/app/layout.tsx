@@ -21,13 +21,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Plan Wallet | 夢を叶える共有貯金＆Todoアプリ",
+  title: "Plan Wallet | 共有家計簿・貯金＆Todoリストアプリ",
   description:
-    "旅行や同棲、趣味の資金。恋人や友人と一緒にお金を貯めながら、目標までのTodoを楽しく管理できる共有アプリです。",
+    "カップルや夫婦、友人と使える共有家計簿＆Todoリストアプリ。旅行や同棲、趣味のための貯金や出費をリアルタイムに共有し、目標までのToDo（タスク）を楽しく一元管理できます。無料で利用可能！",
   openGraph: {
-    title: "Plan Wallet | 夢を叶える共有貯金＆Todoアプリ",
+    title: "Plan Wallet | 共有家計簿・貯金＆Todoリストアプリ",
     description:
-      "旅行や同棲、趣味の資金。恋人や友人と一緒にお金を貯めながら、目標までのTodoを楽しく管理できる共有アプリです。",
+      "カップルや夫婦、友人と使える共有家計簿＆Todoリストアプリ。旅行や同棲、趣味のための貯金や出費をリアルタイムに共有し、目標までのToDo（タスク）を楽しく一元管理できます。無料で利用可能！",
     type: "website",
     locale: "ja_JP",
     url: "https://plan-wallet.com",
@@ -35,9 +35,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Plan Wallet | 夢を叶える共有貯金＆Todoアプリ",
+    title: "Plan Wallet | 共有家計簿・貯金＆Todoリストアプリ",
     description:
-      "旅行や同棲、趣味の資金。恋人や友人と一緒にお金を貯めながら、目標までのTodoを楽しく管理できる共有アプリです。",
+      "カップルや夫婦、友人と使える共有家計簿＆Todoリストアプリ。旅行や同棲、趣味のための貯金や出費をリアルタイムに共有し、目標までのToDo（タスク）を楽しく一元管理できます。無料で利用可能！",
   },
   icons: {
     icon: "/logo.jpg",
